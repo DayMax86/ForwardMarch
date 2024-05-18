@@ -15,6 +15,8 @@ interface Square {
     var hostile: Boolean
     var clickable: Boolean
     var contents: Array<GameObject>
+    var boardXpos: Int
+    var boardYpos: Int
 
     fun updateTileImage(){
 
