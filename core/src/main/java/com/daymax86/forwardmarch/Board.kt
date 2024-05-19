@@ -2,9 +2,10 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.utils.Array
 
-class Board {
+interface Board {
 
-    val dimensions: Int = 8
-    val SquaresArray: Array<Square> = Array<Square>(dimensions * dimensions)
+    var dimensions: Int
+    var squaresArray: Array<Square>
+    var tileWidth: Int
 
 }

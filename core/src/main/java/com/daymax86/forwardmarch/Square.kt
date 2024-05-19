@@ -1,12 +1,13 @@
 package com.daymax86.forwardmarch
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.utils.Array
 
 enum class TileColours{
     BLACK,
     WHITE,
-    READ
+    RED
 }
 
 interface Square {
@@ -17,9 +18,6 @@ interface Square {
     var contents: Array<GameObject>
     var boardXpos: Int
     var boardYpos: Int
-
-    fun updateTileImage(){
-
-    }
+    var tileWidth: Int
 
 }
