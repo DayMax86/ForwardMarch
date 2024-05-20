@@ -4,6 +4,7 @@ import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms.  */
 class MainApplication : Game() {
@@ -14,6 +15,8 @@ class MainApplication : Game() {
     lateinit var batch: SpriteBatch
     lateinit var font: BitmapFont
     lateinit var fps: FrameRateCounter
+    lateinit var shapeRenderer: ShapeRenderer
+
 
     override fun create() {
         windowHeight = Gdx.graphics.height
@@ -22,6 +25,7 @@ class MainApplication : Game() {
         font = BitmapFont()
         font.data.setScale(3f)
         fps = FrameRateCounter()
+        shapeRenderer = ShapeRenderer()
         this.setScreen(GameScreen(this))
     }
 
@@ -40,5 +44,6 @@ class MainApplication : Game() {
         super.dispose()
         batch.dispose()
         font.dispose()
+        shapeRenderer.dispose()
     }
 }

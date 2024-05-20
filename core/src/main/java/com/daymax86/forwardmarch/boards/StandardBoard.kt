@@ -25,7 +25,9 @@ class StandardBoard(
                     )
                 }
                 this.squaresArray.add(square)
-                lastWasBlack = !lastWasBlack
+                if (x.mod(dimensions)!=0) {
+                    lastWasBlack = !lastWasBlack
+                }
             }
         }
     }
