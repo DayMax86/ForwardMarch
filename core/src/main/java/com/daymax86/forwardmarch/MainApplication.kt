@@ -2,7 +2,6 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.FPSLogger
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 
@@ -19,7 +18,6 @@ class MainApplication : Game() {
     override fun create() {
         windowHeight = Gdx.graphics.height
         windowWidth = Gdx.graphics.width
-        tileWidth = this.windowWidth/4
         batch = SpriteBatch()
         font = BitmapFont()
         font.data.setScale(3f)
@@ -39,8 +37,8 @@ class MainApplication : Game() {
     }
 
     override fun dispose() {
+        super.dispose()
         batch.dispose()
         font.dispose()
-        super.dispose()
     }
 }

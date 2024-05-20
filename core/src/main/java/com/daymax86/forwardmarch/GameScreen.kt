@@ -2,7 +2,6 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.utils.ScreenUtils
 import com.daymax86.forwardmarch.boards.StandardBoard
@@ -17,7 +16,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     )
 
     init {
-        camera.setToOrtho(false, 1920f, 1080f)
+        camera.setToOrtho(false, application.windowWidth.toFloat(), application.windowHeight.toFloat())
         application.batch.begin()
         application.batch.end()
     }
@@ -32,9 +31,9 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     private fun drawBoard(board: Board) {
-        val quarterScreen: Float = (application.windowWidth / 4).toFloat()
-        val squareVisualWidth: Float = ((application.windowWidth) /4).toFloat()
-        val squareVisualHeight: Float = (application.windowHeight/4).toFloat()
+        val quarterScreen: Float = (application.windowWidth / 8).toFloat() // Why is this 8 instead of 4?
+        val squareVisualWidth: Float = quarterScreen / 2
+        val squareVisualHeight: Float = quarterScreen / 2
         val rect = Rectangle()
         for ((index, square: Square) in board.squaresArray.withIndex()) {
             rect.set(
@@ -50,6 +49,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     override fun resize(width: Int, height: Int) {
+        camera.setToOrtho(false, application.windowWidth.toFloat(), application.windowHeight.toFloat())
     }
 
     override fun pause() {
