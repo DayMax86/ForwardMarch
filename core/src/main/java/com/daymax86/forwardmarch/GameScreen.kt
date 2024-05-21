@@ -3,18 +3,15 @@ package com.daymax86.forwardmarch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
-import com.badlogic.gdx.graphics.Colors
 import com.badlogic.gdx.graphics.OrthographicCamera
-import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ScreenUtils
 import com.daymax86.forwardmarch.boards.StandardBoard
-import kotlin.reflect.typeOf
+import com.daymax86.forwardmarch.pieces.BlackPawn
+import com.daymax86.forwardmarch.pieces.Piece
 
 class GameScreen(private val application: MainApplication) : Screen {
 
@@ -24,7 +21,11 @@ class GameScreen(private val application: MainApplication) : Screen {
         dimensions = boardDimensions,
         tileWidth = application.tileWidth
     )
-
+    private val pieces = Array<Piece>()
+    private val quarterScreen: Float =
+        (application.windowWidth / 8).toFloat() // Why is this 8 instead of 4?
+    private val squareVisualWidth: Float = quarterScreen / 2
+    private val squareVisualHeight: Float = quarterScreen / 2
 
     init {
         camera.setToOrtho(
@@ -55,6 +56,14 @@ class GameScreen(private val application: MainApplication) : Screen {
             }
         }
 
+        val testPawn = BlackPawn()
+        testPawn.boardXpos = 3
+        testPawn.boardYpos = 3
+        pieces.add(testPawn)
+        val testPawn2 = BlackPawn()
+        testPawn2.boardXpos = 5
+        testPawn2.boardYpos = 8
+        pieces.add(testPawn2)
 
     }
 
@@ -64,14 +73,29 @@ class GameScreen(private val application: MainApplication) : Screen {
         application.batch.projectionMatrix = camera.combined
         application.batch.begin()
         drawBoard(testBoard)
+        drawPieces(pieces)
         application.batch.end()
     }
 
+    private fun drawPieces(pieces: Array<Piece>) {
+        // TODO() Adapt this method to allow for multiple boards
+        for (piece in pieces) {
+            val img = if (piece.highlight) {
+                piece.highlightedImage
+            } else {
+                piece.image
+            }
+            application.batch.draw(
+                img,
+                quarterScreen + piece.boardXpos.toFloat() * squareVisualWidth, //TODO() One square over - why?
+                piece.boardYpos.toFloat() * squareVisualHeight,
+                squareVisualWidth,
+                squareVisualHeight
+            )
+        }
+    }
+
     private fun drawBoard(board: Board) {
-        val quarterScreen: Float =
-            (application.windowWidth / 8).toFloat() // Why is this 8 instead of 4?
-        val squareVisualWidth: Float = quarterScreen / 2
-        val squareVisualHeight: Float = quarterScreen / 2
         val rect = Rectangle()
         for ((index, square: Square) in board.squaresArray.withIndex()) {
             rect.set(
