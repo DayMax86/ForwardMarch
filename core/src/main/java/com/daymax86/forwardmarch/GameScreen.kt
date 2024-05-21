@@ -34,8 +34,14 @@ class GameScreen(private val application: MainApplication) : Screen {
         )
 
         Gdx.input.inputProcessor = object : InputAdapter() {
-            override fun touchDown(x: Int, y: Int, pointer: Int, button: Int): Boolean {
-                Gdx.app.log("input", "Test input - $x,$y - $pointer - $button")
+            override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
+                Gdx.app.log("mouse", "Mouse button = $button")
+                checkMouseCollisions(
+                    testBoard.squaresArray,
+                    screenX,
+                    application.windowHeight - screenY,
+                    button
+                )
                 return true
             }
 
@@ -89,7 +95,12 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private var mouseBox = BoundingBox(Vector3(0f, 0f, 0f), Vector3(0f, 0f, 0f))
 
-    private fun checkMouseCollisions(collection: Array<Square>, mouseX: Int, mouseY: Int) {
+    private fun checkMouseCollisions(
+        collection: Array<Square>,
+        mouseX: Int,
+        mouseY: Int,
+        button: Int = -1
+    ) {
         mouseBox = BoundingBox(
             Vector3(mouseX.toFloat(), mouseY.toFloat(), 0f),
             Vector3(mouseX.toFloat() + 0.1f, mouseY.toFloat() + 0.1f, 0f)
@@ -97,20 +108,15 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         for (square in collection) {
             if (square.boundingBox.contains(mouseBox)) {
-                Gdx.app.log(
-                    "collisions",
-                    "Mouse has collided! -----------------------------------------"
-                )
-                Gdx.app.log(
-                    "collisions",
-                    "square: ${square.boundingBox.min.x}-${square.boundingBox.max.x}"
-                )
-                Gdx.app.log("collisions", "mouse: ${mouseBox.min.x}-${mouseBox.max.x}")
                 square.onHover()
+                if (button >= 0) {
+                    square.onClick(button)
+                }
             } else {
                 square.onExitHover()
             }
         }
+
     }
 
     override fun resize(width: Int, height: Int) {

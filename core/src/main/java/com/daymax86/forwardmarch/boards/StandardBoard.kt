@@ -17,11 +17,13 @@ class StandardBoard(
             for (x: Int in 1..dimensions) {
                 val square: Square = if (lastWasBlack) {
                     WhiteSquareDefault(boardXpos = x, boardYpos = y,
-                        tileWidth = tileWidth
+                        tileWidth = tileWidth,
+                        clickable = true,
                     )
                 } else {
                     BlackSquareDefault(boardXpos = x, boardYpos = y,
-                        tileWidth = tileWidth
+                        tileWidth = tileWidth,
+                        clickable = true,
                     )
                 }
                 this.squaresArray.add(square)

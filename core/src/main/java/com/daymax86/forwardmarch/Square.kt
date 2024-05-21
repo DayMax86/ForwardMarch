@@ -1,5 +1,6 @@
 package com.daymax86.forwardmarch
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
@@ -26,9 +27,34 @@ interface Square {
     var highlight: Boolean
     var boundingBox: BoundingBox
 
-    fun onClick() {
+    /*
+    * Mouse buttons:
+    * 0 - LMB
+    * 1 - RMB
+    * 2 - SCROLL_WHEEL_CLICK
+    * 3 - MOUSE3
+    * 4 - MOUSE4
+    */
+    fun onClick(button: Int) {
         if (clickable) {
-
+            when (button) {
+                0 -> {// LMB
+                    Gdx.app.log("square", "OnClick event for square and LMB")
+                    Gdx.app.log("square", "$boardXpos, $boardYpos")
+                }
+                1 -> {// LMB
+                    Gdx.app.log("square", "OnClick event for square and RMB")
+                }
+                2 -> {// LMB
+                    Gdx.app.log("square", "OnClick event for square and SCROLL_WHEEL_CLICK")
+                }
+                3 -> {// LMB
+                    Gdx.app.log("square", "OnClick event for square and MOUSE3")
+                }
+                4 -> {// LMB
+                    Gdx.app.log("square", "OnClick event for square and MOUSE4")
+                }
+            }
         }
     }
 
