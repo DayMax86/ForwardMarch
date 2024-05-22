@@ -2,6 +2,7 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
+import com.badlogic.gdx.utils.Array
 
 interface BoardObject {
 
@@ -16,17 +17,19 @@ interface BoardObject {
     var clickable: Boolean
     var hostile: Boolean
     var boundingBox: BoundingBox
+    // Needs to know the boards it can interact with
+    var activeBoards: Array<Board>
 
     fun onHover() {
-        highlight = true
+        //highlight = true
     }
 
     fun onExitHover() {
-        highlight = false
+        //highlight = false
     }
 
     fun onClick(button: Int) {
-
+        highlight = !highlight
     }
 
 }

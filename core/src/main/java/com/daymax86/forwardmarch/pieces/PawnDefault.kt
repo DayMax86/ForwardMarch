@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.inputTypes
+import ktx.collections.contains
 import ktx.collections.isNotEmpty
 import ktx.collections.minus
 
@@ -20,10 +22,23 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.PAWN,
     override var friendly: Boolean = true,
-    override var movement: Array<Square> = Array<Square>()
+    override var movement: Array<Square> = Array<Square>(),
+    override var activeBoards: Array<Board> = Array<Board>()
 ) : Piece {
 
-    override fun getValidMoves(boards: Array<Board>): Boolean {
+    override fun onClick(button: Int) {
+        super.onClick(button)
+        if (button == inputTypes["LMB"]) {
+            getValidMoves()
+            for (square in activeBoards[0].squaresArray) {
+                if (this.movement.contains(square)) {
+                    square.highlight = true
+                }
+            }
+        }
+    }
+
+    override fun getValidMoves(): Boolean {
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         this.movement.clear() // Reset movement array
         /* Use piece's XY positions on the board
@@ -35,70 +50,70 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
         // TODO() Check if the filter method works when piece is at the very edge of a board
         // Determine if the movement will straddle across 2 (or more?) boards
         // For a pawn this will only be the case if it's in the 8th row
-        if (this.boardXpos == 8) {
+        if (this.boardYpos == 8) {
             // Pawn must be at the very top of one board
             // Left and right as normal
             // LEFT
-            this.movement.add(boards[0].squaresArray.first {
+            this.movement.add(this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos
             })
             // RIGHT
-            this.movement.add(boards[0].squaresArray.first {
+            this.movement.add(this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos
             })
             // UP
-            this.movement.add(boards[1].squaresArray.first {
+            this.movement.add(this.activeBoards[1].squaresArray.first {
                 it.boardXpos == this.boardXpos && it.boardYpos == 1
             })
             // DIAGONALS
-            val upLeftDiagonal: Square? = boards[1].squaresArray.first {
+            val upLeftDiagonal: Square? = this.activeBoards[1].squaresArray.first {
                 it.boardXpos == this.boardXpos - 1 && it.boardYpos == 1
             }
-            val upRightDiagonal: Square? = boards[1].squaresArray.first {
+            val upRightDiagonal: Square? = this.activeBoards[1].squaresArray.first {
                 it.boardXpos == this.boardXpos + 1 && it.boardYpos == 1
             }
             // TODO() This .first() works only if a square contains one thing only!!
-            if (upLeftDiagonal != null) {
-                if (upLeftDiagonal.contents.first().hostile) { // There's a hostile piece
-                    this.movement.add(upLeftDiagonal)
-                }
-            }
-            if (upRightDiagonal != null) {
-                if (upRightDiagonal.contents.first().hostile) { // There's a hostile piece
-                    this.movement.add(upRightDiagonal)
-                }
-            }
+//            if (upLeftDiagonal != null) {
+//                if (upLeftDiagonal.contents.first().hostile) { // There's a hostile piece
+//                    this.movement.add(upLeftDiagonal)
+//                }
+//            }
+//            if (upRightDiagonal != null) {
+//                if (upRightDiagonal.contents.first().hostile) { // There's a hostile piece
+//                    this.movement.add(upRightDiagonal)
+//                }
+//            }
 
         } else { // Must be contained within one board
             // First check for diagonal spaces to see if there are any hostile pieces
-            val upLeftDiagonal: Square? = boards[0].squaresArray.first {
+            val upLeftDiagonal: Square = this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos + 1
             }
-            val upRightDiagonal: Square? = boards[0].squaresArray.first {
+            val upRightDiagonal: Square = this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos + 1
             }
-            if (upLeftDiagonal != null) {
-                if (upLeftDiagonal.contents.first().hostile) { // There's a hostile piece
+            if (upLeftDiagonal.contents.isNotEmpty()) {
+                if (upLeftDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
                     this.movement.add(upLeftDiagonal)
                 }
             }
-            if (upRightDiagonal != null) {
-                if (upRightDiagonal.contents.first().hostile) { // There's a hostile piece
+            if (upRightDiagonal.contents.isNotEmpty()) {
+                if (upRightDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
                     this.movement.add(upRightDiagonal)
                 }
             }
 
             // Add normal non-diagonal squares
             // LEFT
-            this.movement.add(boards[0].squaresArray.first {
+            this.movement.add(this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos
             })
             // RIGHT
-            this.movement.add(boards[0].squaresArray.first {
+            this.movement.add(this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos
             })
             // UP
-            this.movement.add(boards[0].squaresArray.first {
+            this.movement.add(this.activeBoards[0].squaresArray.first {
                 it.boardXpos == this.boardXpos && it.boardYpos == this.boardYpos + 1
             })
         }

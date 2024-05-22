@@ -10,24 +10,26 @@ class StandardBoard(
     override var dimensions: Int,
     override var squaresArray: Array<Square> = Array<Square>(),
     override var tileWidth: Int,
-): Board {
+) : Board {
     init {
         var lastWasBlack = false
         for (y: Int in 1..dimensions) {
             for (x: Int in 1..dimensions) {
                 val square: Square = if (lastWasBlack) {
-                    WhiteSquareDefault(boardXpos = x, boardYpos = y,
+                    WhiteSquareDefault(
+                        boardXpos = x, boardYpos = y,
                         tileWidth = tileWidth,
                         clickable = true,
                     )
                 } else {
-                    BlackSquareDefault(boardXpos = x, boardYpos = y,
+                    BlackSquareDefault(
+                        boardXpos = x, boardYpos = y,
                         tileWidth = tileWidth,
                         clickable = true,
                     )
                 }
                 this.squaresArray.add(square)
-                if (x.mod(dimensions)!=0) {
+                if (x.mod(dimensions) != 0) {
                     lastWasBlack = !lastWasBlack
                 }
             }

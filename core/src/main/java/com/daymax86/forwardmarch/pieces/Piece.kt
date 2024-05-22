@@ -6,14 +6,16 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameScreen
 import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.inputTypes
 
 interface Piece: BoardObject {
     var pieceType: PieceTypes
     var friendly: Boolean
     var movement: Array<Square>
 
-    fun getValidMoves(boards: Array<Board>): Boolean{
+    fun getValidMoves(): Boolean{
         // Return an array of squares into which the piece can move
         // Individual pieces should override this method
         // Update movement variable
@@ -23,21 +25,9 @@ interface Piece: BoardObject {
     override fun onClick(button: Int) {
         if (clickable) {
             when (button) {
-                0 -> {// LMB
+                inputTypes["LMB"] -> {
                     Gdx.app.log("piece", "LMB pressed on $pieceType")
-                    highlight = true
-                }
-                1 -> {// LMB
-
-                }
-                2 -> {// LMB
-
-                }
-                3 -> {// LMB
-
-                }
-                4 -> {// LMB
-
+                    highlight = !highlight
                 }
             }
         }

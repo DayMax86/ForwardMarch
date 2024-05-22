@@ -23,31 +23,24 @@ interface Square {
     var highlight: Boolean
     var boundingBox: BoundingBox
 
-    /*
-    * Mouse buttons:
-    * 0 - LMB
-    * 1 - RMB
-    * 2 - SCROLL_WHEEL_CLICK
-    * 3 - MOUSE3
-    * 4 - MOUSE4
-    */
+
     fun onClick(button: Int) {
         if (clickable) {
             when (button) {
-                0 -> {// LMB
+                inputTypes["LMB"] -> {
                     //Gdx.app.log("square", "OnClick event for square and LMB")
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                 }
-                1 -> {// LMB
+                inputTypes["RMB"] -> {
                     Gdx.app.log("square", "OnClick event for square and RMB")
                 }
-                2 -> {// LMB
+                inputTypes["SCROLL_WHEEL_CLICK"] -> {
                     Gdx.app.log("square", "OnClick event for square and SCROLL_WHEEL_CLICK")
                 }
-                3 -> {// LMB
+                inputTypes["MOUSE3"] -> {
                     Gdx.app.log("square", "OnClick event for square and MOUSE3")
                 }
-                4 -> {// LMB
+                inputTypes["MOUSE4"] -> {
                     Gdx.app.log("square", "OnClick event for square and MOUSE4")
                 }
             }

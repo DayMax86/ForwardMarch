@@ -15,13 +15,12 @@ import com.daymax86.forwardmarch.pieces.Piece
 
 class GameScreen(private val application: MainApplication) : Screen {
 
+    // Global variables
+    val boards = Array<Board>()
+    val pieces = Array<Piece>()
+
     private val boardDimensions: Int = 8
     private var camera: OrthographicCamera = OrthographicCamera()
-    private val testBoard = StandardBoard(
-        dimensions = boardDimensions,
-        tileWidth = application.tileWidth
-    )
-    private val pieces = Array<Piece>()
     private val quarterScreen: Float =
         (application.windowWidth / 8).toFloat() // Why is this 8 instead of 4?
     private val squareVisualWidth: Float = quarterScreen / 2
@@ -38,9 +37,8 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
                 val adjustedX = (quarterScreen + screenX).toInt()
                 val adjustedY = application.windowHeight - screenY
-                //Gdx.app.log("mouse", "Mouse button = $button")
                 checkSquareCollisions(
-                    testBoard.squaresArray,
+                    boards[0].squaresArray, // TODO() Needs to know which board
                     screenX,
                     adjustedY,
                     button
@@ -58,7 +56,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val adjustedX = (quarterScreen + screenX).toInt()
                 val adjustedY = application.windowHeight - screenY
                 checkSquareCollisions(
-                    testBoard.squaresArray,
+                    boards[0].squaresArray, // TODO() Needs to know which board
                     screenX,
                     adjustedY
                 )
@@ -71,15 +69,27 @@ class GameScreen(private val application: MainApplication) : Screen {
             }
         }
 
+        val testBoard = StandardBoard(
+            dimensions = boardDimensions,
+            tileWidth = application.tileWidth
+        )
+        val testBoard2 = StandardBoard(
+            dimensions = boardDimensions,
+            tileWidth = application.tileWidth
+        )
+        boards.add(testBoard, testBoard2)
         val testPawn = BlackPawn()
+        testPawn.activeBoards = boards
         testPawn.boardXpos = 3
         testPawn.boardYpos = 3
         pieces.add(testPawn)
         val testPawn2 = BlackPawn()
+        testPawn2.activeBoards = boards
         testPawn2.boardXpos = 5
         testPawn2.boardYpos = 8
         pieces.add(testPawn2)
         val testPawn3 = BlackPawn()
+        testPawn3.activeBoards = boards
         testPawn3.boardXpos = 0
         testPawn3.boardYpos = 0
         pieces.add(testPawn3)
@@ -90,7 +100,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera.update()
         application.batch.projectionMatrix = camera.combined
         application.batch.begin()
-        drawBoard(testBoard)
+        for (board in boards) {
+            drawBoard(board)
+        }
         drawPieces(pieces)
         application.batch.end()
     }
@@ -128,7 +140,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         for ((index, square: Square) in board.squaresArray.withIndex()) {
             rect.set(
                 quarterScreen + (index.mod(boardDimensions) * squareVisualWidth),
-                square.boardYpos * squareVisualHeight,
+                square.boardYpos * squareVisualHeight, //TODO() Allow for next board to be placed above!
                 squareVisualWidth,
                 squareVisualHeight,
             )
