@@ -9,7 +9,6 @@ import com.badlogic.gdx.utils.Array
 enum class TileColours{
     BLACK,
     WHITE,
-    RED
 }
 
 interface Square {
@@ -36,7 +35,7 @@ interface Square {
         if (clickable) {
             when (button) {
                 0 -> {// LMB
-                    Gdx.app.log("square", "OnClick event for square and LMB")
+                    //Gdx.app.log("square", "OnClick event for square and LMB")
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                 }
                 1 -> {// LMB

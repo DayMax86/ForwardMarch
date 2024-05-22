@@ -36,21 +36,36 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         Gdx.input.inputProcessor = object : InputAdapter() {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-                Gdx.app.log("mouse", "Mouse button = $button")
-                checkMouseCollisions(
+                val adjustedX = (quarterScreen + screenX).toInt()
+                val adjustedY = application.windowHeight - screenY
+                //Gdx.app.log("mouse", "Mouse button = $button")
+                checkSquareCollisions(
                     testBoard.squaresArray,
                     screenX,
-                    application.windowHeight - screenY,
+                    adjustedY,
+                    button
+                )
+                checkPieceCollisions(
+                    pieces,
+                    adjustedX,
+                    adjustedY,
                     button
                 )
                 return true
             }
 
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-                checkMouseCollisions(
+                val adjustedX = (quarterScreen + screenX).toInt()
+                val adjustedY = application.windowHeight - screenY
+                checkSquareCollisions(
                     testBoard.squaresArray,
                     screenX,
-                    application.windowHeight - screenY
+                    adjustedY
+                )
+                checkPieceCollisions(
+                    pieces,
+                    adjustedX,
+                    adjustedY
                 )
                 return true
             }
@@ -64,7 +79,10 @@ class GameScreen(private val application: MainApplication) : Screen {
         testPawn2.boardXpos = 5
         testPawn2.boardYpos = 8
         pieces.add(testPawn2)
-
+        val testPawn3 = BlackPawn()
+        testPawn3.boardXpos = 0
+        testPawn3.boardYpos = 0
+        pieces.add(testPawn3)
     }
 
     override fun render(delta: Float) {
@@ -80,6 +98,16 @@ class GameScreen(private val application: MainApplication) : Screen {
     private fun drawPieces(pieces: Array<Piece>) {
         // TODO() Adapt this method to allow for multiple boards
         for (piece in pieces) {
+
+            val rect = Rectangle()
+            rect.set(
+                quarterScreen + piece.boardXpos.toFloat() * squareVisualWidth + squareVisualWidth,
+                piece.boardYpos.toFloat() * squareVisualHeight,
+                squareVisualWidth,
+                squareVisualHeight,
+            )
+            piece.updateBoundingBox(rect.x + quarterScreen, rect.y, rect.width, rect.height)
+
             val img = if (piece.highlight) {
                 piece.highlightedImage
             } else {
@@ -87,8 +115,8 @@ class GameScreen(private val application: MainApplication) : Screen {
             }
             application.batch.draw(
                 img,
-                quarterScreen + piece.boardXpos.toFloat() * squareVisualWidth, //TODO() One square over - why?
-                piece.boardYpos.toFloat() * squareVisualHeight,
+                rect.x,
+                rect.y,
                 squareVisualWidth,
                 squareVisualHeight
             )
@@ -117,21 +145,23 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
     }
 
-    private var mouseBox = BoundingBox(Vector3(0f, 0f, 0f), Vector3(0f, 0f, 0f))
 
-    private fun checkMouseCollisions(
+    private fun getMouseBox(mouseX: Int, mouseY: Int): BoundingBox {
+        val mouseBox = BoundingBox(
+            Vector3(mouseX.toFloat(), mouseY.toFloat(), 0f),
+            Vector3(mouseX.toFloat() + 0.1f, mouseY.toFloat() + 0.1f, 0f)
+        )
+        return mouseBox
+    }
+
+    private fun checkSquareCollisions(
         collection: Array<Square>,
         mouseX: Int,
         mouseY: Int,
         button: Int = -1
     ) {
-        mouseBox = BoundingBox(
-            Vector3(mouseX.toFloat(), mouseY.toFloat(), 0f),
-            Vector3(mouseX.toFloat() + 0.1f, mouseY.toFloat() + 0.1f, 0f)
-        )
-
         for (square in collection) {
-            if (square.boundingBox.contains(mouseBox)) {
+            if (square.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
                 square.onHover()
                 if (button >= 0) {
                     square.onClick(button)
@@ -142,6 +172,47 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
 
     }
+
+    // Generic function for any board object
+    private fun checkBoardObjectCollisions(
+        collection: Array<BoardObject>,
+        mouseX: Int,
+        mouseY: Int,
+        button: Int = -1
+    ) {
+        for (obj in collection) {
+            if (obj.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
+                obj.onHover()
+                if (button >= 0) {
+                    obj.onClick(button)
+                }
+            } else {
+                obj.onExitHover()
+            }
+        }
+
+    }
+
+    // Specific function for pieces
+    private fun checkPieceCollisions(
+        collection: Array<Piece>,
+        mouseX: Int,
+        mouseY: Int,
+        button: Int = -1
+    ) {
+        for (piece in collection) {
+            if (piece.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
+                piece.onHover()
+                if (button >= 0) {
+                    piece.onClick(button)
+                }
+            } else {
+                piece.onExitHover()
+            }
+        }
+
+    }
+
 
     override fun resize(width: Int, height: Int) {
         camera.setToOrtho(
@@ -164,14 +235,6 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     override fun dispose() {
-    }
-
-    private fun drawHUD(showDiagnostics: Boolean, x: Int, y: Int) {
-        application.batch.begin()
-        if (showDiagnostics) {
-            application.font.draw(application.batch, "$x,$y", 0f, 0f)
-        }
-        application.batch.end()
     }
 
 

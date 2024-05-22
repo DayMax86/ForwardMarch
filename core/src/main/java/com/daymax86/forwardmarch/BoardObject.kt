@@ -25,4 +25,8 @@ interface BoardObject {
         highlight = false
     }
 
+    fun onClick(button: Int) {
+
+    }
+
 }
