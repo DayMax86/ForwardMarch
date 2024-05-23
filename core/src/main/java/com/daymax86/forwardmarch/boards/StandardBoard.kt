@@ -10,6 +10,7 @@ class StandardBoard(
     override var dimensions: Int,
     override var squaresArray: Array<Square> = Array<Square>(),
     override var tileWidth: Int,
+    override var onScreen: Boolean = false,
 ) : Board {
     init {
         var lastWasBlack = false

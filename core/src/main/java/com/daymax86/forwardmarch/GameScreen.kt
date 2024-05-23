@@ -21,21 +21,22 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private val boardDimensions: Int = 8
     private var camera: OrthographicCamera = OrthographicCamera()
-    private val quarterScreen: Float =
-        (application.windowWidth / 8).toFloat() // Why is this 8 instead of 4?
-    private val squareVisualWidth: Float = quarterScreen / 2
-    private val squareVisualHeight: Float = quarterScreen / 2
+    private val edgeBuffer: Float =
+        (application.windowWidth / 8).toFloat()
+    private val squareVisualWidth: Float = edgeBuffer / 2
+    private val squareVisualHeight: Float = edgeBuffer / 2
+    private val cameraHeightMultiplier: Float = 1.25f
 
     init {
         camera.setToOrtho(
             false,
             application.windowWidth.toFloat(),
-            application.windowHeight.toFloat()
+            application.windowHeight * cameraHeightMultiplier
         )
 
         Gdx.input.inputProcessor = object : InputAdapter() {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-                val adjustedX = (quarterScreen + screenX).toInt()
+                val adjustedX = (edgeBuffer + screenX).toInt()
                 val adjustedY = application.windowHeight - screenY
                 checkSquareCollisions(
                     boards[0].squaresArray, // TODO() Needs to know which board
@@ -53,13 +54,15 @@ class GameScreen(private val application: MainApplication) : Screen {
             }
 
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-                val adjustedX = (quarterScreen + screenX).toInt()
+                val adjustedX = (edgeBuffer + screenX).toInt()
                 val adjustedY = application.windowHeight - screenY
-                checkSquareCollisions(
-                    boards[0].squaresArray, // TODO() Needs to know which board
-                    screenX,
-                    adjustedY
-                )
+                for (board in boards) {
+                    checkSquareCollisions(
+                        board.squaresArray,
+                        screenX,
+                        adjustedY
+                    )
+                }
                 checkPieceCollisions(
                     pieces,
                     adjustedX,
@@ -73,10 +76,12 @@ class GameScreen(private val application: MainApplication) : Screen {
             dimensions = boardDimensions,
             tileWidth = application.tileWidth
         )
+        testBoard.onScreen = true
         val testBoard2 = StandardBoard(
             dimensions = boardDimensions,
             tileWidth = application.tileWidth
         )
+        testBoard2.onScreen = true
         boards.add(testBoard, testBoard2)
         val testPawn = BlackPawn()
         testPawn.activeBoards = boards
@@ -92,7 +97,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         testPawn3.activeBoards = boards
         testPawn3.boardXpos = 0
         testPawn3.boardYpos = 0
-        pieces.add(testPawn3)
+        //pieces.add(testPawn3)
     }
 
     override fun render(delta: Float) {
@@ -100,25 +105,31 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera.update()
         application.batch.projectionMatrix = camera.combined
         application.batch.begin()
+
+        var boardsOnScreen = 0
+        var startingY: Int = 0
         for (board in boards) {
-            drawBoard(board)
+            if (board.onScreen) {boardsOnScreen++}
+            // Adjust starting Y value of drawn board according to number of boards on screen
+            startingY = (squareVisualHeight.toInt() * boardDimensions * boardsOnScreen) - application.windowHeight
+            drawBoard(board, startingY)
         }
+
         drawPieces(pieces)
         application.batch.end()
     }
 
     private fun drawPieces(pieces: Array<Piece>) {
-        // TODO() Adapt this method to allow for multiple boards
         for (piece in pieces) {
 
             val rect = Rectangle()
             rect.set(
-                quarterScreen + piece.boardXpos.toFloat() * squareVisualWidth + squareVisualWidth,
-                piece.boardYpos.toFloat() * squareVisualHeight,
+                edgeBuffer + piece.boardXpos.toFloat() * squareVisualWidth + squareVisualWidth,
+                piece.boardYpos.toFloat() * squareVisualHeight - squareVisualHeight,
                 squareVisualWidth,
                 squareVisualHeight,
             )
-            piece.updateBoundingBox(rect.x + quarterScreen, rect.y, rect.width, rect.height)
+            piece.updateBoundingBox(rect.x + edgeBuffer, rect.y, rect.width, rect.height)
 
             val img = if (piece.highlight) {
                 piece.highlightedImage
@@ -135,16 +146,16 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
     }
 
-    private fun drawBoard(board: Board) {
+    private fun drawBoard(board: Board, startingY: Int) {
         val rect = Rectangle()
         for ((index, square: Square) in board.squaresArray.withIndex()) {
             rect.set(
-                quarterScreen + (index.mod(boardDimensions) * squareVisualWidth),
-                square.boardYpos * squareVisualHeight, //TODO() Allow for next board to be placed above!
+                edgeBuffer + (index.mod(boardDimensions) * squareVisualWidth),
+                (square.boardYpos * squareVisualHeight) + startingY,
                 squareVisualWidth,
                 squareVisualHeight,
             )
-            square.updateBoundingBox(rect.x + quarterScreen, rect.y, rect.width, rect.height)
+            square.updateBoundingBox(rect.x + edgeBuffer, rect.y, rect.width, rect.height)
             // Check for highlight and use appropriate variable!
             val img = if (square.highlight) {
                 square.highlightedTileImage
@@ -152,16 +163,17 @@ class GameScreen(private val application: MainApplication) : Screen {
                 square.tileImage
             }
             application.batch.draw(
-                img, quarterScreen + rect.x, rect.y, rect.width, rect.height
+                img, edgeBuffer + rect.x, rect.y, rect.width, rect.height
             )
         }
     }
 
 
     private fun getMouseBox(mouseX: Int, mouseY: Int): BoundingBox {
+        val adjustedY = mouseY * cameraHeightMultiplier
         val mouseBox = BoundingBox(
-            Vector3(mouseX.toFloat(), mouseY.toFloat(), 0f),
-            Vector3(mouseX.toFloat() + 0.1f, mouseY.toFloat() + 0.1f, 0f)
+            Vector3(mouseX.toFloat(), adjustedY.toFloat(), 0f),
+            Vector3(mouseX.toFloat() + 0.1f, adjustedY.toFloat() + 0.1f, 0f)
         )
         return mouseBox
     }
@@ -230,7 +242,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera.setToOrtho(
             false,
             application.windowWidth.toFloat(),
-            application.windowHeight.toFloat()
+            application.windowHeight * cameraHeightMultiplier
         )
     }
 

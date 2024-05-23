@@ -7,5 +7,6 @@ interface Board {
     var dimensions: Int
     var squaresArray: Array<Square>
     var tileWidth: Int
+    var onScreen: Boolean
 
 }
