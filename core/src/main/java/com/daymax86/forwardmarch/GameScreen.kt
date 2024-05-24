@@ -21,12 +21,13 @@ class GameScreen(private val application: MainApplication) : Screen {
     // Global variables
     val boards = Array<Board>()
     val pieces = Array<Piece>()
+
     // Hardcoded constants which affect visuals only
     private val boardDimensions: Int = 8
     private val environmentWidth = 2000f
     private val environmentHeight = 3000f
-    private val squareEnvironmentWidth = 80f
-    private val squareEnvironmentHeight = 80f
+    private val squareEnvironmentWidth = 120f
+    private val squareEnvironmentHeight = 120f
     private val edgeBuffer: Float = (environmentWidth / 20)
     private val viewWidth = 2000
     private val viewHeight = 2000
@@ -43,9 +44,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         windowHeight = Gdx.graphics.height
 
         camera = OrthographicCamera(
-            (viewWidth).toFloat(), (viewHeight * (viewWidth/viewHeight)).toFloat()
+            (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
         )
-        camera.position.set(camera.viewportWidth / 2f, camera.viewportHeight / 2f, 0f)
+        camera.position.set(camera.viewportWidth / 2f, ((windowHeight/2) + squareEnvironmentHeight).toFloat(), 0f)
         camera.update()
 
         Gdx.input.inputProcessor = object : InputAdapter() {
@@ -53,12 +54,14 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val xPos = getMouseEnvironmentPosition()?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition()?.y?.toInt()
                 if (xPos != null && yPos != null) {
-                    checkSquareCollisions(
-                        boards[0].squaresArray, // TODO() Needs to know which board
-                        xPos,
-                        yPos,
-                        button
-                    )
+                    for (board in boards) {
+                        checkSquareCollisions(
+                            board.squaresArray,
+                            xPos,
+                            yPos,
+                            button
+                        )
+                    }
                     checkPieceCollisions(
                         pieces,
                         xPos,
@@ -125,24 +128,25 @@ class GameScreen(private val application: MainApplication) : Screen {
         val testBoard2 = StandardBoard(
             dimensions = boardDimensions,
             environmentXPos = edgeBuffer.toInt(),
-            environmentYPos = ((squareEnvironmentHeight * boardDimensions) * 2).toInt(),
+            environmentYPos = (squareEnvironmentHeight * boardDimensions).toInt(),
             squareWidth = squareEnvironmentWidth.toInt()
         )
         testBoard2.onScreen = true
         boards.add(testBoard, testBoard2)
 
         val testPawn = BlackPawn()
-        testPawn.activeBoards = boards
         testPawn.boardXpos = 3
         testPawn.boardYpos = 3
+        testPawn.associatedBoard = boards[0]
+        testPawn.nextBoard = boards[1]
         pieces.add(testPawn)
         val testPawn2 = BlackPawn()
-        testPawn2.activeBoards = boards
         testPawn2.boardXpos = 5
         testPawn2.boardYpos = 8
+        testPawn2.associatedBoard = boards[0]
+        testPawn2.nextBoard = boards[1]
         pieces.add(testPawn2)
         val testPawn3 = BlackPawn()
-        testPawn3.activeBoards = boards
         testPawn3.boardXpos = 0
         testPawn3.boardYpos = 0
         //pieces.add(testPawn3)
@@ -170,18 +174,16 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private fun drawBackground() {
         application.batch.draw(
-            environmentSprite, 0f, 0f, environmentWidth, environmentWidth
+            environmentSprite, 0f, 0f, environmentWidth, environmentHeight
         )
     }
 
     private fun drawPieces(pieces: Array<Piece>) {
         for (piece in pieces) {
-            val associatedBoardY: Int? =
-                piece.associatedBoard?.environmentYPos // Nullable as pieces could be placed outside a board
             val rect = Rectangle()
             rect.set(
-                piece.boardXpos.toFloat(),
-                piece.boardYpos.toFloat() + (associatedBoardY ?: 0),
+                (piece.associatedBoard?.environmentXPos ?: 0) + (piece.boardXpos * squareEnvironmentWidth),
+                (piece.associatedBoard?.environmentYPos ?: 0) + (piece.boardYpos * squareEnvironmentHeight),
                 squareEnvironmentWidth,
                 squareEnvironmentHeight,
             )

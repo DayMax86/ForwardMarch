@@ -15,6 +15,7 @@ interface Piece: BoardObject {
     var friendly: Boolean
     var movement: Array<Square>
     var associatedBoard: Board?
+    var nextBoard: Board?
 
     fun getValidMoves(): Boolean{
         // Return an array of squares into which the piece can move

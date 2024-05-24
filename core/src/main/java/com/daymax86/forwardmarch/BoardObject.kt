@@ -17,8 +17,6 @@ interface BoardObject {
     var clickable: Boolean
     var hostile: Boolean
     var boundingBox: BoundingBox
-    // Needs to know the boards it can interact with
-    var activeBoards: Array<Board>
 
     fun onHover() {
         //highlight = true
