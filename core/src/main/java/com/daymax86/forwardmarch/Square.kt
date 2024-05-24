@@ -19,7 +19,7 @@ interface Square {
     var contents: Array<BoardObject>
     var boardXpos: Int
     var boardYpos: Int
-    var tileWidth: Int
+    var squareWidth: Int
     var highlight: Boolean
     var boundingBox: BoundingBox
 

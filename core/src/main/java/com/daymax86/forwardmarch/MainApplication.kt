@@ -11,7 +11,6 @@ class MainApplication : Game() {
 
     var windowHeight: Int = 0
     var windowWidth: Int = 0
-    var tileWidth: Int = 0
     lateinit var batch: SpriteBatch
     lateinit var font: BitmapFont
     lateinit var fps: FrameRateCounter

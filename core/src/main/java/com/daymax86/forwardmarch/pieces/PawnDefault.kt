@@ -23,7 +23,8 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     override var pieceType: PieceTypes = PieceTypes.PAWN,
     override var friendly: Boolean = true,
     override var movement: Array<Square> = Array<Square>(),
-    override var activeBoards: Array<Board> = Array<Board>()
+    override var activeBoards: Array<Board> = Array<Board>(),
+    override var associatedBoard: Board? = null
 ) : Piece {
 
     override fun onClick(button: Int) {

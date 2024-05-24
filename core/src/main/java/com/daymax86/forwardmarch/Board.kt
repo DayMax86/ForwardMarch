@@ -5,8 +5,10 @@ import com.badlogic.gdx.utils.Array
 interface Board {
 
     var dimensions: Int
+    var environmentXPos: Int
+    var environmentYPos: Int
     var squaresArray: Array<Square>
-    var tileWidth: Int
     var onScreen: Boolean
+    var squareWidth: Int
 
 }

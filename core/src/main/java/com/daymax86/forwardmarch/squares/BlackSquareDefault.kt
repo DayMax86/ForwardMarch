@@ -16,7 +16,7 @@ class BlackSquareDefault(
     override var contents: Array<BoardObject> = Array<BoardObject>(),
     override var boardXpos: Int,
     override var boardYpos: Int,
-    override var tileWidth: Int,
+    override var squareWidth: Int,
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     ) : Square {

@@ -9,8 +9,10 @@ import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 class StandardBoard(
     override var dimensions: Int,
     override var squaresArray: Array<Square> = Array<Square>(),
-    override var tileWidth: Int,
     override var onScreen: Boolean = false,
+    override var environmentXPos: Int,
+    override var environmentYPos: Int,
+    override var squareWidth: Int,
 ) : Board {
     init {
         var lastWasBlack = false
@@ -19,14 +21,14 @@ class StandardBoard(
                 val square: Square = if (lastWasBlack) {
                     WhiteSquareDefault(
                         boardXpos = x, boardYpos = y,
-                        tileWidth = tileWidth,
                         clickable = true,
+                        squareWidth = squareWidth,
                     )
                 } else {
                     BlackSquareDefault(
                         boardXpos = x, boardYpos = y,
-                        tileWidth = tileWidth,
                         clickable = true,
+                        squareWidth = squareWidth,
                     )
                 }
                 this.squaresArray.add(square)
