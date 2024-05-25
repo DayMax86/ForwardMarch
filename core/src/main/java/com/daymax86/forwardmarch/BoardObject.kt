@@ -8,7 +8,8 @@ interface BoardObject {
 
     // All items to appear on the board should be children of this class,
     // including pieces, traps, pickups, interactibles etc.
-
+    var associatedGame: GameLogic
+    var associatedBoard: Board?
     var image: Texture
     var highlightedImage: Texture
     var highlight: Boolean
@@ -28,6 +29,10 @@ interface BoardObject {
 
     fun onClick(button: Int) {
         highlight = !highlight
+    }
+
+    fun move(x: Int, y: Int) {
+
     }
 
 }

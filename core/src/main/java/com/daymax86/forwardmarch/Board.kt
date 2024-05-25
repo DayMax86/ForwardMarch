@@ -10,5 +10,6 @@ interface Board {
     var squaresArray: Array<Square>
     var onScreen: Boolean
     var squareWidth: Int
+    var associatedGame: GameLogic
 
 }

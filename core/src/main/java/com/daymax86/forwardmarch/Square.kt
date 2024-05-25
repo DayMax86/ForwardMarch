@@ -22,14 +22,17 @@ interface Square {
     var squareWidth: Int
     var highlight: Boolean
     var boundingBox: BoundingBox
+    var associatedBoard: Board
 
 
     fun onClick(button: Int) {
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    //Gdx.app.log("square", "OnClick event for square and LMB")
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
+                    if (associatedBoard.associatedGame.selectedPiece != null) { // Null safety check for !! use
+                        associatedBoard.associatedGame.selectedPiece!!.move(this.boardXpos, this.boardYpos)
+                    }
                 }
                 inputTypes["RMB"] -> {
                     Gdx.app.log("square", "OnClick event for square and RMB")
@@ -48,6 +51,7 @@ interface Square {
     }
 
     fun onHover() {
+        swapToAltHighlight(false)
         highlight = true
     }
 
@@ -57,6 +61,10 @@ interface Square {
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
         boundingBox = BoundingBox(Vector3(x,y,0f),Vector3(x + width,y + height,0f))
+    }
+
+    fun swapToAltHighlight(swap: Boolean) {
+
     }
 
 

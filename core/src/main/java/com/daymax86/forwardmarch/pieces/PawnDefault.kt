@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.GameLogic
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.inputTypes
 import ktx.collections.contains
@@ -24,31 +25,11 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     override var friendly: Boolean = true,
     override var movement: Array<Square> = Array<Square>(),
     override var associatedBoard: Board? = null,
-    override var nextBoard: Board? = null
+    override var nextBoard: Board? = null,
+    override var associatedGame: GameLogic
 ) : Piece {
 
-    override fun onClick(button: Int) {
-        super.onClick(button)
-        if (button == inputTypes["LMB"]) {
-            getValidMoves()
-            if (this.associatedBoard != null) { // Null safety check for !! use
-                for (square in this.associatedBoard!!.squaresArray) {
-                    if (this.movement.contains(square)) {
-                        square.highlight = true
-                    }
-                }
-            }
-            if (this.nextBoard != null) { // Null safety check for !! use
-                for (square in this.nextBoard!!.squaresArray) {
-                    if (this.movement.contains(square)) {
-                        square.highlight = true
-                    }
-                }
-            }
-        }
-    }
-
-    override fun getValidMoves(): Boolean {
+    override fun getValidMoves(): Boolean { // TODO() This needs to be heavily optimised!
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
@@ -59,32 +40,31 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
                     * ----0-X-0----------
                     * -------------------
                     */
-            // TODO() Check if the filter method works when piece is at the very edge of a board
             // Determine if the movement will straddle across 2 (or more?) boards
             // For a pawn this will only be the case if it's in the 8th row
             if (this.boardYpos == 8) {
                 // Pawn must be at the very top of one board
                 // Left and right as normal
                 // LEFT
-                this.movement.add(this.associatedBoard!!.squaresArray.first {
+                this.movement.add(this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos
                 })
                 // RIGHT
-                this.movement.add(this.associatedBoard!!.squaresArray.first {
+                this.movement.add(this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos
                 })
                 // UP
-                this.movement.add(this.nextBoard!!.squaresArray.first {
+                this.movement.add(this.nextBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos && it.boardYpos == 1
                 })
                 var upLeftDiagonal: Square? = null
                 var upRightDiagonal: Square? = null
                 if (this.nextBoard != null) {
                     // DIAGONALS
-                    upLeftDiagonal = this.nextBoard!!.squaresArray.first {
+                    upLeftDiagonal = this.nextBoard!!.squaresArray.firstOrNull {
                         it.boardXpos == this.boardXpos - 1 && it.boardYpos == 1
                     }
-                    upRightDiagonal = this.nextBoard!!.squaresArray.first {
+                    upRightDiagonal = this.nextBoard!!.squaresArray.firstOrNull {
                         it.boardXpos == this.boardXpos + 1 && it.boardYpos == 1
                     }
                 }
@@ -106,20 +86,24 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
 
             } else { // Must be contained within one board
                 // First check for diagonal spaces to see if there are any hostile pieces
-                val upLeftDiagonal: Square = this.associatedBoard!!.squaresArray.first {
+                val upLeftDiagonal: Square? = this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos + 1
                 }
-                val upRightDiagonal: Square = this.associatedBoard!!.squaresArray.first {
+                val upRightDiagonal: Square? = this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos + 1
                 }
-                if (upLeftDiagonal.contents.isNotEmpty()) {
-                    if (upLeftDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
-                        this.movement.add(upLeftDiagonal)
+                if (upLeftDiagonal != null) {
+                    if (upLeftDiagonal.contents.isNotEmpty()) {
+                        if (upLeftDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
+                            this.movement.add(upLeftDiagonal)
+                        }
                     }
                 }
-                if (upRightDiagonal.contents.isNotEmpty()) {
-                    if (upRightDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
-                        this.movement.add(upRightDiagonal)
+                if (upRightDiagonal != null) {
+                    if (upRightDiagonal.contents.isNotEmpty()) {
+                        if (upRightDiagonal.contents.firstOrNull()!!.hostile) { // There's a hostile piece
+                            this.movement.add(upRightDiagonal)
+                        }
                     }
                 }
 
@@ -141,8 +125,10 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
             // Remove any occupied squares
             val toRemoveArray = Array<Square>()
             for (sq in movement) {
-                if (sq.contents.isNotEmpty())
-                    toRemoveArray.add(sq)
+                if (sq != null) {
+                    if (sq.contents.isNotEmpty())
+                        toRemoveArray.add(sq)
+                }
             }
             for (trsq in toRemoveArray) {
                 this.movement.minus(trsq)

@@ -18,12 +18,7 @@ import com.daymax86.forwardmarch.pieces.Piece
 
 class GameScreen(private val application: MainApplication) : Screen {
 
-    // Global variables
-    val boards = Array<Board>()
-    val pieces = Array<Piece>()
-
     // Hardcoded constants which affect visuals only
-    private val boardDimensions: Int = 8
     private val environmentWidth = 2000f
     private val environmentHeight = 3000f
     private val squareEnvironmentWidth = 120f
@@ -31,6 +26,12 @@ class GameScreen(private val application: MainApplication) : Screen {
     private val edgeBuffer: Float = (environmentWidth / 20)
     private val viewWidth = 2000
     private val viewHeight = 2000
+
+    private val game: GameLogic = GameLogic(
+        squareWidth = squareEnvironmentWidth,
+        squareHeight = squareEnvironmentHeight,
+        edgeBuffer = edgeBuffer,
+    )
 
     private var camera: OrthographicCamera
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_2000x3000.png")))
@@ -54,7 +55,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val xPos = getMouseEnvironmentPosition()?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition()?.y?.toInt()
                 if (xPos != null && yPos != null) {
-                    for (board in boards) {
+                    for (board in game.boards) {
                         checkSquareCollisions(
                             board.squaresArray,
                             xPos,
@@ -63,7 +64,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                         )
                     }
                     checkPieceCollisions(
-                        pieces,
+                        game.pieces,
                         xPos,
                         yPos,
                         button
@@ -76,7 +77,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition()?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition()?.y?.toInt()
-                for (board in boards) {
+                for (board in game.boards) {
                     getMouseEnvironmentPosition()?.let {
                         checkSquareCollisions(
                             board.squaresArray,
@@ -87,7 +88,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 }
                 if (xPos != null && yPos != null) {
                     checkPieceCollisions(
-                        pieces,
+                        game.pieces,
                         xPos,
                         yPos
                     )
@@ -118,38 +119,6 @@ class GameScreen(private val application: MainApplication) : Screen {
             }
         }
 
-        val testBoard = StandardBoard(
-            dimensions = boardDimensions,
-            environmentXPos = edgeBuffer.toInt(),
-            environmentYPos = 0,
-            squareWidth = squareEnvironmentWidth.toInt()
-        )
-        testBoard.onScreen = true
-        val testBoard2 = StandardBoard(
-            dimensions = boardDimensions,
-            environmentXPos = edgeBuffer.toInt(),
-            environmentYPos = (squareEnvironmentHeight * boardDimensions).toInt(),
-            squareWidth = squareEnvironmentWidth.toInt()
-        )
-        testBoard2.onScreen = true
-        boards.add(testBoard, testBoard2)
-
-        val testPawn = BlackPawn()
-        testPawn.boardXpos = 3
-        testPawn.boardYpos = 3
-        testPawn.associatedBoard = boards[0]
-        testPawn.nextBoard = boards[1]
-        pieces.add(testPawn)
-        val testPawn2 = BlackPawn()
-        testPawn2.boardXpos = 5
-        testPawn2.boardYpos = 8
-        testPawn2.associatedBoard = boards[0]
-        testPawn2.nextBoard = boards[1]
-        pieces.add(testPawn2)
-        val testPawn3 = BlackPawn()
-        testPawn3.boardXpos = 0
-        testPawn3.boardYpos = 0
-        //pieces.add(testPawn3)
     }
 
     override fun render(delta: Float) {
@@ -161,14 +130,14 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawBackground()
 
         var boardsOnScreen = 0
-        for (board in boards) {
+        for (board in game.boards) {
             if (board.onScreen) {
                 boardsOnScreen++
             }
             drawBoard(board, board.environmentXPos, board.environmentYPos)
         }
 
-        drawPieces(pieces)
+        drawPieces(game.pieces)
         application.batch.end()
     }
 

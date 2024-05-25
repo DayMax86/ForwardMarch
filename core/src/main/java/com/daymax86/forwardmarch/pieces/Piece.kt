@@ -9,34 +9,78 @@ import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameScreen
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.inputTypes
+import ktx.collections.contains
 
-interface Piece: BoardObject {
+interface Piece : BoardObject {
     var pieceType: PieceTypes
     var friendly: Boolean
     var movement: Array<Square>
-    var associatedBoard: Board?
     var nextBoard: Board?
 
-    fun getValidMoves(): Boolean{
+    fun getValidMoves(): Boolean {
         // Return an array of squares into which the piece can move
         // Individual pieces should override this method
         // Update movement variable
         return false // Returns true if valid move(s) available, otherwise false
     }
 
+
     override fun onClick(button: Int) {
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("piece", "LMB pressed on $pieceType")
-                    highlight = !highlight
+                    if (associatedGame.selectedPiece == null) {
+                        // No selected piece so assign this one
+                        associatedGame.selectedPiece = this
+                        highlight = true
+                        Gdx.app.log("piece", "associatedGame.selectedPiece = $this")
+                    } else if (associatedGame.selectedPiece == this) {
+                        // Already selected so deselect
+                        associatedGame.selectedPiece = null
+                        highlight = false
+                        Gdx.app.log("piece", "associatedGame.selectedPiece = null")
+                    } else {
+                        // Another piece has been clicked on that isn't this one
+                        // How do we want this to behave?
+                        // For now do nothing until deselected
+                    }
                 }
             }
         }
     }
 
+    override fun onHover(){
+        if (this.associatedBoard != null) { // Null safety check for !! use
+            for (square in this.associatedBoard!!.squaresArray) {
+                if (this.movement.contains(square)) {
+                    square.swapToAltHighlight(true)
+                    square.highlight = true
+                }
+            }
+        }
+        if (this.nextBoard != null) { // Null safety check for !! use
+            for (square in this.nextBoard!!.squaresArray) {
+                if (this.movement.contains(square)) {
+                    square.swapToAltHighlight(true)
+                    square.highlight = true
+                }
+            }
+        }
+    }
+
+    override fun onExitHover() {
+
+    }
+
+    override fun move(x: Int, y: Int) { // TODO() Factor in movement onto a different board!
+        this.boardXpos = x
+        this.boardYpos = y
+        associatedGame.updateValidMoves()
+    }
+
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
-        boundingBox = BoundingBox(Vector3(x,y,0f), Vector3(x + width,y + height,0f))
+        boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
     }
 
 }
