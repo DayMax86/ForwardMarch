@@ -73,10 +73,12 @@ interface Piece : BoardObject {
 
     }
 
-    override fun move(x: Int, y: Int) { // TODO() Factor in movement onto a different board!
+    override fun move(x: Int, y: Int, newBoard: Board?) {
         this.boardXpos = x
         this.boardYpos = y
-        associatedGame.updateValidMoves()
+        if (newBoard != null) {
+            this.associatedBoard = newBoard
+        }
     }
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {

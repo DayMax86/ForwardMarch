@@ -109,15 +109,15 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
 
                 // Add normal non-diagonal squares
                 // LEFT
-                this.movement.add(this.associatedBoard!!.squaresArray.first {
+                this.movement.add(this.associatedBoard!!.squaresArray.firstOrNull() {
                     it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos
                 })
                 // RIGHT
-                this.movement.add(this.associatedBoard!!.squaresArray.first {
+                this.movement.add(this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos
                 })
                 // UP
-                this.movement.add(this.associatedBoard!!.squaresArray.first {
+                this.movement.add(this.associatedBoard!!.squaresArray.firstOrNull {
                     it.boardXpos == this.boardXpos && it.boardYpos == this.boardYpos + 1
                 })
             }

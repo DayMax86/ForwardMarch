@@ -31,7 +31,7 @@ interface Square {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                     if (associatedBoard.associatedGame.selectedPiece != null) { // Null safety check for !! use
-                        associatedBoard.associatedGame.selectedPiece!!.move(this.boardXpos, this.boardYpos)
+                        associatedBoard.associatedGame.selectedPiece!!.move(this.boardXpos, this.boardYpos, this.associatedBoard)
                     }
                 }
                 inputTypes["RMB"] -> {

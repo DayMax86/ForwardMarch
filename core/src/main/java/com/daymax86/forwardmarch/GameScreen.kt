@@ -68,7 +68,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                         xPos,
                         yPos,
                         button
-                    )
+                    ).apply { game.updateValidMoves() } // Call method only once moves have been made
                 }
                 return true
             }

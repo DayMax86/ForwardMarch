@@ -40,15 +40,17 @@ class GameLogic(
         )
         testPawn.associatedBoard = this.boards[0]
         testPawn.nextBoard = this.boards[1]
-        testPawn.move(3,3)
+        testPawn.move(3,3, null)
         this.pieces.add(testPawn)
         val testPawn2 = BlackPawn(
             associatedGame = this
         )
         testPawn2.associatedBoard = this.boards[0]
         testPawn2.nextBoard = this.boards[1]
-        testPawn2.move(5,8)
+        testPawn2.move(5,8, null)
         this.pieces.add(testPawn2)
+
+        updateValidMoves()
 
     }
 

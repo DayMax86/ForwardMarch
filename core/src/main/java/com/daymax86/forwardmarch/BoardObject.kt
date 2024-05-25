@@ -31,7 +31,7 @@ interface BoardObject {
         highlight = !highlight
     }
 
-    fun move(x: Int, y: Int) {
+    fun move(x: Int, y: Int, newBoard: Board?) {
 
     }
 
