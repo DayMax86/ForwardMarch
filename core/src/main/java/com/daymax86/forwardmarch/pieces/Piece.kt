@@ -1,29 +1,42 @@
 package com.daymax86.forwardmarch.pieces
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameLogic
 import com.daymax86.forwardmarch.GameScreen
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.inputTypes
 import ktx.collections.contains
+import ktx.collections.filter
 
-interface Piece : BoardObject {
-    var pieceType: PieceTypes
-    var friendly: Boolean
-    var movement: Array<Square>
-    var nextBoard: Board?
+abstract class Piece(
+    override var associatedGame: GameLogic,
+    override var associatedBoard: Board?,
+    override var image: Texture,
+    override var highlightedImage: Texture,
+    override var highlight: Boolean,
+    override var boardXpos: Int,
+    override var boardYpos: Int,
+    override var clickable: Boolean,
+    override var hostile: Boolean,
+    override var boundingBox: BoundingBox,
+) : BoardObject() {
+    open lateinit var pieceType: PieceTypes
+    open var friendly: Boolean = false
+    open lateinit var movement: Array<Square>
+    open var nextBoard: Board? = null
 
-    fun getValidMoves(): Boolean {
+    open fun getValidMoves(): Boolean {
         // Return an array of squares into which the piece can move
         // Individual pieces should override this method
         // Update movement variable
         return false // Returns true if valid move(s) available, otherwise false
     }
-
 
     override fun onClick(button: Int) {
         if (clickable) {
@@ -50,7 +63,7 @@ interface Piece : BoardObject {
         }
     }
 
-    override fun onHover(){
+    override fun onHover() {
         if (this.associatedBoard != null) { // Null safety check for !! use
             for (square in this.associatedBoard!!.squaresArray) {
                 if (this.movement.contains(square)) {
@@ -79,6 +92,7 @@ interface Piece : BoardObject {
         if (newBoard != null) {
             this.associatedBoard = newBoard
         }
+
     }
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {

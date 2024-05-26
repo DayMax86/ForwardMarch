@@ -27,9 +27,20 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
     override var associatedGame: GameLogic
-) : Piece {
+) : Piece(
+    image = image,
+    highlightedImage = highlightedImage,
+    highlight = highlight,
+    boardXpos = boardXpos,
+    boardYpos = boardYpos,
+    clickable = clickable,
+    hostile = hostile,
+    boundingBox = boundingBox,
+    associatedBoard = associatedBoard,
+    associatedGame = associatedGame,
+) {
 
-    override fun getValidMoves(): Boolean { // TODO() This needs to be heavily optimised!
+    override fun getValidMoves(): Boolean { // TODO() This needs to be optimised!
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage

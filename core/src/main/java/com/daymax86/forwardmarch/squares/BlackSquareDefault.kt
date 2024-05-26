@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameLogic
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.TileColours
 
@@ -21,7 +22,8 @@ class BlackSquareDefault(
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var associatedBoard: Board,
-) : Square {
+    override var associatedGame: GameLogic,
+) : Square() {
 
     override fun swapToAltHighlight(swap: Boolean) {
         highlightedTileImage = if (swap) {

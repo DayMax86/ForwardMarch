@@ -15,7 +15,7 @@ class StandardBoard(
     override var environmentYPos: Int,
     override var squareWidth: Int,
     override var associatedGame: GameLogic,
-) : Board {
+) : Board() {
     init {
         var lastWasBlack = false
         for (y: Int in 1..dimensions) {
@@ -26,6 +26,7 @@ class StandardBoard(
                         clickable = true,
                         squareWidth = squareWidth,
                         associatedBoard = this,
+                        associatedGame = associatedGame,
                     )
                 } else {
                     BlackSquareDefault(
@@ -33,6 +34,7 @@ class StandardBoard(
                         clickable = true,
                         squareWidth = squareWidth,
                         associatedBoard = this,
+                        associatedGame = associatedGame
                     )
                 }
                 this.squaresArray.add(square)

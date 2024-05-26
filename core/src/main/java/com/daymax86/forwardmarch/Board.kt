@@ -2,14 +2,20 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.utils.Array
 
-interface Board {
+abstract class Board {
 
-    var dimensions: Int
-    var environmentXPos: Int
-    var environmentYPos: Int
-    var squaresArray: Array<Square>
-    var onScreen: Boolean
-    var squareWidth: Int
-    var associatedGame: GameLogic
+    abstract var dimensions: Int
+    abstract var environmentXPos: Int
+    abstract var environmentYPos: Int
+    abstract var squaresArray: Array<Square>
+    abstract var onScreen: Boolean
+    abstract var squareWidth: Int
+    abstract var associatedGame: GameLogic
+
+    fun getSquare(x: Int, y: Int): Square? {
+        return this.squaresArray.first{
+            it.boardXpos == x && it.boardYpos == y
+        }
+    }
 
 }
