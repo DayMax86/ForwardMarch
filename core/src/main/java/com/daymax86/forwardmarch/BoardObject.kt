@@ -2,13 +2,11 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.badlogic.gdx.utils.Array
 
 abstract class BoardObject() {
 
     // All items to appear on the board should be children of this class,
     // including pieces, traps, pickups, interactibles etc.
-    abstract var associatedGame: GameLogic
     abstract var associatedBoard: Board?
     abstract var image: Texture
     abstract var highlightedImage: Texture

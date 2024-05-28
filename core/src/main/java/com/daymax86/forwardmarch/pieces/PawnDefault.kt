@@ -5,10 +5,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.GameLogic
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
-import com.daymax86.forwardmarch.inputTypes
-import ktx.collections.contains
 import ktx.collections.isNotEmpty
 import ktx.collections.minus
 
@@ -26,7 +24,6 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     override var movement: Array<Square> = Array<Square>(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override var associatedGame: GameLogic
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,
@@ -37,7 +34,6 @@ open class PawnDefault( // TODO() Provide placeholder image for default pieces
     hostile = hostile,
     boundingBox = boundingBox,
     associatedBoard = associatedBoard,
-    associatedGame = associatedGame,
 ) {
 
     override fun getValidMoves(): Boolean { // TODO() This needs to be optimised!
