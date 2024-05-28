@@ -21,22 +21,27 @@ abstract class Square {
     abstract var boardYpos: Int
     abstract var squareWidth: Int
     abstract var highlight: Boolean
+    abstract var altHighlight: Boolean
     abstract var boundingBox: BoundingBox
     abstract var associatedBoard: Board
-    abstract var associatedGame: GameLogic
-
 
     open fun onClick(button: Int) {
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
-                    if (associatedBoard.associatedGame.selectedPiece != null) { // Null safety check for !! use
-                        associatedBoard.associatedGame.selectedPiece!!.move(
-                            this.boardXpos,
-                            this.boardYpos,
-                            this.associatedBoard
-                        )
+                    if (GameManager.selectedPiece != null) { // Null safety check for !! use
+                        if (this.contents.isEmpty) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
+                            if (GameManager.selectedPiece!!.movement.contains(this)) {
+                                GameManager.selectedPiece!!.move(
+                                    this.boardXpos,
+                                    this.boardYpos,
+                                    this.associatedBoard
+                                )
+                            } else {
+                                // TODO() Feedback to use that this is an invalid move
+                            }
+                        }
                     }
                 }
 
@@ -60,12 +65,16 @@ abstract class Square {
     }
 
     fun onHover() {
-        swapToAltHighlight(false)
-        highlight = true
+        if (!GameManager.freezeHighlights) {
+            swapToAltHighlight(false)
+            highlight = true
+        }
     }
 
-    fun onExitHover() { // TODO() Squares which are part of movement shouldn't be un-highlighted when piece is selected
-        highlight = false
+    fun onExitHover() {
+        if (!GameManager.freezeHighlights) {
+            highlight = false
+        }
     }
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {

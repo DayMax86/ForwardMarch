@@ -7,15 +7,11 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameLogic
-import com.daymax86.forwardmarch.GameScreen
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.inputTypes
-import ktx.collections.contains
-import ktx.collections.filter
 
 abstract class Piece(
-    override var associatedGame: GameLogic,
     override var associatedBoard: Board?,
     override var image: Texture,
     override var highlightedImage: Texture,
@@ -43,20 +39,10 @@ abstract class Piece(
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("piece", "LMB pressed on $pieceType")
-                    if (associatedGame.selectedPiece == null) {
-                        // No selected piece so assign this one
-                        associatedGame.selectedPiece = this
-                        highlight = true
-                        Gdx.app.log("piece", "associatedGame.selectedPiece = $this")
-                    } else if (associatedGame.selectedPiece == this) {
-                        // Already selected so deselect
-                        associatedGame.selectedPiece = null
-                        highlight = false
-                        Gdx.app.log("piece", "associatedGame.selectedPiece = null")
+                    if (GameManager.selectedPiece == null) {
+                        GameManager.selectPiece(this)
                     } else {
-                        // Another piece has been clicked on that isn't this one
-                        // How do we want this to behave?
-                        // For now do nothing until deselected
+                        GameManager.deselectPiece(this)
                     }
                 }
             }
@@ -64,22 +50,7 @@ abstract class Piece(
     }
 
     override fun onHover() {
-        if (this.associatedBoard != null) { // Null safety check for !! use
-            for (square in this.associatedBoard!!.squaresArray) {
-                if (this.movement.contains(square)) {
-                    square.swapToAltHighlight(true)
-                    square.highlight = true
-                }
-            }
-        }
-        if (this.nextBoard != null) { // Null safety check for !! use
-            for (square in this.nextBoard!!.squaresArray) {
-                if (this.movement.contains(square)) {
-                    square.swapToAltHighlight(true)
-                    square.highlight = true
-                }
-            }
-        }
+
     }
 
     override fun onExitHover() {
@@ -87,12 +58,14 @@ abstract class Piece(
     }
 
     override fun move(x: Int, y: Int, newBoard: Board?) {
+        // New piece coordinates
         this.boardXpos = x
         this.boardYpos = y
+
         if (newBoard != null) {
             this.associatedBoard = newBoard
         }
-
+        GameManager.deselectPiece(this)
     }
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {

@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameLogic
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.TileColours
 
@@ -22,14 +22,17 @@ class BlackSquareDefault(
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var associatedBoard: Board,
-    override var associatedGame: GameLogic,
+    override var altHighlight: Boolean = false,
 ) : Square() {
 
     override fun swapToAltHighlight(swap: Boolean) {
-        highlightedTileImage = if (swap) {
-            Texture(Gdx.files.internal("black_square_1000_highlighted_alt.png"))
+        if (swap) {
+            highlightedTileImage =
+                Texture(Gdx.files.internal("black_square_1000_highlighted_alt.png"))
+            altHighlight = true
         } else {
-            Texture(Gdx.files.internal("black_square_1000_highlighted.png"))
+            highlightedTileImage = Texture(Gdx.files.internal("black_square_1000_highlighted.png"))
+            altHighlight = false
         }
     }
 }

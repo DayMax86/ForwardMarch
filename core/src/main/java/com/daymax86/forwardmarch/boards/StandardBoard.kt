@@ -2,7 +2,7 @@ package com.daymax86.forwardmarch.boards
 
 import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.GameLogic
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
@@ -14,7 +14,6 @@ class StandardBoard(
     override var environmentXPos: Int,
     override var environmentYPos: Int,
     override var squareWidth: Int,
-    override var associatedGame: GameLogic,
 ) : Board() {
     init {
         var lastWasBlack = false
@@ -26,7 +25,6 @@ class StandardBoard(
                         clickable = true,
                         squareWidth = squareWidth,
                         associatedBoard = this,
-                        associatedGame = associatedGame,
                     )
                 } else {
                     BlackSquareDefault(
@@ -34,7 +32,6 @@ class StandardBoard(
                         clickable = true,
                         squareWidth = squareWidth,
                         associatedBoard = this,
-                        associatedGame = associatedGame
                     )
                 }
                 this.squaresArray.add(square)

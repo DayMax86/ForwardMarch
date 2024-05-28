@@ -10,7 +10,6 @@ abstract class Board {
     abstract var squaresArray: Array<Square>
     abstract var onScreen: Boolean
     abstract var squareWidth: Int
-    abstract var associatedGame: GameLogic
 
     fun getSquare(x: Int, y: Int): Square? {
         return this.squaresArray.first{
