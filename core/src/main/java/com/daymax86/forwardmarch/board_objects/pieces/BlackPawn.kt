@@ -1,4 +1,4 @@
-package com.daymax86.forwardmarch.pieces
+package com.daymax86.forwardmarch.board_objects.pieces
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture

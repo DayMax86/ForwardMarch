@@ -1,4 +1,4 @@
-package com.daymax86.forwardmarch.pieces
+package com.daymax86.forwardmarch.board_objects.pieces
 
 enum class PieceTypes {
     KING,
