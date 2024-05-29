@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.badlogic.gdx.utils.Array
 
 enum class TileColours {
     BLACK,
@@ -16,7 +15,7 @@ abstract class Square {
     abstract var highlightedTileImage: Texture
     abstract var colour: TileColours
     abstract var clickable: Boolean
-    abstract var contents: Array<BoardObject>
+    abstract val contents: MutableList<BoardObject>
     abstract var boardXpos: Int
     abstract var boardYpos: Int
     abstract var squareWidth: Int
@@ -31,7 +30,7 @@ abstract class Square {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
-                        if (this.contents.isEmpty) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
+                        if (this.contents.isEmpty()) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
                             if (GameManager.selectedPiece!!.movement.contains(this)) {
                                 GameManager.selectedPiece!!.move(
                                     this.boardXpos,

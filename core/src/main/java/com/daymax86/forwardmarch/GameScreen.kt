@@ -10,9 +10,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.badlogic.gdx.utils.Array
 import com.badlogic.gdx.utils.ScreenUtils
-import com.daymax86.forwardmarch.pieces.Piece
 
 class GameScreen(private val application: MainApplication) : Screen {
 
@@ -34,7 +32,11 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera = OrthographicCamera(
             (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
         )
-        camera.position.set(camera.viewportWidth / 2f, ((windowHeight/2) + GameManager.SQUARE_WIDTH).toFloat(), 0f)
+        camera.position.set(
+            camera.viewportWidth / 2f,
+            ((windowHeight / 2) + GameManager.SQUARE_WIDTH),
+            0f
+        )
         camera.update()
 
         Gdx.input.inputProcessor = object : InputAdapter() {
@@ -42,15 +44,17 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val xPos = getMouseEnvironmentPosition()?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition()?.y?.toInt()
                 if (xPos != null && yPos != null) {
-                    for (board in GameManager.boards) {
-                        checkSquareCollisions(
-                            board.squaresArray,
-                            xPos,
-                            yPos,
-                            button
-                        )
+                    if (!GameManager.movementInProgress) {
+                        GameManager.boards.forEach {board ->
+                            checkSquareCollisions(
+                                board.squaresList,
+                                xPos,
+                                yPos,
+                                button
+                            )
+                        }
                     }
-                    checkPieceCollisions(
+                    checkBoardObjectCollisions(
                         GameManager.pieces,
                         xPos,
                         yPos,
@@ -64,17 +68,19 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition()?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition()?.y?.toInt()
-                for (board in GameManager.boards) {
-                    getMouseEnvironmentPosition()?.let {
-                        checkSquareCollisions(
-                            board.squaresArray,
-                            it.x.toInt(),
-                            it.y.toInt()
-                        )
+                if (!GameManager.movementInProgress) {
+                    GameManager.boards.forEach { board ->
+                        getMouseEnvironmentPosition()?.let {
+                            checkSquareCollisions(
+                                board.squaresList,
+                                it.x.toInt(),
+                                it.y.toInt()
+                            )
+                        }
                     }
                 }
                 if (xPos != null && yPos != null) {
-                    checkPieceCollisions(
+                    checkBoardObjectCollisions(
                         GameManager.pieces,
                         xPos,
                         yPos
@@ -117,14 +123,17 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawBackground()
 
         var boardsOnScreen = 0
-        for (board in GameManager.boards) {
+        GameManager.boards.forEach {board ->
             if (board.onScreen) {
                 boardsOnScreen++
             }
             drawBoard(board, board.environmentXPos, board.environmentYPos)
         }
 
-        drawPieces(GameManager.pieces)
+        //drawStuff(GameManager.traps)
+        drawBoardObjects(GameManager.pieces)
+        drawBoardObjects(GameManager.traps)
+
         application.batch.end()
     }
 
@@ -134,21 +143,78 @@ class GameScreen(private val application: MainApplication) : Screen {
         )
     }
 
-    private fun drawPieces(pieces: Array<Piece>) {
-        for (piece in pieces) {
+//    private fun drawPieces(pieces: List<BoardObject>) {
+//        pieces.forEach { piece ->
+//            val rect = Rectangle().apply {
+//                set(
+//                    (piece.associatedBoard?.environmentXPos
+//                        ?: 0) + (piece.boardXpos * GameManager.SQUARE_WIDTH),
+//                    (piece.associatedBoard?.environmentYPos
+//                        ?: 0) + (piece.boardYpos * GameManager.SQUARE_HEIGHT),
+//                    GameManager.SQUARE_WIDTH,
+//                    GameManager.SQUARE_HEIGHT,
+//                )
+//                piece.updateBoundingBox(x, y, width, height)
+//            }
+//
+//            val img = if (piece.highlight) piece.highlightedImage else piece.image
+//
+//            application.batch.draw(
+//                img,
+//                rect.x,
+//                rect.y,
+//                GameManager.SQUARE_WIDTH,
+//                GameManager.SQUARE_HEIGHT
+//            )
+//        }
+//    }
+
+//    private fun drawTraps(traps: Array<BoardObject>) {
+//        for (trap in traps) {
+//            val rect = Rectangle()
+//            rect.set(
+//                (trap.associatedBoard?.environmentXPos
+//                    ?: 0) + (trap.boardXpos * GameManager.SQUARE_WIDTH),
+//                (trap.associatedBoard?.environmentYPos
+//                    ?: 0) + (trap.boardYpos * GameManager.SQUARE_HEIGHT),
+//                GameManager.SQUARE_WIDTH,
+//                GameManager.SQUARE_HEIGHT,
+//            )
+//            trap.updateBoundingBox(rect.x, rect.y, rect.width, rect.height)
+//
+//            val img = if (trap.highlight) {
+//                trap.highlightedImage
+//            } else {
+//                trap.image
+//            }
+//            application.batch.draw(
+//                img,
+//                rect.x,
+//                rect.y,
+//                GameManager.SQUARE_WIDTH,
+//                GameManager.SQUARE_HEIGHT
+//            )
+//        }
+//    }
+
+    private fun drawBoardObjects(objects: List<BoardObject>) {
+        objects.forEach {obj ->
             val rect = Rectangle()
             rect.set(
-                (piece.associatedBoard?.environmentXPos ?: 0) + (piece.boardXpos * GameManager.SQUARE_WIDTH),
-                (piece.associatedBoard?.environmentYPos ?: 0) + (piece.boardYpos * GameManager.SQUARE_HEIGHT),
+                (obj.associatedBoard?.environmentXPos
+                    ?: 0) + (obj.boardXpos * GameManager.SQUARE_WIDTH),
+                (obj.associatedBoard?.environmentYPos
+                    ?: 0) + (obj.boardYpos * GameManager.SQUARE_HEIGHT),
                 GameManager.SQUARE_WIDTH,
                 GameManager.SQUARE_HEIGHT,
-            )
-            piece.updateBoundingBox(rect.x, rect.y, rect.width, rect.height)
+            ).apply {
+                obj.updateBoundingBox(x, y, width, height)
+            }
 
-            val img = if (piece.highlight) {
-                piece.highlightedImage
+            val img = if (obj.highlight) {
+                obj.highlightedImage
             } else {
-                piece.image
+                obj.image
             }
             application.batch.draw(
                 img,
@@ -162,14 +228,16 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private fun drawBoard(board: Board, startingX: Int, startingY: Int) {
         val rect = Rectangle()
-        for (square in board.squaresArray) {
+        board.squaresList.forEach {square ->
             rect.set(
                 startingX + square.boardXpos * GameManager.SQUARE_WIDTH,
                 startingY + square.boardYpos * GameManager.SQUARE_HEIGHT,
                 square.squareWidth.toFloat(),
                 square.squareWidth.toFloat(),
-            )
-            square.updateBoundingBox(rect.x, rect.y, rect.width, rect.height)
+            ).apply {
+                square.updateBoundingBox(x, y, width, height)
+            }
+
             // Check for highlight and use appropriate variable!
             val img = if (square.highlight) {
                 square.highlightedTileImage
@@ -196,12 +264,12 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     private fun checkSquareCollisions(
-        collection: Array<Square>,
+        collection: List<Square>,
         mouseX: Int,
         mouseY: Int,
         button: Int = -1
     ) {
-        for (square in collection) {
+        collection.forEach { square ->
             if (square.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
                 square.onHover()
                 if (button >= 0) {
@@ -211,17 +279,16 @@ class GameScreen(private val application: MainApplication) : Screen {
                 square.onExitHover()
             }
         }
-
     }
 
     // Generic function for any board object
     private fun checkBoardObjectCollisions(
-        collection: Array<BoardObject>,
+        collection: List<BoardObject>,
         mouseX: Int,
         mouseY: Int,
         button: Int = -1
     ) {
-        for (obj in collection) {
+        collection.forEach { obj ->
             if (obj.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
                 obj.onHover()
                 if (button >= 0) {
@@ -231,29 +298,28 @@ class GameScreen(private val application: MainApplication) : Screen {
                 obj.onExitHover()
             }
         }
-
     }
 
     // Specific function for pieces
-    private fun checkPieceCollisions(
-        collection: Array<Piece>,
-        mouseX: Int,
-        mouseY: Int,
-        button: Int = -1
-    ) {
-        for (piece in collection) {
-            if (piece.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
-                piece.onHover()
-                if (button >= 0) {
-                    piece.onClick(button)
-                }
-            } else {
-                piece.onExitHover()
-            }
-        }
-
-    }
-
+//    private fun checkPieceCollisions(
+//        collection: List<Piece>,
+//        mouseX: Int,
+//        mouseY: Int,
+//        button: Int = -1
+//    ) {
+//        collection.forEach {piece ->
+//            if (piece.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
+//                piece.onHover()
+//                if (button >= 0) {
+//                    piece.onClick(button)
+//                }
+//            } else {
+//                piece.onExitHover()
+//            }
+//        }
+//
+//    }
+//
 
     override fun resize(width: Int, height: Int) {
         camera.viewportWidth = viewWidth.toFloat()

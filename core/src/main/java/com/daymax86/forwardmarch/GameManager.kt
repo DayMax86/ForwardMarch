@@ -1,9 +1,9 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.boards.StandardBoard
-import com.daymax86.forwardmarch.pieces.BlackPawn
-import com.daymax86.forwardmarch.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 
 object GameManager {
 
@@ -12,13 +12,16 @@ object GameManager {
     const val SQUARE_WIDTH = 120f
     const val SQUARE_HEIGHT = 120f
     const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
+    const val DIMENSIONS: Int = 8
+    // Collections
+    val pieces: MutableList<Piece> = mutableListOf()
+    val boards: MutableList<Board> = mutableListOf()
+    val traps: MutableList<BoardObject> = mutableListOf()
 
-
-    private const val DIMENSIONS: Int = 8
-    val pieces = Array<Piece>()
-    val boards = Array<Board>()
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
+    var movementInProgress: Boolean = false
+
 
     init {
         val testBoard = StandardBoard(
@@ -35,20 +38,27 @@ object GameManager {
             squareWidth = SQUARE_WIDTH.toInt(),
         )
         testBoard2.onScreen = true
-        this.boards.add(testBoard, testBoard2)
+        this.boards.add(testBoard)
+        this.boards.add(testBoard2)
 
-        val testPawn = BlackPawn()
-        testPawn.associatedBoard = this.boards[0]
-        testPawn.nextBoard = this.boards[1]
-        testPawn.move(3, 3, null)
-        this.pieces.add(testPawn)
+        BlackPawn().also {
+            it.associatedBoard = this.boards[0]
+            it.nextBoard = this.boards[1]
+            it.move(1, 2, null)
+        }.apply {
+            this@GameManager.pieces.add(this)
+        }
+
         val testPawn2 = BlackPawn()
         testPawn2.associatedBoard = this.boards[0]
         testPawn2.nextBoard = this.boards[1]
         testPawn2.move(5, 8, null)
         this.pieces.add(testPawn2)
 
-        updateValidMoves()
+        val testTrap = SpikeTrap()
+        testTrap.associatedBoard = this.boards[0]
+        testTrap.move(1, 3, null)
+        this.traps.add(testTrap)
 
     }
 
@@ -57,7 +67,7 @@ object GameManager {
         piece.highlight = true
         piece.getValidMoves()
         for (board in this.boards) { // TODO Iterating through nested array may be too intensive
-            for (square in board.squaresArray) {
+            for (square in board.squaresList) {
                 if (piece.movement.contains(square)) {
                     square.swapToAltHighlight(true)
                     square.highlight = true
@@ -67,12 +77,14 @@ object GameManager {
         this.freezeHighlights = true
     }
 
-    fun deselectPiece(piece: Piece) {
-        piece.highlight = false
-        this.freezeHighlights = false
-        this.selectedPiece = null
-        for (square in piece.movement) {
-            square.highlight = false
+    fun deselectPiece() {
+        if (selectedPiece != null) {
+            selectedPiece!!.highlight = false
+            this.freezeHighlights = false
+            selectedPiece!!.movement.forEach {
+                it.highlight = false
+            }
+            this.selectedPiece = null
         }
     }
 

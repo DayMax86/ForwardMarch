@@ -1,10 +1,8 @@
-package com.daymax86.forwardmarch.pieces
+package com.daymax86.forwardmarch.board_objects.pieces
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.badlogic.gdx.utils.Array
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
@@ -24,7 +22,7 @@ abstract class Piece(
 ) : BoardObject() {
     open lateinit var pieceType: PieceTypes
     open var friendly: Boolean = false
-    open lateinit var movement: Array<Square>
+    open val movement: MutableList<Square> = mutableListOf()
     open var nextBoard: Board? = null
 
     open fun getValidMoves(): Boolean {
@@ -42,7 +40,7 @@ abstract class Piece(
                     if (GameManager.selectedPiece == null) {
                         GameManager.selectPiece(this)
                     } else {
-                        GameManager.deselectPiece(this)
+                        GameManager.deselectPiece()
                     }
                 }
             }
@@ -58,18 +56,10 @@ abstract class Piece(
     }
 
     override fun move(x: Int, y: Int, newBoard: Board?) {
-        // New piece coordinates
-        this.boardXpos = x
-        this.boardYpos = y
-
-        if (newBoard != null) {
-            this.associatedBoard = newBoard
-        }
-        GameManager.deselectPiece(this)
+        super.move(x, y, newBoard)
+        GameManager.deselectPiece()
     }
 
-    fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
-        boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
-    }
+
 
 }
