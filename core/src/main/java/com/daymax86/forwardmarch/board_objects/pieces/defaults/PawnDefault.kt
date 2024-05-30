@@ -1,10 +1,12 @@
-package com.daymax86.forwardmarch.board_objects.pieces
+package com.daymax86.forwardmarch.board_objects.pieces.defaults
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces
@@ -39,11 +41,13 @@ open class PawnDefault(
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
             /* Use piece's XY positions on the board
+
                     * ----------- PAWN --
                     * ----?-0-?----------
                     * ----0-X-0----------
                     * -------------------
                     */
+
             // Determine if the movement will straddle across 2 (or more?) boards
             // For a pawn this will only be the case if it's in the 8th row
             if (this.boardYpos == 8) {
@@ -118,6 +122,6 @@ open class PawnDefault(
             }
 
         }
-        return this.movement.isNotEmpty() // No valid moves if array is empty (if empty = true, valid = false)
+        return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 }

@@ -3,6 +3,7 @@ package com.daymax86.forwardmarch
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 
 object GameManager {
@@ -49,6 +50,14 @@ object GameManager {
             this@GameManager.pieces.add(this)
         }
 
+        RookDefault().also {
+            it.associatedBoard = this.boards[0]
+            it.nextBoard = this.boards[1]
+            it.move (3, 4, null)
+        }. apply {
+            this@GameManager.pieces.add(this)
+        }
+
         val testPawn2 = BlackPawn()
         testPawn2.associatedBoard = this.boards[0]
         testPawn2.nextBoard = this.boards[1]
@@ -57,7 +66,7 @@ object GameManager {
 
         val testTrap = SpikeTrap()
         testTrap.associatedBoard = this.boards[0]
-        testTrap.move(1, 3, null)
+        testTrap.move(5, 4, null)
         this.traps.add(testTrap)
 
     }
