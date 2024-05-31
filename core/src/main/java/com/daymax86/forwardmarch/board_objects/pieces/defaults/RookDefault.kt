@@ -1,13 +1,16 @@
 package com.daymax86.forwardmarch.board_objects.pieces.defaults
 
+import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import java.lang.Math.clamp
 import kotlin.math.abs
 
 open class RookDefault(
@@ -63,14 +66,15 @@ open class RookDefault(
             var downChecked = false
 
             // LEFT
-            val leftLimit = if (this.boardXpos < range) 0 else (this.boardXpos - range)
+            val leftLimit =
+                if (this.boardXpos < range) 1 else (this.boardXpos + 1 - range)
             for (leftIndex in this.boardXpos - 1 downTo leftLimit) {
                 if (!leftChecked) {
                     // For each xPos to the left of the piece, check the square for content,
                     // if square is empty, add to the movement array,
                     // otherwise stop looking in this direction
                     this.associatedBoard!!.squaresList.first { square ->
-                        square.boardXpos - 1 == leftIndex && square.boardYpos == this.boardYpos // -1 to not include piece's square!
+                        square.boardXpos == leftIndex && square.boardYpos == this.boardYpos
                     }.let {
                         if (it.contents.isEmpty()) {
                             this.movement.add(it)
@@ -83,14 +87,14 @@ open class RookDefault(
 
             // RIGHT
             val rightLimit =
-                if (this.boardXpos + 1 > range) GameManager.DIMENSIONS + 1 else (this.boardXpos + range)
+                if (this.boardXpos + range > GameManager.DIMENSIONS) GameManager.DIMENSIONS else (this.boardXpos + range)
             for (rightIndex in this.boardXpos + 1..rightLimit) {
                 if (!rightChecked) {
                     // For each xPos to the right of the piece, check the square for content,
                     // if square is empty, add to the movement array,
                     // otherwise stop looking in this direction
                     this.associatedBoard!!.squaresList.first { square ->
-                        square.boardXpos == rightIndex && square.boardYpos == this.boardYpos // +1 to not include piece's square!
+                        square.boardXpos == rightIndex && square.boardYpos == this.boardYpos
                     }.let {
                         if (it.contents.isEmpty()) {
                             this.movement.add(it)
@@ -103,28 +107,93 @@ open class RookDefault(
 
             // UP
             // Manage movement across boards
-            var board: Board
+            var boardUp: Board
+            var acrossBoardsUp = false
             if (this.nextBoard != null) {
                 for (upIndex in this.boardYpos + 1..this.boardYpos + range) {
-                    board =
-                        if (boardYpos - GameManager.DIMENSIONS < 1) this.associatedBoard!! else this.nextBoard!!
-                    board.squaresList.first { square ->
-                        square.boardXpos == this.boardXpos && (abs(square.boardYpos - GameManager.DIMENSIONS) == upIndex)
-                    }.let {
-                        if (it.contents.isEmpty()) {
-                            this.movement.add(it)
-                        } else {
-                            upChecked = true
+                    if (!upChecked) {
+                        // For i in range ( pieceY +1 <= pieceY + 4)
+                        boardUp =
+                            if (upIndex - GameManager.DIMENSIONS < 1) this.associatedBoard!! else this.nextBoard!!.also {
+                                acrossBoardsUp = true
+                            }
+                        boardUp.squaresList.first { square ->
+                            // Find the square that is pieceY + 1 in y-axis, and no change in x-axis
+                            square.boardXpos == this.boardXpos && square.boardYpos == if (acrossBoardsUp) abs(
+                                upIndex - GameManager.DIMENSIONS
+                            ) else upIndex
+                        }.let {
+                            if (it.contents.isEmpty()) {
+                                this.movement.add(it)
+                            } else {
+                                upChecked = true
+                            }
+                        }
+                    }
+                }
+            }
+
+            // DOWN
+            // Manage movement across boards
+            var boardDown: Board
+            // Search GameManager Boards collection to see if there is a board below to be able to move to
+            val boardBelow: Boolean = GameManager.boards.indexOf(this.associatedBoard) > 0
+            var downLimit: Int
+            if (boardBelow && this.boardYpos - range < 1) {
+                // Split across two boards
+                downLimit = 1
+                for (downIndex1 in this.boardYpos - 1 downTo downLimit) {
+                    if (!downChecked) {
+                        // Movement on upper board
+                        boardDown = this.associatedBoard!!
+                        boardDown.squaresList.first { square ->
+                            square.boardXpos == this.boardXpos && square.boardYpos == downIndex1
+                        }.let {
+                            if (it.contents.isEmpty()) {
+                                this.movement.add(it)
+                            } else {
+                                downChecked = true
+                            }
+                        }
+                    }
+                }
+                downLimit = GameManager.DIMENSIONS - abs(this.boardYpos - range)
+                for (downIndex2 in GameManager.DIMENSIONS downTo downLimit)
+                    if (!downChecked) {
+                        boardDown =
+                            GameManager.boards[0] // Boards offscreen will be removed from stack
+                        boardDown.squaresList.first { square ->
+                            square.boardXpos == this.boardXpos && square.boardYpos == downIndex2
+                        }.let {
+                            if (it.contents.isEmpty()) {
+                                this.movement.add(it)
+                            } else {
+                                downChecked = true
+                            }
+                        }
+                    }
+            } else {
+                // Must be contained within one board
+                downLimit = MathUtils.clamp(this.boardYpos - range, 1, 8)
+                for (downIndex3 in this.boardYpos - 1 downTo downLimit) {
+                    if (!downChecked) {
+                        // Movement on upper board
+                        boardDown = this.associatedBoard!!
+                        Gdx.app.log("movement", "downIndex3 = $downIndex3")
+                        boardDown.squaresList.first { square ->
+                            square.boardXpos == this.boardXpos && square.boardYpos == downIndex3
+                        }.let {
+                            if (it.contents.isEmpty()) {
+                                this.movement.add(it)
+                            } else {
+                                downChecked = true
+                            }
                         }
                     }
                 }
             }
 
         }
-
-
-
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
-
 }
