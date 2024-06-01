@@ -19,7 +19,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     private val viewHeight = 2000
 
     private var camera: OrthographicCamera
-    private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_2000x3000.png")))
+    private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
     private var windowWidth: Int = 0
     private var windowHeight: Int = 0
 

@@ -10,8 +10,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces
-    override var image: Texture = Texture(Gdx.files.internal("black_pawn_1000.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("black_pawn_1000_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("black_pawn_256.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("black_pawn_256_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,

@@ -14,8 +14,8 @@ import java.lang.Math.clamp
 import kotlin.math.abs
 
 open class RookDefault(
-    override var image: Texture = Texture(Gdx.files.internal("black_rook_1000.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("black_rook_1000_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("black_rook_256.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("black_rook_256_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,

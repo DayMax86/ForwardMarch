@@ -9,8 +9,8 @@ import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.TileColours
 
 class BlackSquareDefault(
-    override var tileImage: Texture = Texture(Gdx.files.internal("black_square_1000.png")),
-    override var highlightedTileImage: Texture = Texture(Gdx.files.internal("black_square_1000_highlighted.png")),
+    override var tileImage: Texture = Texture(Gdx.files.internal("black_square_256.png")),
+    override var highlightedTileImage: Texture = Texture(Gdx.files.internal("black_square_256_highlighted.png")),
     override var colour: TileColours = TileColours.BLACK,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
@@ -26,10 +26,10 @@ class BlackSquareDefault(
     override fun swapToAltHighlight(swap: Boolean) {
         if (swap) {
             highlightedTileImage =
-                Texture(Gdx.files.internal("black_square_1000_highlighted_alt.png"))
+                Texture(Gdx.files.internal("black_square_256_highlighted_alt.png"))
             altHighlight = true
         } else {
-            highlightedTileImage = Texture(Gdx.files.internal("black_square_1000_highlighted.png"))
+            highlightedTileImage = Texture(Gdx.files.internal("black_square_256_highlighted.png"))
             altHighlight = false
         }
     }
