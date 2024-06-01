@@ -12,7 +12,7 @@ object GameManager {
     const val ENVIRONMENT_HEIGHT = 3000f
     const val SQUARE_WIDTH = 120f
     const val SQUARE_HEIGHT = 120f
-    const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
+    private const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()
@@ -43,39 +43,54 @@ object GameManager {
         this.boards.add(testBoard2)
 
         BlackPawn().also {
-            it.associatedBoard = this.boards[0]
-            it.nextBoard = this.boards[1]
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
             it.move(1, 2, null)
         }.apply {
-            this@GameManager.pieces.add(this)
+            pieces.add(this)
         }
 
         RookDefault().also {
-            it.associatedBoard = this.boards[0]
-            it.nextBoard = this.boards[1]
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
             it.move (3, 4, null)
         }. apply {
-            this@GameManager.pieces.add(this)
+            pieces.add(this)
         }
 
         val testPawn2 = BlackPawn()
-        testPawn2.associatedBoard = this.boards[0]
-        testPawn2.nextBoard = this.boards[1]
+        testPawn2.associatedBoard = boards[0]
+        testPawn2.nextBoard = boards[1]
         testPawn2.move(5, 8, null)
-        this.pieces.add(testPawn2)
+        pieces.add(testPawn2)
 
         val testTrap = SpikeTrap()
-        testTrap.associatedBoard = this.boards[0]
+        testTrap.associatedBoard = boards[0]
         testTrap.move(5, 4, null)
-        this.traps.add(testTrap)
+        traps.add(testTrap)
 
     }
 
+    fun forwardMarch(distance: Int) {
+        // Move all pieces up by one square
+        pieces.forEach { piece ->
+            if (piece.boardYpos + distance > 8) {
+                // Must be moving onto the next board
+                val boardIndex = boards.indexOf(piece.associatedBoard)
+                piece.move(piece.boardXpos, (piece.boardYpos + distance - 8), boards[boardIndex + 1])
+            } else { // Movement contained within one board
+                piece.move(piece.boardXpos, piece.boardYpos + distance, null)
+            }
+        }
+
+        // Move camera up accordingly (a smooth movement ideally to show what's happened)
+    }
+
     fun selectPiece(piece: Piece) {
-        this.selectedPiece = piece
+        selectedPiece = piece
         piece.highlight = true
         piece.getValidMoves()
-        for (board in this.boards) { // TODO Iterating through nested array may be too intensive
+        for (board in boards) { // TODO Iterating through nested array may be too intensive
             for (square in board.squaresList) {
                 if (piece.movement.contains(square)) {
                     square.swapToAltHighlight(true)
@@ -83,17 +98,17 @@ object GameManager {
                 }
             }
         }
-        this.freezeHighlights = true
+        freezeHighlights = true
     }
 
     fun deselectPiece() {
         if (selectedPiece != null) {
             selectedPiece!!.highlight = false
-            this.freezeHighlights = false
+            freezeHighlights = false
             selectedPiece!!.movement.forEach {
                 it.highlight = false
             }
-            this.selectedPiece = null
+            selectedPiece = null
         }
     }
 

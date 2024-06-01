@@ -8,9 +8,12 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
+import kotlinx.coroutines.CoroutineScope
+import ktx.graphics.lerpTo
 
 class GameScreen(private val application: MainApplication) : Screen {
 
@@ -19,6 +22,8 @@ class GameScreen(private val application: MainApplication) : Screen {
     private val viewHeight = 2000
 
     private var camera: OrthographicCamera
+    private var cameraTargetInX: Float = 0f
+    private var cameraTargetInY: Float = 0f
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
     private var windowWidth: Int = 0
     private var windowHeight: Int = 0
@@ -32,12 +37,10 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera = OrthographicCamera(
             (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
         )
-        camera.position.set(
-            camera.viewportWidth / 2f,
-            ((windowHeight / 2) + GameManager.SQUARE_WIDTH),
-            0f
-        )
-        camera.update()
+
+        cameraTargetInX = camera.viewportWidth / 2f
+        cameraTargetInY = ((windowHeight / 2) + GameManager.SQUARE_WIDTH)
+        camera.position.set(cameraTargetInX, cameraTargetInY, 0f)
 
         Gdx.input.inputProcessor = object : InputAdapter() {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
@@ -107,6 +110,13 @@ class GameScreen(private val application: MainApplication) : Screen {
                     (Input.Keys.RIGHT) -> {
                         camera.translate(50f, 0f)
                     }
+
+                    // --------- FOR TESTING ONLY ---------- //
+                    (Input.Keys.F) -> {
+                        GameManager.forwardMarch(1)
+                        cameraTargetInY += GameManager.SQUARE_HEIGHT
+                    }
+
                 }
                 return true
             }
@@ -114,9 +124,15 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     }
 
+
+    private fun updateCamera() {
+        camera.lerpTo(Vector2(cameraTargetInX, cameraTargetInY), 0.1f)
+        camera.update()
+    }
+
     override fun render(delta: Float) {
         ScreenUtils.clear(0f, 0.8f, 0.8f, 1f)
-        camera.update()
+        updateCamera()
         application.batch.projectionMatrix = camera.combined
         application.batch.begin()
 
@@ -142,60 +158,6 @@ class GameScreen(private val application: MainApplication) : Screen {
             environmentSprite, 0f, 0f, GameManager.ENVIRONMENT_WIDTH, GameManager.ENVIRONMENT_HEIGHT
         )
     }
-
-//    private fun drawPieces(pieces: List<BoardObject>) {
-//        pieces.forEach { piece ->
-//            val rect = Rectangle().apply {
-//                set(
-//                    (piece.associatedBoard?.environmentXPos
-//                        ?: 0) + (piece.boardXpos * GameManager.SQUARE_WIDTH),
-//                    (piece.associatedBoard?.environmentYPos
-//                        ?: 0) + (piece.boardYpos * GameManager.SQUARE_HEIGHT),
-//                    GameManager.SQUARE_WIDTH,
-//                    GameManager.SQUARE_HEIGHT,
-//                )
-//                piece.updateBoundingBox(x, y, width, height)
-//            }
-//
-//            val img = if (piece.highlight) piece.highlightedImage else piece.image
-//
-//            application.batch.draw(
-//                img,
-//                rect.x,
-//                rect.y,
-//                GameManager.SQUARE_WIDTH,
-//                GameManager.SQUARE_HEIGHT
-//            )
-//        }
-//    }
-
-//    private fun drawTraps(traps: Array<BoardObject>) {
-//        for (trap in traps) {
-//            val rect = Rectangle()
-//            rect.set(
-//                (trap.associatedBoard?.environmentXPos
-//                    ?: 0) + (trap.boardXpos * GameManager.SQUARE_WIDTH),
-//                (trap.associatedBoard?.environmentYPos
-//                    ?: 0) + (trap.boardYpos * GameManager.SQUARE_HEIGHT),
-//                GameManager.SQUARE_WIDTH,
-//                GameManager.SQUARE_HEIGHT,
-//            )
-//            trap.updateBoundingBox(rect.x, rect.y, rect.width, rect.height)
-//
-//            val img = if (trap.highlight) {
-//                trap.highlightedImage
-//            } else {
-//                trap.image
-//            }
-//            application.batch.draw(
-//                img,
-//                rect.x,
-//                rect.y,
-//                GameManager.SQUARE_WIDTH,
-//                GameManager.SQUARE_HEIGHT
-//            )
-//        }
-//    }
 
     private fun drawBoardObjects(objects: List<BoardObject>) {
         objects.forEach {obj ->
