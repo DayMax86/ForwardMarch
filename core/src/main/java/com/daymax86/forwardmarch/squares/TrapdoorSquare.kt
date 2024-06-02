@@ -10,8 +10,8 @@ import com.daymax86.forwardmarch.TileColours
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 
 class TrapdoorSquare(
-    override var tileImage: Texture = Texture(Gdx.files.internal("trapdoor_square_256.png")),
-    override var highlightedTileImage: Texture = Texture(Gdx.files.internal("trapdoor_square_256_highlighted.png")),
+    override var tileImage: Texture = Texture(Gdx.files.internal("sprites/trapdoor_square_256.png")),
+    override var highlightedTileImage: Texture = Texture(Gdx.files.internal("sprites/trapdoor_square_256_highlighted.png")),
     override var colour: TileColours = TileColours.OTHER,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
@@ -27,11 +27,11 @@ class TrapdoorSquare(
     override fun swapToAltHighlight(swap: Boolean) {
         if (swap) {
             highlightedTileImage =
-                Texture(Gdx.files.internal("trapdoor_square_256_highlighted.png"))
+                Texture(Gdx.files.internal("sprites/trapdoor_square_256_highlighted.png"))
             altHighlight = true
         } else {
             highlightedTileImage =
-                Texture(Gdx.files.internal("trapdoor_square_256_highlighted.png"))
+                Texture(Gdx.files.internal("sprites/trapdoor_square_256_highlighted.png"))
             altHighlight = false
         }
     }

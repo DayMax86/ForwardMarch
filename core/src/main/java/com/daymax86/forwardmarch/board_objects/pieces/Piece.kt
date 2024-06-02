@@ -33,11 +33,12 @@ abstract class Piece(
     }
 
     override fun onClick(button: Int) {
+        super.onClick(button)
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("piece", "LMB pressed on $pieceType")
-                    if (GameManager.selectedPiece == null) {
+                    if (GameManager.selectedPiece == null && !GameManager.movementInProgress) {
                         GameManager.selectPiece(this)
                     } else {
                         GameManager.deselectPiece()
@@ -55,11 +56,9 @@ abstract class Piece(
 
     }
 
-    override fun move(x: Int, y: Int, newBoard: Board?) {
-        super.move(x, y, newBoard)
-        GameManager.deselectPiece()
+    override fun kill() {
+        this.deathAnimation.activate(this.boundingBox)
+        super.kill()
     }
-
-
 
 }

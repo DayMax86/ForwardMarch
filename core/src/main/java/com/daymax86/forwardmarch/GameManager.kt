@@ -1,10 +1,14 @@
 package com.daymax86.forwardmarch
 
-import com.daymax86.forwardmarch.boards.StandardBoard
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.g2d.Animation
+import com.badlogic.gdx.graphics.g2d.TextureRegion
+import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
+import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
 
 object GameManager {
@@ -19,11 +23,11 @@ object GameManager {
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
     val traps: MutableList<BoardObject> = mutableListOf()
+    val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
     var movementInProgress: Boolean = false
-
 
     init {
         val testBoard = StandardBoard(
@@ -84,14 +88,13 @@ object GameManager {
             }
         }
 
-        // Move camera up accordingly (a smooth movement ideally to show what's happened)
     }
 
     fun selectPiece(piece: Piece) {
         selectedPiece = piece
         piece.highlight = true
         piece.getValidMoves()
-        for (board in boards) { // TODO Iterating through nested array may be too intensive
+        for (board in boards) {
             for (square in board.squaresList) {
                 if (piece.movement.contains(square)) {
                     square.swapToAltHighlight(true)
@@ -109,8 +112,8 @@ object GameManager {
             selectedPiece!!.movement.forEach {
                 it.highlight = false
             }
-            selectedPiece = null
         }
+        selectedPiece = null
     }
 
     fun updateValidMoves() {

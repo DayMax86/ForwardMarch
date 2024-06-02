@@ -2,8 +2,13 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.Gdx.files
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.g2d.TextureAtlas
+import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms.  */
@@ -15,7 +20,6 @@ class MainApplication : Game() {
     lateinit var font: BitmapFont
     lateinit var fps: FrameRateCounter
     lateinit var shapeRenderer: ShapeRenderer
-
 
     override fun create() {
         windowHeight = Gdx.graphics.height

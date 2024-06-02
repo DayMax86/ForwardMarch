@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces
-    override var image: Texture = Texture(Gdx.files.internal("black_pawn_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("black_pawn_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -23,6 +24,11 @@ open class PawnDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
+    override var deathAnimation: SpriteAnimation = SpriteAnimation(
+        atlasFilepath = "atlases/black_pawn_death_animation.atlas",
+        frameDuration = 0.1f,
+        loop = false,
+    )
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

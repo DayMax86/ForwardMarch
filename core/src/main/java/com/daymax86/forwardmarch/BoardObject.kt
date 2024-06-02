@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 abstract class BoardObject() {
 
@@ -18,6 +19,7 @@ abstract class BoardObject() {
     abstract var clickable: Boolean
     abstract var hostile: Boolean
     abstract var boundingBox: BoundingBox
+    abstract var deathAnimation: SpriteAnimation
 
     open fun onHover() {
         //highlight = true
@@ -65,13 +67,22 @@ abstract class BoardObject() {
                         }
                     }
                 }
+            }
+        }
 
+        // Update the bounding box
+        this.associatedBoard.let {
+            if (it != null) {
+                this.updateBoundingBox(
+                    it.environmentXPos + (this.boardXpos * GameManager.SQUARE_WIDTH),
+                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT),
+                    GameManager.SQUARE_WIDTH,
+                    GameManager.SQUARE_HEIGHT,
+                )
             }
         }
 
         // Check collisions before resolving movements
-
-
         GameManager.movementInProgress = false
     }
 
@@ -93,10 +104,7 @@ abstract class BoardObject() {
 
     open fun kill() {
         // Dispose of the piece, remove from all lists etc.
-        Gdx.app.log(
-            "collisions",
-            "Piece $this has been killed for colliding with another board object"
-        )
+        GameManager.pieces.remove(this)
     }
 
 }
