@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
 
 enum class TileColours {
     BLACK,
     WHITE,
+    OTHER,
 }
 
 abstract class Square {
@@ -81,6 +83,10 @@ abstract class Square {
     }
 
     open fun swapToAltHighlight(swap: Boolean) {
+
+    }
+
+    open fun onEnter(obj: BoardObject) {
 
     }
 

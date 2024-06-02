@@ -179,7 +179,6 @@ open class RookDefault(
                     if (!downChecked) {
                         // Movement on upper board
                         boardDown = this.associatedBoard!!
-                        Gdx.app.log("movement", "downIndex3 = $downIndex3")
                         boardDown.squaresList.first { square ->
                             square.boardXpos == this.boardXpos && square.boardYpos == downIndex3
                         }.let {

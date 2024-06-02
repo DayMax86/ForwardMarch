@@ -5,6 +5,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
+import com.daymax86.forwardmarch.boards.VeryEasyBoard1
 
 object GameManager {
 
@@ -32,7 +33,7 @@ object GameManager {
             squareWidth = SQUARE_WIDTH.toInt(),
         )
         testBoard.onScreen = true
-        val testBoard2 = StandardBoard(
+        val testBoard2 = VeryEasyBoard1(
             dimensions = DIMENSIONS,
             environmentXPos = EDGE_BUFFER.toInt(),
             environmentYPos = (SQUARE_HEIGHT * DIMENSIONS).toInt(),

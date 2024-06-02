@@ -53,6 +53,7 @@ abstract class BoardObject() {
         // Update the 'contents' property of the appropriate square
         if (this.associatedBoard != null) {
             this.associatedBoard!!.getSquare(x, y).let { sq ->
+                sq?.onEnter(this)
                 sq?.contents?.add(this).also {
                     // Are there multiple objects in this square?
                     if (sq?.contents?.size!! > 1) {
@@ -84,6 +85,10 @@ abstract class BoardObject() {
         } else {
             Gdx.app.log("collisions", "Piece $this has collided with a non-hostile object")
         }
+    }
+
+    open fun collide(other: Square) {
+        other.onEnter(this)
     }
 
     open fun kill() {
