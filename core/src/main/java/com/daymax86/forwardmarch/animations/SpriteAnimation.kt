@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
+import java.sql.Time
 
 class SpriteAnimation(
     val atlasFilepath: String,
@@ -22,6 +23,10 @@ class SpriteAnimation(
     fun getAnim(): Animation<TextureRegion> {
         val atlas = TextureAtlas(Gdx.files.internal(this.atlasFilepath))
         return Animation<TextureRegion>(this.frameDuration, atlas.regions)
+    }
+
+    fun isFinished(stateTime: Float) : Boolean {
+        return (this.getAnim().isAnimationFinished(stateTime))
     }
 
 }

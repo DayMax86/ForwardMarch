@@ -38,10 +38,8 @@ class TrapdoorSquare(
 
     override fun onEnter(obj: BoardObject) {
         super.onEnter(obj)
-        Gdx.app.log("square", "Trapdoor square effect triggered by $obj")
         when (obj) {
             is Piece -> {
-                Gdx.app.log("square", "Trapdoor entered by instance of Piece")
                 obj.kill()
             }
         }

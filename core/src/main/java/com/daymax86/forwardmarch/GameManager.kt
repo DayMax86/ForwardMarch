@@ -19,6 +19,8 @@ object GameManager {
     const val SQUARE_HEIGHT = 120f
     private const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
+    const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
+
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
@@ -58,16 +60,36 @@ object GameManager {
         RookDefault().also {
             it.associatedBoard = boards[0]
             it.nextBoard = boards[1]
-            it.move (3, 4, null)
-        }. apply {
+            it.move(3, 4, null)
+        }.apply {
+            pieces.add(this)
+        }
+
+        RookDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(1, 7, null)
+        }.apply {
             pieces.add(this)
         }
 
         val testPawn2 = BlackPawn()
         testPawn2.associatedBoard = boards[0]
         testPawn2.nextBoard = boards[1]
-        testPawn2.move(5, 1, null)
+        testPawn2.move(6, 1, null)
         pieces.add(testPawn2)
+
+        val testPawn3 = BlackPawn()
+        testPawn3.associatedBoard = boards[0]
+        testPawn3.nextBoard = boards[1]
+        testPawn3.move(7, 1, null)
+        pieces.add(testPawn3)
+
+        val testPawn4 = BlackPawn()
+        testPawn4.associatedBoard = boards[0]
+        testPawn4.nextBoard = boards[1]
+        testPawn4.move(8, 2, null)
+        pieces.add(testPawn4)
 
         val testTrap = SpikeTrap()
         testTrap.associatedBoard = boards[0]
@@ -77,17 +99,18 @@ object GameManager {
     }
 
     fun forwardMarch(distance: Int) {
+        val movementQueue: MutableList<() -> Unit> = mutableListOf()
         // Move all pieces up by one square
         pieces.forEach { piece ->
-            if (piece.boardYpos + distance > 8) {
-                // Must be moving onto the next board
-                val boardIndex = boards.indexOf(piece.associatedBoard)
-                piece.move(piece.boardXpos, (piece.boardYpos + distance - 8), boards[boardIndex + 1])
-            } else { // Movement contained within one board
-                piece.move(piece.boardXpos, piece.boardYpos + distance, null)
-            }
+            val yMovement =
+                if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
+            val newBoard =
+                if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
+            movementQueue.add { piece.move(piece.boardXpos, yMovement, newBoard) } // Add to queue to invoke after movement is fully resolved
         }
-
+        movementQueue.forEach {
+            it.invoke()
+        }
     }
 
     fun selectPiece(piece: Piece) {

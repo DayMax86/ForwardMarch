@@ -30,7 +30,7 @@ open class RookDefault(
     override var nextBoard: Board? = null,
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
-        frameDuration = 0.1f,
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = false,
     )
 ) : Piece(

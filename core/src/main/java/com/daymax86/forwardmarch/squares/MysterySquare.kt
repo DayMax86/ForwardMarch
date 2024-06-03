@@ -37,7 +37,6 @@ class MysterySquare(
 
     override fun onEnter(obj: BoardObject) {
         super.onEnter(obj)
-        Gdx.app.log("square", "Mystery square effect triggered by $obj")
         when (obj) {
             is Piece -> {
                 Gdx.app.log("square", "Trapdoor entered by instance of Piece")
@@ -45,10 +44,12 @@ class MysterySquare(
                 rnd.let {
                     when (it) {
                         in 1..3 -> { // Unlucky!
+                            Gdx.app.log("square", "Unlucky my friend!")
                             obj.kill()
                         }
                         in 4..6 -> {
                             // Do nothing
+                            Gdx.app.log("square", "Nothing seems to have happened.?.?.?.")
                         }
                         else -> {
                             // Do something good!

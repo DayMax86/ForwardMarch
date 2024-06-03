@@ -32,10 +32,6 @@ class GameScreen(private val application: MainApplication) : Screen {
     private var windowWidth: Int = 0
     private var windowHeight: Int = 0
 
-    // ----------- PLACED HERE FOR TESTING PURPOSES ------------- //
-
-    // ---------------------------------------------------------- //
-
     init {
         environmentSprite.setPosition(0f, 0f)
         environmentSprite.setSize(GameManager.ENVIRONMENT_WIDTH, GameManager.ENVIRONMENT_HEIGHT)
@@ -168,6 +164,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     private fun drawAnimations(anims: List<SpriteAnimation>) {
+        val animsToRemove = mutableListOf<SpriteAnimation>()
         anims.forEach { anim ->
             application.batch.draw(
                 anim.getAnim().getKeyFrame(anim.elapsedTime, anim.loop),
@@ -177,6 +174,12 @@ class GameScreen(private val application: MainApplication) : Screen {
                 anim.height,
             )
             anim.elapsedTime += Gdx.graphics.deltaTime
+            if (anim.isFinished(anim.elapsedTime)) {
+                animsToRemove.add(anim)
+            }
+        }
+        animsToRemove.forEach {
+            GameManager.activeAnimations.remove(it)
         }
     }
 

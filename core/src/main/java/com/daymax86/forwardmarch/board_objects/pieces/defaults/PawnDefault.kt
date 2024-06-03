@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
@@ -26,7 +27,7 @@ open class PawnDefault(
     override var nextBoard: Board? = null,
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
-        frameDuration = 0.1f,
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = false,
     )
 ) : Piece(
