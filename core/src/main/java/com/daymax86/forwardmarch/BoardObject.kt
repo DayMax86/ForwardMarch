@@ -52,6 +52,19 @@ abstract class BoardObject() {
         if (newBoard != null) {
             this.associatedBoard = newBoard
         }
+
+        // Update the bounding box
+        this.associatedBoard.let {
+            if (it != null) {
+                this.updateBoundingBox(
+                    it.environmentXPos + (this.boardXpos * GameManager.SQUARE_WIDTH),
+                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT),
+                    GameManager.SQUARE_WIDTH,
+                    GameManager.SQUARE_HEIGHT,
+                )
+            }
+        }
+
         // Update the 'contents' property of the appropriate square
         if (this.associatedBoard != null) {
             this.associatedBoard!!.getSquare(x, y).let { sq ->
@@ -67,18 +80,6 @@ abstract class BoardObject() {
                         }
                     }
                 }
-            }
-        }
-
-        // Update the bounding box
-        this.associatedBoard.let {
-            if (it != null) {
-                this.updateBoundingBox(
-                    it.environmentXPos + (this.boardXpos * GameManager.SQUARE_WIDTH),
-                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT),
-                    GameManager.SQUARE_WIDTH,
-                    GameManager.SQUARE_HEIGHT,
-                )
             }
         }
 

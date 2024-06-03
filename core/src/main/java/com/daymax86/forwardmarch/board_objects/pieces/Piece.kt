@@ -7,6 +7,7 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.animations.SpriteAnimator
 import com.daymax86.forwardmarch.inputTypes
 
 abstract class Piece(
@@ -57,7 +58,13 @@ abstract class Piece(
     }
 
     override fun kill() {
-        this.deathAnimation.activate(this.boundingBox)
+        SpriteAnimator.activateAnimation(
+            this.deathAnimation.atlasFilepath,
+            this.deathAnimation.frameDuration,
+            this.deathAnimation.loop,
+            this.boundingBox.min.x,
+            this.boundingBox.min.y
+        )
         super.kill()
     }
 

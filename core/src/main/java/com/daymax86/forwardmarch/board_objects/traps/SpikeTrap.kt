@@ -2,6 +2,7 @@ package com.daymax86.forwardmarch.board_objects.traps
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 class SpikeTrap(

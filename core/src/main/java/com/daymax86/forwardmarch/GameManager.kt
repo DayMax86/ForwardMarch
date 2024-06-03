@@ -66,7 +66,7 @@ object GameManager {
         val testPawn2 = BlackPawn()
         testPawn2.associatedBoard = boards[0]
         testPawn2.nextBoard = boards[1]
-        testPawn2.move(5, 8, null)
+        testPawn2.move(5, 1, null)
         pieces.add(testPawn2)
 
         val testTrap = SpikeTrap()

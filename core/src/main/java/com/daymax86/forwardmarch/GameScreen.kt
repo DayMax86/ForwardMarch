@@ -34,9 +34,6 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     // ----------- PLACED HERE FOR TESTING PURPOSES ------------- //
 
-
-    private var elapsedTime = 0f
-
     // ---------------------------------------------------------- //
 
     init {
@@ -159,7 +156,6 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         drawBoardObjects(GameManager.pieces)
         drawBoardObjects(GameManager.traps)
-        elapsedTime += Gdx.graphics.deltaTime
         drawAnimations(GameManager.activeAnimations)
 
         application.batch.end()
@@ -174,10 +170,13 @@ class GameScreen(private val application: MainApplication) : Screen {
     private fun drawAnimations(anims: List<SpriteAnimation>) {
         anims.forEach { anim ->
             application.batch.draw(
-                anim.getAnim().getKeyFrame(elapsedTime, anim.loop),
-                anim.boundingBox.min.x,
-                anim.boundingBox.min.y,
+                anim.getAnim().getKeyFrame(anim.elapsedTime, anim.loop),
+                anim.x,
+                anim.y,
+                anim.width,
+                anim.height,
             )
+            anim.elapsedTime += Gdx.graphics.deltaTime
         }
     }
 
