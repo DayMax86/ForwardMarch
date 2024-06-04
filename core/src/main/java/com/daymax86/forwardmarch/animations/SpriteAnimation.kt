@@ -17,16 +17,17 @@ class SpriteAnimation(
     var y: Float = 0f,
     var width: Float = GameManager.SQUARE_WIDTH,
     var height: Float = GameManager.SQUARE_HEIGHT,
-    var elapsedTime: Float = 0f
+    var elapsedTime: Float = 0f,
+    var anim: Animation<TextureRegion> = Animation<TextureRegion>(0f)
 ) {
 
-    fun getAnim(): Animation<TextureRegion> {
+    init {
         val atlas = TextureAtlas(Gdx.files.internal(this.atlasFilepath))
-        return Animation<TextureRegion>(this.frameDuration, atlas.regions)
+        anim = Animation<TextureRegion>(this.frameDuration, atlas.regions)
     }
 
     fun isFinished(stateTime: Float) : Boolean {
-        return (this.getAnim().isAnimationFinished(stateTime))
+        return (this.anim.isAnimationFinished(stateTime))
     }
 
 }

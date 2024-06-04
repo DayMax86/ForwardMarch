@@ -167,7 +167,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         val animsToRemove = mutableListOf<SpriteAnimation>()
         anims.forEach { anim ->
             application.batch.draw(
-                anim.getAnim().getKeyFrame(anim.elapsedTime, anim.loop),
+                anim.anim.getKeyFrame(anim.elapsedTime, anim.loop),
                 anim.x,
                 anim.y,
                 anim.width,
