@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
@@ -22,15 +23,18 @@ import ktx.graphics.lerpTo
 class GameScreen(private val application: MainApplication) : Screen {
 
     // Hardcoded constants which affect visuals only
-    private val viewWidth = 2000
-    private val viewHeight = 2000
+    val viewWidth = 2000
+    val viewHeight = 2000
 
     private var camera: OrthographicCamera
+    private var hudCamera: OrthographicCamera
     private var cameraTargetInX: Float = 0f
     private var cameraTargetInY: Float = 0f
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
-    private var windowWidth: Int = 0
-    private var windowHeight: Int = 0
+    var windowWidth: Int = 0
+    var windowHeight: Int = 0
+    private val gameHUD: GameHUD = GameHUD(this)
+    private val hudBatch = SpriteBatch()
 
     init {
         environmentSprite.setPosition(0f, 0f)
@@ -40,6 +44,9 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         camera = OrthographicCamera(
             (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
+        )
+        hudCamera = OrthographicCamera(
+            (windowWidth).toFloat(), (windowHeight).toFloat()
         )
 
         cameraTargetInX = camera.viewportWidth / 2f
@@ -155,6 +162,11 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawAnimations(GameManager.activeAnimations)
 
         application.batch.end()
+
+        hudBatch.projectionMatrix = hudCamera.combined
+        hudBatch.begin()
+        gameHUD.drawHUD(hudBatch)
+        hudBatch.end()
     }
 
     private fun drawBackground() {
@@ -279,6 +291,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         camera.viewportWidth = viewWidth.toFloat()
         camera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
         camera.update()
+        gameHUD.resize(width.toFloat(), height.toFloat())
     }
 
     override fun pause() {
