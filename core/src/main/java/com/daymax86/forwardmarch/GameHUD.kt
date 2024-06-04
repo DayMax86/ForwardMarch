@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 
 class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
+    // Draw everything square to have it display correctly
     val hudElements: MutableList<HUDElement> = mutableListOf()
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
@@ -17,16 +18,17 @@ class GameHUD(gameScreen: GameScreen) {
     )
 
     init {
-        hudElements.add(
+        val testHUDElement =
             HUDElement(
-                "sprites/mystery_square_256.png",
-                1080/2f,
-                1920/4f,
-                GameManager.SQUARE_WIDTH,
-                GameManager.SQUARE_HEIGHT,
+                "hud_elements/forward_march_button.png",
+                1080 / 2f,
+                1920 / 4f,
+                150f,
+                150f,
                 visible = true
             )
-        )
+        testHUDElement.highlightImage = Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
+        hudElements.add(testHUDElement)
     }
 
     // Must be called within a batch's begin and end methods!
@@ -34,8 +36,12 @@ class GameHUD(gameScreen: GameScreen) {
         hudElements.forEach { element ->
             if (element.visible) {
                 try {
-                    batch.draw(element.image, element.x, element.y, element.width,
-                        element.height * GameManager.aspectRatio)
+                    val img = if (element.highlight) element.highlightImage else element.image
+                    batch.draw(
+                        img, element.x, element.y,
+                        element.width * GameManager.aspectRatio,
+                        element.height * GameManager.aspectRatio
+                    )
                 } catch (e: Exception) {
                     Gdx.app.log(
                         "HUD",
@@ -62,6 +68,7 @@ class GameHUD(gameScreen: GameScreen) {
         var visible: Boolean = false,
     ) {
         var image = Texture(Gdx.files.internal(texturePath))
+        var highlightImage = Texture(Gdx.files.internal(texturePath))
         var boundingBox: BoundingBox = BoundingBox()
         var highlight: Boolean = false
 
@@ -80,7 +87,7 @@ class GameHUD(gameScreen: GameScreen) {
         fun onClick(button: Int) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    Gdx.app.log("HUD", "HUD element has been clicked on")
+                    GameManager.forwardMarch(1)
                 }
             }
         }

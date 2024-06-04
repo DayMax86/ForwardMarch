@@ -32,6 +32,9 @@ object GameManager {
     var freezeHighlights: Boolean = false
     var movementInProgress: Boolean = false
 
+    var cameraTargetInX: Float = 0f
+    var cameraTargetInY: Float = 0f
+
     init {
         val testBoard = StandardBoard(
             dimensions = DIMENSIONS,
@@ -112,6 +115,11 @@ object GameManager {
         movementQueue.forEach {
             it.invoke()
         }
+        advanceCamera()
+    }
+
+    private fun advanceCamera(){
+         cameraTargetInY += GameManager.SQUARE_HEIGHT
     }
 
     fun selectPiece(piece: Piece) {

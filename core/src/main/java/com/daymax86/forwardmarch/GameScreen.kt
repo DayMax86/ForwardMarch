@@ -17,6 +17,8 @@ import com.badlogic.gdx.utils.viewport.ExtendViewport
 import com.badlogic.gdx.utils.viewport.FillViewport
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.StretchViewport
+import com.daymax86.forwardmarch.GameManager.cameraTargetInX
+import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
@@ -27,8 +29,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     val viewWidth = 2000
     val viewHeight = 2000
 
-    private var cameraTargetInX: Float = 0f
-    private var cameraTargetInY: Float = 0f
+
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
     var windowWidth: Int = 0
     var windowHeight: Int = 0
@@ -142,7 +143,6 @@ class GameScreen(private val application: MainApplication) : Screen {
                     // --------- FOR TESTING ONLY ---------- //
                     (Input.Keys.F) -> {
                         GameManager.forwardMarch(1)
-                        cameraTargetInY += GameManager.SQUARE_HEIGHT
                     }
 
                 }

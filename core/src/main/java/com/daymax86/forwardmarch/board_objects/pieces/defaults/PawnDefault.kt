@@ -1,6 +1,7 @@
 package com.daymax86.forwardmarch.board_objects.pieces.defaults
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.audio.Sound
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
@@ -42,7 +43,12 @@ open class PawnDefault(
     associatedBoard = associatedBoard,
 ) {
 
-    override fun getValidMoves(): Boolean { // TODO() This needs to be optimised!
+    init {
+        this.soundSet.move.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/move_default.ogg")))
+        this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
+    }
+
+    override fun getValidMoves(): Boolean { // TODO() Can this be optimised?
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage

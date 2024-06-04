@@ -43,6 +43,11 @@ open class RookDefault(
     associatedBoard = associatedBoard,
 ) {
 
+    init {
+        this.soundSet.move.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/move_default.ogg")))
+        this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
+    }
+
     open var range: Int = 4 // Set a default value for friendly rook's movement
     // Can be overridden by individual pieces
 
