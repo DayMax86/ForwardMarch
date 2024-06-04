@@ -1,17 +1,15 @@
 package com.daymax86.forwardmarch.board_objects.pieces.defaults
 
-import com.badlogic.gdx.Game
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import java.lang.Math.clamp
 import kotlin.math.abs
 
 open class RookDefault(

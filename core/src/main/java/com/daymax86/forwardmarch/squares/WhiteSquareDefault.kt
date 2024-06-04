@@ -5,9 +5,6 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.Square
-import com.daymax86.forwardmarch.TileColours
 
 class WhiteSquareDefault(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/white_square_256.png")),

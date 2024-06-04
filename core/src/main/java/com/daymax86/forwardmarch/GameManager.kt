@@ -20,6 +20,7 @@ object GameManager {
     private const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
+    var aspectRatio = 1920/1080f
 
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()

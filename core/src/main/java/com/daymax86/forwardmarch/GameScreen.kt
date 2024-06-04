@@ -6,18 +6,19 @@ import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.g2d.TextureAtlas
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
+import com.badlogic.gdx.utils.viewport.ExtendViewport
+import com.badlogic.gdx.utils.viewport.FillViewport
+import com.badlogic.gdx.utils.viewport.FitViewport
+import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import kotlinx.coroutines.CoroutineScope
+import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
 class GameScreen(private val application: MainApplication) : Screen {
@@ -26,8 +27,6 @@ class GameScreen(private val application: MainApplication) : Screen {
     val viewWidth = 2000
     val viewHeight = 2000
 
-    private var camera: OrthographicCamera
-    private var hudCamera: OrthographicCamera
     private var cameraTargetInX: Float = 0f
     private var cameraTargetInY: Float = 0f
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
@@ -35,6 +34,12 @@ class GameScreen(private val application: MainApplication) : Screen {
     var windowHeight: Int = 0
     private val gameHUD: GameHUD = GameHUD(this)
     private val hudBatch = SpriteBatch()
+    val gameCamera = OrthographicCamera(
+        (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
+    )
+    val hudCamera = OrthographicCamera(
+        (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
+    )
 
     init {
         environmentSprite.setPosition(0f, 0f)
@@ -42,21 +47,14 @@ class GameScreen(private val application: MainApplication) : Screen {
         windowWidth = Gdx.graphics.width
         windowHeight = Gdx.graphics.height
 
-        camera = OrthographicCamera(
-            (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
-        )
-        hudCamera = OrthographicCamera(
-            (windowWidth).toFloat(), (windowHeight).toFloat()
-        )
-
-        cameraTargetInX = camera.viewportWidth / 2f
+        cameraTargetInX = gameCamera.viewportWidth / 2f
         cameraTargetInY = ((windowHeight / 2) + GameManager.SQUARE_WIDTH)
-        camera.position.set(cameraTargetInX, cameraTargetInY, 0f)
+        gameCamera.position.set(cameraTargetInX, cameraTargetInY, 0f)
 
         Gdx.input.inputProcessor = object : InputAdapter() {
             override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-                val xPos = getMouseEnvironmentPosition()?.x?.toInt()
-                val yPos = getMouseEnvironmentPosition()?.y?.toInt()
+                val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
+                val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
                 if (xPos != null && yPos != null) {
                     if (!GameManager.movementInProgress) {
                         GameManager.boards.forEach { board ->
@@ -74,17 +72,27 @@ class GameScreen(private val application: MainApplication) : Screen {
                         yPos,
                         button
                     ).apply { GameManager.updateValidMoves() } // Call method only once moves have been made
+
+                    val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
+                    val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
+                    checkHUDCollisions(
+                        gameHUD.hudElements,
+                        hudXPos ?: 0,
+                        hudYPos ?: 0,
+                        button,
+                    )
+
                 }
                 return true
             }
 
 
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-                val xPos = getMouseEnvironmentPosition()?.x?.toInt()
-                val yPos = getMouseEnvironmentPosition()?.y?.toInt()
+                val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
+                val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
                 if (!GameManager.movementInProgress) {
                     GameManager.boards.forEach { board ->
-                        getMouseEnvironmentPosition()?.let {
+                        getMouseEnvironmentPosition(gameCamera)?.let {
                             checkSquareCollisions(
                                 board.squaresList,
                                 it.x.toInt(),
@@ -97,9 +105,18 @@ class GameScreen(private val application: MainApplication) : Screen {
                     checkBoardObjectCollisions(
                         GameManager.pieces,
                         xPos,
-                        yPos
+                        yPos,
                     )
                 }
+
+                val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
+                val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
+                checkHUDCollisions(
+                    gameHUD.hudElements,
+                    hudXPos ?: 0,
+                    hudYPos ?: 0,
+                )
+
                 return true
             }
 
@@ -107,19 +124,19 @@ class GameScreen(private val application: MainApplication) : Screen {
                 super.keyDown(keycode)
                 when (keycode) {
                     (Input.Keys.UP) -> {
-                        camera.translate(0f, 50f)
+                        gameCamera.translate(0f, 50f)
                     }
 
                     (Input.Keys.LEFT) -> {
-                        camera.translate(-50f, 0f)
+                        gameCamera.translate(-50f, 0f)
                     }
 
                     (Input.Keys.DOWN) -> {
-                        camera.translate(0f, -50f)
+                        gameCamera.translate(0f, -50f)
                     }
 
                     (Input.Keys.RIGHT) -> {
-                        camera.translate(50f, 0f)
+                        gameCamera.translate(50f, 0f)
                     }
 
                     // --------- FOR TESTING ONLY ---------- //
@@ -137,14 +154,14 @@ class GameScreen(private val application: MainApplication) : Screen {
 
 
     private fun updateCamera() {
-        camera.lerpTo(Vector2(cameraTargetInX, cameraTargetInY), 0.1f)
-        camera.update()
+        gameCamera.lerpTo(Vector2(cameraTargetInX, cameraTargetInY), 0.1f)
+        gameCamera.update()
     }
 
     override fun render(delta: Float) {
         ScreenUtils.clear(0f, 0.8f, 0.8f, 1f)
         updateCamera()
-        application.batch.projectionMatrix = camera.combined
+        application.batch.projectionMatrix = gameCamera.combined
         application.batch.begin()
 
         drawBackground()
@@ -237,8 +254,8 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
 
-    private fun getMouseEnvironmentPosition(): Vector3? {
-        return camera.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
+    private fun getMouseEnvironmentPosition(cam: OrthographicCamera): Vector3? {
+        return cam.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
     }
 
     private fun getMouseBox(mouseX: Int, mouseY: Int): BoundingBox {
@@ -286,12 +303,30 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
     }
 
+    private fun checkHUDCollisions(
+        collection: List<GameHUD.HUDElement>,
+        mouseX: Int,
+        mouseY: Int,
+        button: Int = -1
+    ) {
+        collection.forEach { element ->
+            if (element.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
+                element.onHover()
+                if (button >= 0) {
+                    element.onClick(button)
+                }
+            } else {
+                element.onExitHover()
+            }
+        }
+    }
+
 
     override fun resize(width: Int, height: Int) {
-        camera.viewportWidth = viewWidth.toFloat()
-        camera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
-        camera.update()
-        gameHUD.resize(width.toFloat(), height.toFloat())
+        gameCamera.viewportWidth = viewWidth.toFloat()
+        gameCamera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
+        gameCamera.update()
+        gameHUD.resize(hudCamera.viewportWidth, hudCamera.viewportHeight)
     }
 
     override fun pause() {

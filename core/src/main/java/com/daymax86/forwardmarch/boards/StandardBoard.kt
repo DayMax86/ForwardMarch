@@ -1,7 +1,7 @@
 package com.daymax86.forwardmarch.boards
 
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.Square
+import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 

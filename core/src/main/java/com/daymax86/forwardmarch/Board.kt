@@ -1,5 +1,7 @@
 package com.daymax86.forwardmarch
 
+import com.daymax86.forwardmarch.squares.Square
+
 abstract class Board {
 
     abstract var dimensions: Int

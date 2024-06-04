@@ -1,10 +1,13 @@
-package com.daymax86.forwardmarch
+package com.daymax86.forwardmarch.squares
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.inputTypes
 
 enum class TileColours {
     BLACK,
@@ -40,7 +43,7 @@ abstract class Square {
                                     this.associatedBoard
                                 )
                             } else {
-                                // TODO() Feedback to use that this is an invalid move
+                                // TODO() Feedback to user that this is an invalid move
                             }
                         }
                     }
