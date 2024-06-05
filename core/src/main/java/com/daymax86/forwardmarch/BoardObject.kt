@@ -21,6 +21,7 @@ abstract class BoardObject() {
     abstract var hostile: Boolean
     abstract var boundingBox: BoundingBox
     abstract var deathAnimation: SpriteAnimation
+    abstract var idleAnimation: SpriteAnimation?
 
     open fun onHover() {
         //highlight = true

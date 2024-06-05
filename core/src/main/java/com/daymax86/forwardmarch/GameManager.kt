@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
@@ -26,6 +27,7 @@ object GameManager {
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
     val traps: MutableList<BoardObject> = mutableListOf()
+    val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
     val enemyPieces: MutableList<Piece> = mutableListOf()
 
@@ -166,6 +168,15 @@ object GameManager {
         for (piece in this.pieces) {
             piece.getValidMoves()
         }
+    }
+
+    fun getAllObjects(): MutableList<BoardObject> {
+        val allObjects: MutableList<BoardObject> = mutableListOf()
+        pieces.forEach { allObjects.add(it) }
+        traps.forEach { allObjects.add(it) }
+        enemyPieces.forEach { allObjects.add(it) }
+        pickups.forEach { allObjects.add(it) }
+        return allObjects
     }
 
 }

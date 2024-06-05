@@ -3,6 +3,7 @@ package com.daymax86.forwardmarch.boards
 import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.EnemyPawn
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
@@ -88,6 +89,22 @@ class VeryEasyBoard1(
         // Will this need to know about the next board? Only if it can move backwards
         Gdx.app.log("enemies", "Enemy pawn placed at $randX3, $randY3")
         GameManager.enemyPieces.add(enemyPiece1)
+
+        val testPickup = Coin(
+            associatedBoard = this,
+            boardXpos = 1,
+            boardYpos = 1,
+            clickable = false,
+        ).also { coin ->
+            coin.updateBoundingBox(
+                this.environmentXPos + coin.boardXpos * GameManager.SQUARE_WIDTH,
+                this.environmentYPos + coin.boardYpos * GameManager.SQUARE_HEIGHT,
+                GameManager.SQUARE_WIDTH,
+                GameManager.SQUARE_HEIGHT,
+            )
+        }
+        GameManager.pickups.add(testPickup)
+
 
     }
 }

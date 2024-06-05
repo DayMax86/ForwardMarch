@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 open class TrapDefault (
@@ -21,7 +22,12 @@ open class TrapDefault (
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = 0.1f,
         loop = false,
-    )
+    ),
+    override var idleAnimation: SpriteAnimation? = SpriteAnimation(
+        atlasFilepath = "atlases/coin_spin_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
+        loop = true,
+    ),
     ) : BoardObject() {
 
 }

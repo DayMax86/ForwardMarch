@@ -26,13 +26,20 @@ class SpriteAnimation(
         anim = Animation<TextureRegion>(this.frameDuration, atlas.regions)
     }
 
-    fun isFinished(stateTime: Float) : Boolean {
-        return (this.anim.isAnimationFinished(stateTime))
+    fun isFinished(stateTime: Float): Boolean {
+        if (!loop) {
+            return (this.anim.isAnimationFinished(stateTime))
+        } else {
+            if (this.elapsedTime >= this.frameDuration * anim.keyFrames.size) {
+                this.elapsedTime = 0f // Reset the elapsed time for looping animations
+            }
+            return false
+        }
     }
 
 }
 
-object SpriteAnimator{
+object SpriteAnimator {
 
     fun activateAnimation(
         atlasFilepath: String,

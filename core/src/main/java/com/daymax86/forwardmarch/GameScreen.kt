@@ -64,12 +64,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
                     checkBoardObjectCollisions(
-                        GameManager.enemyPieces,
-                        xPos,
-                        yPos,
-                    )
-                    checkBoardObjectCollisions(
-                        GameManager.pieces,
+                        GameManager.getAllObjects(),
                         xPos,
                         yPos,
                         button
@@ -105,12 +100,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 }
                 if (xPos != null && yPos != null) {
                     checkBoardObjectCollisions(
-                        GameManager.pieces,
-                        xPos,
-                        yPos,
-                    )
-                    checkBoardObjectCollisions(
-                        GameManager.enemyPieces,
+                        GameManager.getAllObjects(),
                         xPos,
                         yPos,
                     )
@@ -180,9 +170,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             drawBoard(board, board.environmentXPos, board.environmentYPos)
         }
 
-        drawBoardObjects(GameManager.pieces)
-        drawBoardObjects(GameManager.enemyPieces)
-        drawBoardObjects(GameManager.traps)
+        drawBoardObjects(GameManager.getAllObjects())
         drawAnimations(GameManager.activeAnimations)
 
         application.batch.end()
@@ -211,6 +199,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             )
             anim.elapsedTime += Gdx.graphics.deltaTime
             if (anim.isFinished(anim.elapsedTime)) {
+                Gdx.app.log("animations", "Animation ${anim.atlasFilepath} is finished")
                 animsToRemove.add(anim)
             }
         }

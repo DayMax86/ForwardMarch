@@ -30,7 +30,12 @@ open class PawnDefault(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = false,
-    )
+    ),
+    override var idleAnimation: SpriteAnimation? = SpriteAnimation(
+        atlasFilepath = "atlases/coin_spin_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
+        loop = true,
+    ),
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

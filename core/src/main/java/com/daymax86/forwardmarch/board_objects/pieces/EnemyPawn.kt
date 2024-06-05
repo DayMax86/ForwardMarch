@@ -14,7 +14,12 @@ class EnemyPawn(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = false,
-    )
+    ),
+    override var idleAnimation: SpriteAnimation? = SpriteAnimation(
+        atlasFilepath = "atlases/coin_spin_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
+        loop = true,
+    ),
 ) : PawnDefault() {
     override var hostile: Boolean = true
 

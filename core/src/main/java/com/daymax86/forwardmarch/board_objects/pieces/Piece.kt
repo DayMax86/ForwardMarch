@@ -80,7 +80,7 @@ abstract class Piece(
                 }
             }
         }
-        actionQueue.forEach {
+        actionQueue.forEach {0
             it.invoke()
         }
     }
