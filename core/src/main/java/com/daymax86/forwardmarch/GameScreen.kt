@@ -13,10 +13,6 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
-import com.badlogic.gdx.utils.viewport.ExtendViewport
-import com.badlogic.gdx.utils.viewport.FillViewport
-import com.badlogic.gdx.utils.viewport.FitViewport
-import com.badlogic.gdx.utils.viewport.StretchViewport
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -68,6 +64,11 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
                     checkBoardObjectCollisions(
+                        GameManager.enemyPieces,
+                        xPos,
+                        yPos,
+                    )
+                    checkBoardObjectCollisions(
                         GameManager.pieces,
                         xPos,
                         yPos,
@@ -105,6 +106,11 @@ class GameScreen(private val application: MainApplication) : Screen {
                 if (xPos != null && yPos != null) {
                     checkBoardObjectCollisions(
                         GameManager.pieces,
+                        xPos,
+                        yPos,
+                    )
+                    checkBoardObjectCollisions(
+                        GameManager.enemyPieces,
                         xPos,
                         yPos,
                     )
@@ -175,6 +181,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
 
         drawBoardObjects(GameManager.pieces)
+        drawBoardObjects(GameManager.enemyPieces)
         drawBoardObjects(GameManager.traps)
         drawAnimations(GameManager.activeAnimations)
 

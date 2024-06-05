@@ -27,7 +27,8 @@ class GameHUD(gameScreen: GameScreen) {
                 150f,
                 visible = true
             )
-        testHUDElement.highlightImage = Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
+        testHUDElement.highlightImage =
+            Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
         hudElements.add(testHUDElement)
     }
 
@@ -73,7 +74,14 @@ class GameHUD(gameScreen: GameScreen) {
         var highlight: Boolean = false
 
         init {
-            boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
+            boundingBox = BoundingBox(
+                Vector3(x, y, 0f),
+                Vector3(
+                    x + width * GameManager.aspectRatio,
+                    y + height * GameManager.aspectRatio,
+                    0f
+                )
+            )
         }
 
         fun onHover() {

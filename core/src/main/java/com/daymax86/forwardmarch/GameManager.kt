@@ -20,13 +20,14 @@ object GameManager {
     private const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
-    var aspectRatio = 1920/1080f
+    var aspectRatio = 1920 / 1080f
 
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
     val traps: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
+    val enemyPieces: MutableList<Piece> = mutableListOf()
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
@@ -89,37 +90,50 @@ object GameManager {
         testPawn3.move(7, 1, null)
         pieces.add(testPawn3)
 
-        val testPawn4 = BlackPawn()
-        testPawn4.associatedBoard = boards[0]
-        testPawn4.nextBoard = boards[1]
-        testPawn4.move(8, 2, null)
-        pieces.add(testPawn4)
-
         val testTrap = SpikeTrap()
         testTrap.associatedBoard = boards[0]
         testTrap.move(5, 4, null)
         traps.add(testTrap)
 
+        enemyPieces.forEach {
+            it.move(it.boardXpos, it.boardYpos, null)
+            it.getValidMoves()
+        }
+
     }
 
     fun forwardMarch(distance: Int) {
-        val movementQueue: MutableList<() -> Unit> = mutableListOf()
+        val actionQueue: MutableList<() -> Unit> = mutableListOf()
         // Move all pieces up by one square
         pieces.forEach { piece ->
             val yMovement =
                 if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
             val newBoard =
                 if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
-            movementQueue.add { piece.move(piece.boardXpos, yMovement, newBoard) } // Add to queue to invoke after movement is fully resolved
+            actionQueue.add {
+                piece.move(
+                    piece.boardXpos,
+                    yMovement,
+                    newBoard
+                )
+            } // Add to queue to invoke after movement is fully resolved
         }
-        movementQueue.forEach {
+
+        enemyPieces.forEach { piece ->
+            actionQueue.add {
+                piece.attack()
+            }
+        }
+
+        actionQueue.forEach {
             it.invoke()
         }
+
         advanceCamera()
     }
 
-    private fun advanceCamera(){
-         cameraTargetInY += GameManager.SQUARE_HEIGHT
+    private fun advanceCamera() {
+        cameraTargetInY += GameManager.SQUARE_HEIGHT
     }
 
     fun selectPiece(piece: Piece) {

@@ -60,6 +60,31 @@ abstract class Piece(
 
     }
 
+    open fun attack() {
+        val actionQueue: MutableList<() -> Unit> = mutableListOf()
+        var attacked = false
+        this.movement.forEach { square ->
+            if (!attacked) {
+                GameManager.pieces.forEach { piece ->
+                    if (square.contents.contains(piece)) {
+                        actionQueue.add {
+                            this.move(
+                                square.boardXpos,
+                                square.boardYpos,
+                                null
+                            ) // What happens across boards?
+                            piece.kill()
+                        }
+                        attacked = true
+                    }
+                }
+            }
+        }
+        actionQueue.forEach {
+            it.invoke()
+        }
+    }
+
     override fun move(x: Int, y: Int, newBoard: Board?) {
         super.move(x, y, newBoard)
         AudioManager.playRandomSound(this.soundSet.move)
