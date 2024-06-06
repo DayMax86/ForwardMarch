@@ -171,6 +171,10 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
 
         drawBoardObjects(GameManager.getAllObjects())
+//        drawBoardObjects(GameManager.pieces)
+//        drawBoardObjects(GameManager.enemyPieces)
+//        drawBoardObjects(GameManager.traps)
+//        drawBoardObjects(GameManager.pickups)
         drawAnimations(GameManager.activeAnimations)
 
         application.batch.end()
@@ -199,7 +203,6 @@ class GameScreen(private val application: MainApplication) : Screen {
             )
             anim.elapsedTime += Gdx.graphics.deltaTime
             if (anim.isFinished(anim.elapsedTime)) {
-                Gdx.app.log("animations", "Animation ${anim.atlasFilepath} is finished")
                 animsToRemove.add(anim)
             }
         }

@@ -18,7 +18,7 @@ class SpriteAnimation(
     var width: Float = GameManager.SQUARE_WIDTH,
     var height: Float = GameManager.SQUARE_HEIGHT,
     var elapsedTime: Float = 0f,
-    var anim: Animation<TextureRegion> = Animation<TextureRegion>(0f)
+    var anim: Animation<TextureRegion> = Animation<TextureRegion>(0f),
 ) {
 
     init {

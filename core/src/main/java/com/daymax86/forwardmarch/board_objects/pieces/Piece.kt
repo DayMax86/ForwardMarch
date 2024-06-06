@@ -41,7 +41,6 @@ abstract class Piece(
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    Gdx.app.log("piece", "LMB pressed on $pieceType")
                     if (GameManager.selectedPiece == null && !GameManager.movementInProgress) {
                         GameManager.selectPiece(this)
                     } else {
@@ -99,7 +98,7 @@ abstract class Piece(
             this.boundingBox.min.y
         )
         AudioManager.playRandomSound(this.soundSet.death)
-        super.kill()
+        GameManager.pieces.remove(this)
     }
 
 }

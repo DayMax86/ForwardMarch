@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.squares.Square
 
 abstract class BoardObject() {
@@ -97,7 +98,13 @@ abstract class BoardObject() {
         if (other.hostile) {
             this.kill()
         } else {
-            Gdx.app.log("collisions", "Piece $this has collided with a non-hostile object")
+            when (other) {
+                is Coin -> {
+                    // TODO Increase player's coin count
+                    Gdx.app.log("collisions", "Coin!")
+                    other.kill()
+                }
+            }
         }
     }
 
@@ -107,7 +114,6 @@ abstract class BoardObject() {
 
     open fun kill() {
         // Dispose of the piece, remove from all lists etc.
-        GameManager.pieces.remove(this)
     }
 
 }

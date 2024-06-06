@@ -102,6 +102,11 @@ class VeryEasyBoard1(
                 GameManager.SQUARE_WIDTH,
                 GameManager.SQUARE_HEIGHT,
             )
+            this.squaresList.first { square ->
+                square.boardXpos == coin.boardXpos && square.boardYpos == coin.boardYpos
+            }.apply {
+                this.contents.add(coin)
+            }
         }
         GameManager.pickups.add(testPickup)
 

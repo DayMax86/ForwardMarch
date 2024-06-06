@@ -53,4 +53,30 @@ class Coin(
         )
     }
 
+    override fun kill() {
+
+        GameManager.pickups.remove(this)
+
+        val toRemove: MutableList<() -> Unit> = mutableListOf()
+        GameManager.activeAnimations.forEach {
+            if (it.x == this.boundingBox.min.x && it.y == this.boundingBox.min.y) {
+                toRemove.add {
+                    GameManager.activeAnimations.remove(it)
+                }
+            }
+        }.apply {
+            toRemove.forEach { it.invoke() }
+        }
+
+        this.associatedBoard.let { board ->
+            board?.squaresList?.forEach { square ->
+                if (square.contents.contains(this)) {
+                    square.contents.remove(this)
+                }
+            }
+        }
+
+
+    }
+
 }
