@@ -18,7 +18,7 @@ object GameManager {
     const val ENVIRONMENT_HEIGHT = 3000f
     const val SQUARE_WIDTH = 120f
     const val SQUARE_HEIGHT = 120f
-    private const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
+    const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
     var aspectRatio = 1920 / 1080f
@@ -39,68 +39,22 @@ object GameManager {
     var cameraTargetInY: Float = 0f
 
     init {
-        val testBoard = StandardBoard(
-            dimensions = DIMENSIONS,
-            environmentXPos = EDGE_BUFFER.toInt(),
-            environmentYPos = 0,
-            squareWidth = SQUARE_WIDTH.toInt(),
-        )
+        val testBoard = StandardBoard()
         testBoard.onScreen = true
-        val testBoard2 = VeryEasyBoard1(
-            dimensions = DIMENSIONS,
-            environmentXPos = EDGE_BUFFER.toInt(),
-            environmentYPos = (SQUARE_HEIGHT * DIMENSIONS).toInt(),
-            squareWidth = SQUARE_WIDTH.toInt(),
-        )
+        val testBoard2 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * 8).toInt())
         testBoard2.onScreen = true
         this.boards.add(testBoard)
         this.boards.add(testBoard2)
 
-        BlackPawn().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(1, 2, null)
-        }.apply {
-            pieces.add(this)
-        }
+        setStartingLayout()
+        //placeTraps()
+        setEnemyPieces()
 
-        RookDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(3, 4, null)
-        }.apply {
-            pieces.add(this)
-        }
+//        SpikeTrap().also {
+//            it.associatedBoard = boards[0]
+//            it.move(5, 4, null)
+//        }.apply { traps.add(this) }
 
-        RookDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(1, 7, null)
-        }.apply {
-            pieces.add(this)
-        }
-
-        val testPawn2 = BlackPawn()
-        testPawn2.associatedBoard = boards[0]
-        testPawn2.nextBoard = boards[1]
-        testPawn2.move(6, 1, null)
-        pieces.add(testPawn2)
-
-        val testPawn3 = BlackPawn()
-        testPawn3.associatedBoard = boards[0]
-        testPawn3.nextBoard = boards[1]
-        testPawn3.move(7, 1, null)
-        pieces.add(testPawn3)
-
-        val testTrap = SpikeTrap()
-        testTrap.associatedBoard = boards[0]
-        testTrap.move(5, 4, null)
-        traps.add(testTrap)
-
-        enemyPieces.forEach {
-            it.move(it.boardXpos, it.boardYpos, null)
-            it.getValidMoves()
-        }
 
     }
 
@@ -177,6 +131,47 @@ object GameManager {
         enemyPieces.forEach { allObjects.add(it) }
         pickups.forEach { allObjects.add(it) }
         return allObjects
+    }
+
+    // ------------------------------SETUP PLACEMENT--------------------------------------------- //
+
+    fun setStartingLayout() {
+        // PAWNS
+        placeStartingPawns()
+        // ROOKS
+        placeStartingRooks()
+        // OTHERS...
+    }
+
+    private fun placeStartingPawns() {
+        for (x in 1..8) {
+            BlackPawn().also {
+                it.associatedBoard = boards[0]
+                it.nextBoard = boards[1]
+                it.move(x, 2, null)
+            }.apply { pieces.add(this) }
+        }
+    }
+
+    private fun placeStartingRooks() {
+        RookDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(1, 1, null)
+        }.apply { pieces.add(this) }
+
+        RookDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(8, 1, null)
+        }.apply { pieces.add(this) }
+    }
+
+    fun setEnemyPieces() {
+        enemyPieces.forEach {
+            it.move(it.boardXpos, it.boardYpos, null)
+            it.getValidMoves()
+        }
     }
 
 }
