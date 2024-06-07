@@ -4,7 +4,7 @@ import com.badlogic.gdx.audio.Sound
 
 object AudioManager {
 
-    var effectsVolume: Float = 1.0f
+    var effectsVolume: Float = 0.1f
 
     fun playSound(sound: Sound?) {
         sound?.play(effectsVolume)
@@ -12,7 +12,7 @@ object AudioManager {
 
     fun playRandomSound(sounds: MutableList<Sound?>) {
         if (sounds.isNotEmpty()) {
-            sounds.random()?.play()
+            sounds.random()?.play(effectsVolume)
         }
     }
 

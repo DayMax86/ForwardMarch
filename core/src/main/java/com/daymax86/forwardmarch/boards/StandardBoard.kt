@@ -1,17 +1,18 @@
 package com.daymax86.forwardmarch.boards
 
 import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 
 class StandardBoard(
-    override var dimensions: Int,
-    override var onScreen: Boolean = false,
+    override var dimensions: Int = GameManager.DIMENSIONS,
+    override var expired: Boolean = false,
     override val squaresList: MutableList<Square> = mutableListOf(),
-    override var environmentXPos: Int,
-    override var environmentYPos: Int,
-    override var squareWidth: Int,
+    override var environmentXPos: Int = GameManager.EDGE_BUFFER.toInt(),
+    override var environmentYPos: Int = 0,
+    override var squareWidth: Int = GameManager.SQUARE_WIDTH.toInt(),
 ) : Board() {
 
     init {

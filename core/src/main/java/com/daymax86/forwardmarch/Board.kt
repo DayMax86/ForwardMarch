@@ -8,7 +8,7 @@ abstract class Board {
     abstract var environmentXPos: Int
     abstract var environmentYPos: Int
     abstract val squaresList: MutableList<Square>
-    abstract var onScreen: Boolean
+    abstract var expired: Boolean
     abstract var squareWidth: Int
 
     fun getSquare(x: Int, y: Int): Square? {

@@ -1,21 +1,19 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.g2d.Animation
-import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
-import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 object GameManager {
 
     const val ENVIRONMENT_WIDTH = 2000f
-    const val ENVIRONMENT_HEIGHT = 3000f
+    var environmentHeight = 3000f
     const val SQUARE_WIDTH = 120f
     const val SQUARE_HEIGHT = 120f
     const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
@@ -35,16 +33,19 @@ object GameManager {
     var freezeHighlights: Boolean = false
     var movementInProgress: Boolean = false
 
+    var difficultyModifier: Int = 1
+    var forwardMarchCounter: Int = 0
+
     var cameraTargetInX: Float = 0f
     var cameraTargetInY: Float = 0f
 
     init {
         val testBoard = StandardBoard()
-        testBoard.onScreen = true
-        val testBoard2 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * 8).toInt())
-        testBoard2.onScreen = true
+        val testBoard2 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * DIMENSIONS).toInt())
+        val testBoard3 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * DIMENSIONS * 2).toInt())
         this.boards.add(testBoard)
         this.boards.add(testBoard2)
+        this.boards.add(testBoard3)
 
         setStartingLayout()
         //placeTraps()
@@ -58,7 +59,74 @@ object GameManager {
 
     }
 
+    fun checkBoardsStatus() {
+        // See if any boards need to be removed, or any new boards appended
+        if (forwardMarchCounter.mod(DIMENSIONS) == 0 && forwardMarchCounter >= 8) {
+            appendBoard(difficultyModifier)
+            removeBoard()
+        }
+    }
+
+    fun appendBoard(difficultyModifier: Int) = runBlocking {
+        launch {
+            when (difficultyModifier) {
+                1 -> {
+                    // Choose randomly from very easy boards
+                    boards.add(VeryEasyBoard1(environmentYPos = (boards.size * SQUARE_HEIGHT * DIMENSIONS).toInt()))
+                }
+
+                2 -> {
+                    // Choose randomly from easy boards
+                }
+
+                3 -> {
+                    // Choose randomly from medium boards
+                }
+                // Populate future boards with pieces, traps etc. according to difficulty modifier
+            }
+            Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+        }
+    }
+
+    fun removeBoard() = runBlocking {
+        // If board is entirely off the bottom of the screen, remove from List
+        // Remove all board objects from their corresponding lists
+        val objectsToRemove: MutableList<BoardObject> = mutableListOf()
+        launch {
+            boards[0].squaresList.forEach { square ->
+                square.contents.forEach {
+                    objectsToRemove.add(it)
+                }
+            }
+        }
+
+
+        val objectRemovalUnits: MutableList<() -> Unit> = mutableListOf()
+        objectsToRemove.forEach {
+            if (pieces.contains(it)) {
+                objectRemovalUnits.add { pieces.remove(it) }
+            }
+            if (enemyPieces.contains(it)) {
+                objectRemovalUnits.add { enemyPieces.remove(it) }
+            }
+            if (traps.contains(it)) {
+                objectRemovalUnits.add { traps.remove(it) }
+            }
+            if (pickups.contains(it)) {
+                objectRemovalUnits.add { pickups.remove(it) }
+            }
+        }
+
+        objectRemovalUnits.forEach { it.invoke() }
+
+        // Remove from boards list.
+        boards.removeFirst()
+        Gdx.app.log("manager", "a board has been dropped. (boards.size = ${boards.size})")
+    }
+
+
     fun forwardMarch(distance: Int) {
+        forwardMarchCounter++
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         // Move all pieces up by one square
         pieces.forEach { piece ->
@@ -86,10 +154,11 @@ object GameManager {
         }
 
         advanceCamera()
+        checkBoardsStatus()
     }
 
     private fun advanceCamera() {
-        cameraTargetInY += GameManager.SQUARE_HEIGHT
+        cameraTargetInY += SQUARE_HEIGHT
     }
 
     fun selectPiece(piece: Piece) {

@@ -13,6 +13,9 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
+import com.daymax86.forwardmarch.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
+import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -40,7 +43,7 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     init {
         environmentSprite.setPosition(0f, 0f)
-        environmentSprite.setSize(GameManager.ENVIRONMENT_WIDTH, GameManager.ENVIRONMENT_HEIGHT)
+        environmentSprite.setSize(GameManager.ENVIRONMENT_WIDTH, GameManager.environmentHeight)
         windowWidth = Gdx.graphics.width
         windowHeight = Gdx.graphics.height
 
@@ -139,6 +142,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                     // --------- FOR TESTING ONLY ---------- //
                     (Input.Keys.F) -> {
                         GameManager.forwardMarch(1)
+                        Gdx.app.log("screen", "camera y pos = ${gameCamera.position.y}")
                     }
 
                 }
@@ -162,11 +166,7 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         drawBackground()
 
-        var boardsOnScreen = 0
-        GameManager.boards.forEach { board ->
-            if (board.onScreen) {
-                boardsOnScreen++
-            }
+        boards.forEach { board ->
             drawBoard(board, board.environmentXPos, board.environmentYPos)
         }
 
@@ -187,7 +187,7 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private fun drawBackground() {
         application.batch.draw(
-            environmentSprite, 0f, 0f, GameManager.ENVIRONMENT_WIDTH, GameManager.ENVIRONMENT_HEIGHT
+            environmentSprite, 0f, 0f, GameManager.ENVIRONMENT_WIDTH, GameManager.environmentHeight
         )
     }
 
