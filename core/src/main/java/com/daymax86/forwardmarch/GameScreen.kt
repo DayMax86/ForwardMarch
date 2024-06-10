@@ -14,10 +14,12 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
 import com.daymax86.forwardmarch.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_WIDTH
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
+import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
@@ -43,12 +45,12 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     init {
         environmentSprite.setPosition(0f, 0f)
-        environmentSprite.setSize(GameManager.ENVIRONMENT_WIDTH, GameManager.environmentHeight)
+        environmentSprite.setSize(ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT)
         windowWidth = Gdx.graphics.width
         windowHeight = Gdx.graphics.height
 
         cameraTargetInX = gameCamera.viewportWidth / 2f
-        cameraTargetInY = ((windowHeight / 2) + GameManager.SQUARE_WIDTH)
+        cameraTargetInY = ((ENVIRONMENT_HEIGHT / 2) + (windowHeight / 2) + SQUARE_HEIGHT)
         gameCamera.position.set(cameraTargetInX, cameraTargetInY, 0f)
 
         Gdx.input.inputProcessor = object : InputAdapter() {
@@ -56,7 +58,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
                 if (xPos != null && yPos != null) {
-                    if (!GameManager.movementInProgress) {
+
                         GameManager.boards.forEach { board ->
                             checkSquareCollisions(
                                 board.squaresList,
@@ -65,7 +67,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                                 button
                             )
                         }
-                    }
+
                     checkBoardObjectCollisions(
                         GameManager.getAllObjects(),
                         xPos,
@@ -90,7 +92,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
-                if (!GameManager.movementInProgress) {
+
                     GameManager.boards.forEach { board ->
                         getMouseEnvironmentPosition(gameCamera)?.let {
                             checkSquareCollisions(
@@ -100,7 +102,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                             )
                         }
                     }
-                }
+
                 if (xPos != null && yPos != null) {
                     checkBoardObjectCollisions(
                         GameManager.getAllObjects(),
@@ -142,7 +144,6 @@ class GameScreen(private val application: MainApplication) : Screen {
                     // --------- FOR TESTING ONLY ---------- //
                     (Input.Keys.F) -> {
                         GameManager.forwardMarch(1)
-                        Gdx.app.log("screen", "camera y pos = ${gameCamera.position.y}")
                     }
 
                 }
@@ -187,7 +188,7 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private fun drawBackground() {
         application.batch.draw(
-            environmentSprite, 0f, 0f, GameManager.ENVIRONMENT_WIDTH, GameManager.environmentHeight
+            environmentSprite, 0f, 0f, GameManager.ENVIRONMENT_WIDTH, GameManager.ENVIRONMENT_HEIGHT
         )
     }
 

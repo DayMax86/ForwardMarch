@@ -37,7 +37,6 @@ abstract class BoardObject() {
     }
 
     open fun move(x: Int, y: Int, newBoard: Board?) {
-        GameManager.movementInProgress = true
 
         // Remove the object from the old square's 'contents' list
         if (this.associatedBoard != null) {
@@ -86,8 +85,6 @@ abstract class BoardObject() {
             }
         }
 
-        // Check collisions before resolving movements
-        GameManager.movementInProgress = false
     }
 
     open fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
@@ -95,7 +92,7 @@ abstract class BoardObject() {
     }
 
     open fun collide(other: BoardObject) {
-        if (other.hostile) {
+        if (other.hostile && !this.hostile) {
             this.kill()
         } else {
             when (other) {

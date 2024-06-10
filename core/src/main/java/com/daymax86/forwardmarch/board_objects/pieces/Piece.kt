@@ -41,7 +41,7 @@ abstract class Piece(
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    if (GameManager.selectedPiece == null && !GameManager.movementInProgress) {
+                    if (GameManager.selectedPiece == null ) {
                         GameManager.selectPiece(this)
                     } else {
                         GameManager.deselectPiece()
@@ -79,7 +79,7 @@ abstract class Piece(
                 }
             }
         }
-        actionQueue.forEach {0
+        actionQueue.forEach {
             it.invoke()
         }
     }

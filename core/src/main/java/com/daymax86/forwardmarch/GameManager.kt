@@ -13,12 +13,13 @@ import kotlinx.coroutines.runBlocking
 object GameManager {
 
     const val ENVIRONMENT_WIDTH = 2000f
-    var environmentHeight = 3000f
+    const val ENVIRONMENT_HEIGHT = 3000f
     const val SQUARE_WIDTH = 120f
     const val SQUARE_HEIGHT = 120f
     const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
+    const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
     var aspectRatio = 1920 / 1080f
 
     // Collections
@@ -31,7 +32,6 @@ object GameManager {
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
-    var movementInProgress: Boolean = false
 
     var difficultyModifier: Int = 1
     var forwardMarchCounter: Int = 0
@@ -40,9 +40,11 @@ object GameManager {
     var cameraTargetInY: Float = 0f
 
     init {
-        val testBoard = StandardBoard()
-        val testBoard2 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * DIMENSIONS).toInt())
-        val testBoard3 = VeryEasyBoard1(environmentYPos = (SQUARE_HEIGHT * DIMENSIONS * 2).toInt())
+        val testBoard = StandardBoard(environmentYPos = BOARD_STARTING_Y)
+        val testBoard2 =
+            VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * SQUARE_HEIGHT).toInt())
+        val testBoard3 =
+            VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
         this.boards.add(testBoard)
         this.boards.add(testBoard2)
         this.boards.add(testBoard3)
@@ -61,9 +63,9 @@ object GameManager {
 
     fun checkBoardsStatus() {
         // See if any boards need to be removed, or any new boards appended
-        if (forwardMarchCounter.mod(DIMENSIONS) == 0 && forwardMarchCounter >= 8) {
-            appendBoard(difficultyModifier)
+        if (boards[0].environmentYPos <= 500) {
             removeBoard()
+            appendBoard(difficultyModifier)
         }
     }
 
@@ -72,7 +74,11 @@ object GameManager {
             when (difficultyModifier) {
                 1 -> {
                     // Choose randomly from very easy boards
-                    boards.add(VeryEasyBoard1(environmentYPos = (boards.size * SQUARE_HEIGHT * DIMENSIONS).toInt()))
+                    boards.add(
+                        VeryEasyBoard1(
+                            environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - SQUARE_HEIGHT).toInt()
+                        )
+                    )
                 }
 
                 2 -> {
@@ -99,7 +105,6 @@ object GameManager {
                 }
             }
         }
-
 
         val objectRemovalUnits: MutableList<() -> Unit> = mutableListOf()
         objectsToRemove.forEach {
@@ -143,22 +148,48 @@ object GameManager {
             } // Add to queue to invoke after movement is fully resolved
         }
 
-        enemyPieces.forEach { piece ->
-            actionQueue.add {
-                piece.attack()
-            }
-        }
-
         actionQueue.forEach {
             it.invoke()
         }
 
-        advanceCamera()
+        moveWithinEnvironment { enemyAttacks() }
         checkBoardsStatus()
     }
 
-    private fun advanceCamera() {
-        cameraTargetInY += SQUARE_HEIGHT
+    private fun enemyAttacks() {
+        val attackQueue: MutableList<() -> Unit> = mutableListOf()
+        enemyPieces.forEach { piece ->
+            attackQueue.add {
+                piece.attack()
+            }
+        }
+
+        attackQueue.forEach {
+            it.invoke()
+        }
+    }
+
+    private fun moveWithinEnvironment(onComplete: () -> Unit) {
+        // Each Board, and all its contents, must move down by SQUARE_HEIGHT units, while camera remains fixed
+        boards.forEach { board ->
+            board.environmentYPos -= SQUARE_HEIGHT.toInt()
+        }
+
+        getAllObjects().forEach { obj ->
+            obj.updateBoundingBox(
+                obj.boundingBox.min.x,
+                obj.boundingBox.min.y - SQUARE_HEIGHT.toInt(),
+                SQUARE_WIDTH,
+                SQUARE_HEIGHT
+            )
+        }.also {
+            activeAnimations.forEach { anim ->
+                // Will inactive animations have to be moved too?
+                // I don't think so since when activated they are placed at their current bounding box position
+                anim.y -= SQUARE_HEIGHT
+            }
+            onComplete()
+        }
     }
 
     fun selectPiece(piece: Piece) {
