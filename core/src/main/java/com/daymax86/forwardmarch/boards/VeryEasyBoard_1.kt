@@ -1,19 +1,16 @@
 package com.daymax86.forwardmarch.boards
 
-import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
-import com.daymax86.forwardmarch.board_objects.pieces.EnemyPawn
-import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.MysterySquare
+import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.TrapdoorSquare
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 
 class VeryEasyBoard1(
     override var dimensions: Int = GameManager.DIMENSIONS,
-    override var expired: Boolean = false,
     override val squaresList: MutableList<Square> = mutableListOf(),
     override var environmentXPos: Int = GameManager.EDGE_BUFFER.toInt(),
     override var environmentYPos: Int,
@@ -99,7 +96,6 @@ class VeryEasyBoard1(
             }
         }
         GameManager.pickups.add(testPickup)
-
 
     }
 }

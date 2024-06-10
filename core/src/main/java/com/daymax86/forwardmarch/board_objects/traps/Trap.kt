@@ -8,7 +8,7 @@ import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
-open class TrapDefault (
+open class Trap(
     override var associatedBoard: Board? = null,
     override var image: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256_damage.png")),
@@ -28,6 +28,10 @@ open class TrapDefault (
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
-    ) : BoardObject() {
+) : BoardObject() {
+
+    open fun springTrap(sprungBy: BoardObject) {
+        // Individual behaviour of traps goes here
+    }
 
 }

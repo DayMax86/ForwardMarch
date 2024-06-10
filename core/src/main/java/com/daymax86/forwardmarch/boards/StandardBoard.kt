@@ -8,7 +8,6 @@ import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 
 class StandardBoard(
     override var dimensions: Int = GameManager.DIMENSIONS,
-    override var expired: Boolean = false,
     override val squaresList: MutableList<Square> = mutableListOf(),
     override var environmentXPos: Int = GameManager.EDGE_BUFFER.toInt(),
     override var environmentYPos: Int = 0,

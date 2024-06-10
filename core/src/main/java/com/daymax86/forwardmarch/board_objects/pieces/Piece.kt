@@ -10,6 +10,8 @@ import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimator
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
+import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 
 abstract class Piece(
@@ -41,7 +43,7 @@ abstract class Piece(
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    if (GameManager.selectedPiece == null ) {
+                    if (GameManager.selectedPiece == null) {
                         GameManager.selectPiece(this)
                     } else {
                         GameManager.deselectPiece()
@@ -57,6 +59,25 @@ abstract class Piece(
 
     override fun onExitHover() {
 
+    }
+
+    override fun collide(other: BoardObject) {
+        super.collide(other)
+        if (other.hostile) {
+            this.kill()
+        }
+        Gdx.app.log("collision", "Other in collision is a $other")
+        when (other) {
+            is Coin -> {
+                // TODO Increase player's coin count
+                Gdx.app.log("collisions", "Coin!")
+                other.kill()
+            }
+
+            is Trap -> {
+                other.springTrap(this)
+            }
+        }
     }
 
     open fun attack() {

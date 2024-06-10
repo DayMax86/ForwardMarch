@@ -2,11 +2,13 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.EnemyManager.enemyPieces
+import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
+import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
 import kotlinx.coroutines.launch
@@ -27,7 +29,6 @@ object GameManager {
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
-    val traps: MutableList<BoardObject> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
 
@@ -46,58 +47,97 @@ object GameManager {
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * SQUARE_HEIGHT).toInt())
         val testBoard3 =
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
-        this.boards.add(testBoard)
-        this.boards.add(testBoard2)
-        this.boards.add(testBoard3)
+
+        boards.add(testBoard)
+        boards.add(testBoard2)
+        boards.add(testBoard3)
 
         setStartingLayout()
-        //placeTraps()
         setEnemyPieces()
 
-//        SpikeTrap().also {
-//            it.associatedBoard = boards[0]
-//            it.move(5, 4, null)
-//        }.apply { traps.add(this) }
+    }
 
+    fun forwardMarch(distance: Int) = runBlocking {
+        forwardMarchCounter++
+        launch {
+
+            // Make the player pieces move forward one at a time
+            // -> Resolve collisions in each of the squares they now occupy
+            // Once all movements have been resolved...
+            // -> Get valid moves for the enemy pieces
+            // -> -> Resolve attacks for the pieces in their new positions.
+
+            val movementQueue: MutableList<() -> Unit> = mutableListOf()
+            // Move all pieces up by one square
+            pieces.forEach { piece ->
+                val yMovement =
+                    if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
+                val newBoard =
+                    if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
+                movementQueue.add {
+                    piece.move(
+                        piece.boardXpos,
+                        yMovement,
+                        newBoard
+                    )
+                }
+            }
+
+            movementQueue.forEach {
+                it.invoke()
+            }
+            moveWithinEnvironment()
+
+            checkBoardsStatus()
+
+        }.invokeOnCompletion {
+            enemyPieces.forEach { enemy ->
+                enemy.getValidMoves { enemy.attack() }
+            }
+        }
 
     }
 
     fun checkBoardsStatus() {
         // See if any boards need to be removed, or any new boards appended
-        if (boards[0].environmentYPos <= 500) {
+        if (boards[0].environmentYPos <= ENVIRONMENT_HEIGHT / 6) {
             removeBoard()
             appendBoard(difficultyModifier)
         }
+
     }
 
-    fun appendBoard(difficultyModifier: Int) = runBlocking {
-        launch {
-            when (difficultyModifier) {
-                1 -> {
-                    // Choose randomly from very easy boards
-                    boards.add(
-                        VeryEasyBoard1(
-                            environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (2 * SQUARE_HEIGHT)).toInt()
-                        ).also {
-                            // Spawn enemies based on difficulty modifier
-                            EnemyManager.spawnEnemy(
-                                PieceTypes.PAWN, (1..8).random(), (1..8).random(), it
-                            )
-                        }
+    fun appendBoard(difficultyModifier: Int) {
+
+        when (difficultyModifier) {
+
+            1 -> {
+                // Choose randomly from very easy boards
+                VeryEasyBoard1(
+                    environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
+                ).also { board ->
+                    boards.add(board)
+                    // Spawn enemies based on difficulty modifier
+                    EnemyManager.spawnEnemy(
+                        PieceTypes.PAWN, (1..8).random(), (1..8).random(), board
+                    )
+                    EnemyManager.spawnTrap(
+                        TrapTypes.SPIKE, (1..8).random(), (1..8).random(), board
                     )
                 }
-
-                2 -> {
-                    // Choose randomly from easy boards
-                }
-
-                3 -> {
-                    // Choose randomly from medium boards
-                }
-                // Populate future boards with pieces, traps etc. according to difficulty modifier
             }
-            Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+
+            2 -> {
+                // Choose randomly from easy boards
+            }
+
+            3 -> {
+                // Choose randomly from medium boards
+            }
+            // Populate future boards with pieces, traps etc. according to difficulty modifier
         }
+        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+
     }
 
     fun removeBoard() = runBlocking {
@@ -107,72 +147,31 @@ object GameManager {
         launch {
             boards[0].squaresList.forEach { square ->
                 square.contents.forEach {
+                    Gdx.app.log("game", "Obj to remove: $it")
                     objectsToRemove.add(it)
                 }
             }
-        }
-
-        val objectRemovalUnits: MutableList<() -> Unit> = mutableListOf()
-        objectsToRemove.forEach {
-            if (pieces.contains(it)) {
-                objectRemovalUnits.add { pieces.remove(it) }
-            }
-            if (EnemyManager.enemyPieces.contains(it)) {
-                objectRemovalUnits.add { EnemyManager.enemyPieces.remove(it) }
-            }
-            if (traps.contains(it)) {
-                objectRemovalUnits.add { traps.remove(it) }
-            }
-            if (pickups.contains(it)) {
-                objectRemovalUnits.add { pickups.remove(it) }
-            }
-        }
-
-        objectRemovalUnits.forEach { it.invoke() }
-
-        // Remove from boards list.
-        boards.removeFirst()
-        Gdx.app.log("manager", "a board has been dropped. (boards.size = ${boards.size})")
-    }
-
-
-    fun forwardMarch(distance: Int) = runBlocking {
-        forwardMarchCounter++
-
-        // Make the player pieces move forward one at a time
-        // -> Resolve collisions in each of the squares they now occupy
-        // Once all movements have been resolved...
-        // -> Get valid moves for the enemy pieces
-        // -> -> Resolve attacks for the pieces in their new positions.
-
-        val movementQueue: MutableList<() -> Unit> = mutableListOf()
-        // Move all pieces up by one square
-        pieces.forEach { piece ->
-            val yMovement =
-                if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
-            val newBoard =
-                if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
-            movementQueue.add {
-                piece.move(
-                    piece.boardXpos,
-                    yMovement,
-                    newBoard
-                )
-            }
-        }
-
-        launch {
-            movementQueue.forEach {
-                it.invoke()
-            }
-            moveWithinEnvironment()
         }.invokeOnCompletion {
-            enemyPieces.forEach { enemy ->
-                enemy.getValidMoves { enemy.attack() }
+            objectsToRemove.forEach {
+                if (pieces.contains(it)) {
+                    pieces.remove(it)
+                }
+                if (enemyPieces.contains(it)) {
+                    enemyPieces.remove(it)
+                }
+                if (traps.contains(it)) {
+                    traps.remove(it)
+                }
+                if (pickups.contains(it)) {
+                    pickups.remove(it)
+                }
             }
+
+            // Remove from boards list.
+            boards.removeFirst()
+            Gdx.app.log("manager", "a board has been dropped. (boards.size = ${boards.size})")
         }
 
-        checkBoardsStatus()
     }
 
     private fun moveWithinEnvironment() {

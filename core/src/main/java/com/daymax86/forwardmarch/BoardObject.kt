@@ -6,7 +6,10 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
+import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
+import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.squares.Square
+import kotlin.reflect.typeOf
 
 abstract class BoardObject() {
 
@@ -90,17 +93,7 @@ abstract class BoardObject() {
     }
 
     open fun collide(other: BoardObject) {
-        if (other.hostile && !this.hostile) {
-            this.kill()
-        } else {
-            when (other) {
-                is Coin -> {
-                    // TODO Increase player's coin count
-                    Gdx.app.log("collisions", "Coin!")
-                    other.kill()
-                }
-            }
-        }
+
     }
 
     open fun collide(other: Square) {
