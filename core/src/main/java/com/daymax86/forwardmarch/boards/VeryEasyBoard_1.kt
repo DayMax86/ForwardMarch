@@ -80,16 +80,6 @@ class VeryEasyBoard1(
             )
         }
 
-        val randX3 = (1..8).random()
-        val randY3 = (1..8).random()
-        val enemyPiece1 = EnemyPawn()
-        enemyPiece1.boardXpos = randX3
-        enemyPiece1.boardYpos = randY3
-        enemyPiece1.associatedBoard = this
-        // Will this need to know about the next board? Only if it can move backwards
-        Gdx.app.log("enemies", "Enemy pawn placed at $randX3, $randY3")
-        GameManager.enemyPieces.add(enemyPiece1)
-
         val testPickup = Coin(
             associatedBoard = this,
             boardXpos = 1,

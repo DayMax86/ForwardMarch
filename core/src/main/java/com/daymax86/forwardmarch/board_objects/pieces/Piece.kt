@@ -29,7 +29,7 @@ abstract class Piece(
     open var nextBoard: Board? = null
     var soundSet: SoundSet = SoundSet()
 
-    open fun getValidMoves(): Boolean {
+    open fun getValidMoves(onComplete: () -> Unit = {}): Boolean {
         // Return an array of squares into which the piece can move
         // Individual pieces should override this method
         // Update movement variable

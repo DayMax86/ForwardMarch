@@ -56,7 +56,7 @@ open class RookDefault(
     open var range: Int = 4 // Set a default value for friendly rook's movement
     // Can be overridden by individual pieces
 
-    override fun getValidMoves(): Boolean {
+    override fun getValidMoves(onComplete: () -> Unit): Boolean {
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
@@ -207,6 +207,7 @@ open class RookDefault(
             }
 
         }
+        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 }

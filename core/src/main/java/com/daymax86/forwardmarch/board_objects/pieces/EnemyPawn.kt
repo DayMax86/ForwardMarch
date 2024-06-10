@@ -49,7 +49,7 @@ class EnemyPawn(
         }
     }
 
-    override fun getValidMoves(): Boolean {
+    override fun getValidMoves(onComplete: () -> Unit): Boolean {
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
@@ -83,8 +83,9 @@ class EnemyPawn(
                         }
                     }
 
-                } catch (e: NullPointerException) {
+                } catch (e: IndexOutOfBoundsException) {
                     Gdx.app.log("enemies", "There is no previous board!")
+                    Gdx.app.log("enemies", "$e")
                 }
 
             } else {
@@ -105,6 +106,7 @@ class EnemyPawn(
                 }
             }
         }
+        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 

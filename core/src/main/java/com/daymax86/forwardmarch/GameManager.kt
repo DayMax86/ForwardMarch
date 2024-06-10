@@ -1,9 +1,11 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
+import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
@@ -28,7 +30,6 @@ object GameManager {
     val traps: MutableList<BoardObject> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
-    val enemyPieces: MutableList<Piece> = mutableListOf()
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
@@ -76,8 +77,13 @@ object GameManager {
                     // Choose randomly from very easy boards
                     boards.add(
                         VeryEasyBoard1(
-                            environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - SQUARE_HEIGHT).toInt()
-                        )
+                            environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (2 * SQUARE_HEIGHT)).toInt()
+                        ).also {
+                            // Spawn enemies based on difficulty modifier
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.PAWN, (1..8).random(), (1..8).random(), it
+                            )
+                        }
                     )
                 }
 
@@ -111,8 +117,8 @@ object GameManager {
             if (pieces.contains(it)) {
                 objectRemovalUnits.add { pieces.remove(it) }
             }
-            if (enemyPieces.contains(it)) {
-                objectRemovalUnits.add { enemyPieces.remove(it) }
+            if (EnemyManager.enemyPieces.contains(it)) {
+                objectRemovalUnits.add { EnemyManager.enemyPieces.remove(it) }
             }
             if (traps.contains(it)) {
                 objectRemovalUnits.add { traps.remove(it) }
@@ -130,46 +136,46 @@ object GameManager {
     }
 
 
-    fun forwardMarch(distance: Int) {
+    fun forwardMarch(distance: Int) = runBlocking {
         forwardMarchCounter++
-        val actionQueue: MutableList<() -> Unit> = mutableListOf()
+
+        // Make the player pieces move forward one at a time
+        // -> Resolve collisions in each of the squares they now occupy
+        // Once all movements have been resolved...
+        // -> Get valid moves for the enemy pieces
+        // -> -> Resolve attacks for the pieces in their new positions.
+
+        val movementQueue: MutableList<() -> Unit> = mutableListOf()
         // Move all pieces up by one square
         pieces.forEach { piece ->
             val yMovement =
                 if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
             val newBoard =
                 if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
-            actionQueue.add {
+            movementQueue.add {
                 piece.move(
                     piece.boardXpos,
                     yMovement,
                     newBoard
                 )
-            } // Add to queue to invoke after movement is fully resolved
-        }
-
-        actionQueue.forEach {
-            it.invoke()
-        }
-
-        moveWithinEnvironment { enemyAttacks() }
-        checkBoardsStatus()
-    }
-
-    private fun enemyAttacks() {
-        val attackQueue: MutableList<() -> Unit> = mutableListOf()
-        enemyPieces.forEach { piece ->
-            attackQueue.add {
-                piece.attack()
             }
         }
 
-        attackQueue.forEach {
-            it.invoke()
+        launch {
+            movementQueue.forEach {
+                it.invoke()
+            }
+            moveWithinEnvironment()
+        }.invokeOnCompletion {
+            enemyPieces.forEach { enemy ->
+                enemy.getValidMoves { enemy.attack() }
+            }
         }
+
+        checkBoardsStatus()
     }
 
-    private fun moveWithinEnvironment(onComplete: () -> Unit) {
+    private fun moveWithinEnvironment() {
         // Each Board, and all its contents, must move down by SQUARE_HEIGHT units, while camera remains fixed
         boards.forEach { board ->
             board.environmentYPos -= SQUARE_HEIGHT.toInt()
@@ -188,23 +194,24 @@ object GameManager {
                 // I don't think so since when activated they are placed at their current bounding box position
                 anim.y -= SQUARE_HEIGHT
             }
-            onComplete()
         }
     }
 
     fun selectPiece(piece: Piece) {
-        selectedPiece = piece
-        piece.highlight = true
-        piece.getValidMoves()
-        for (board in boards) {
-            for (square in board.squaresList) {
-                if (piece.movement.contains(square)) {
-                    square.swapToAltHighlight(true)
-                    square.highlight = true
+        if (!piece.hostile) {
+            selectedPiece = piece
+            piece.highlight = true
+            piece.getValidMoves()
+            for (board in boards) {
+                for (square in board.squaresList) {
+                    if (piece.movement.contains(square)) {
+                        square.swapToAltHighlight(true)
+                        square.highlight = true
+                    }
                 }
             }
+            freezeHighlights = true
         }
-        freezeHighlights = true
     }
 
     fun deselectPiece() {

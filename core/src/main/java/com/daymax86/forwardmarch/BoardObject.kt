@@ -67,23 +67,21 @@ abstract class BoardObject() {
             }
         }
 
+        val collisionQueue: MutableList<() -> Unit> = mutableListOf()
         // Update the 'contents' property of the appropriate square
         if (this.associatedBoard != null) {
             this.associatedBoard!!.getSquare(x, y).let { sq ->
                 sq?.onEnter(this)
-                sq?.contents?.add(this).also {
-                    // Are there multiple objects in this square?
-                    if (sq?.contents?.size!! > 1) {
-                        // Handle collisions (for all pieces other than itself!)
-                        sq.contents.forEach { obj ->
-                            if (obj != this) {
-                                this.collide(obj)
-                            }
-                        }
+                // Before adding to new square's contents, resolve collisions
+                sq?.contents?.forEach { other ->
+                    collisionQueue.add {
+                        this.collide(other)
                     }
                 }
+                sq?.contents?.add(this)
             }
         }
+        collisionQueue.forEach { it.invoke() }
 
     }
 

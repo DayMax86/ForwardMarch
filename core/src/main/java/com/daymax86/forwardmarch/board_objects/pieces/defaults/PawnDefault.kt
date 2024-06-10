@@ -53,7 +53,7 @@ open class PawnDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    override fun getValidMoves(): Boolean { // TODO() Can this be optimised?
+    override fun getValidMoves(onComplete: () -> Unit): Boolean { // TODO() Can this be optimised?
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
@@ -140,6 +140,7 @@ open class PawnDefault(
             }
 
         }
+        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 }
