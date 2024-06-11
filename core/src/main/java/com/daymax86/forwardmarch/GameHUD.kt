@@ -95,7 +95,9 @@ class GameHUD(gameScreen: GameScreen) {
         fun onClick(button: Int) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    GameManager.forwardMarch(1)
+                    if (!GameManager.marchInProgress) {
+                        GameManager.forwardMarch(1)
+                    }
                 }
             }
         }

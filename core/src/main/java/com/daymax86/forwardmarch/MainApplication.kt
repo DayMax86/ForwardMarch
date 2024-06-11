@@ -10,6 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
+import ktx.async.KtxAsync
 
 /** [com.badlogic.gdx.ApplicationListener] implementation shared by all platforms.  */
 class MainApplication : Game() {
@@ -29,6 +30,7 @@ class MainApplication : Game() {
         font.data.setScale(3f)
         fps = FrameRateCounter()
         shapeRenderer = ShapeRenderer()
+        KtxAsync.initiate()
         this.setScreen(GameScreen(this))
     }
 

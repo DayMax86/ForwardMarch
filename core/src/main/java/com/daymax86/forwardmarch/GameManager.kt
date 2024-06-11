@@ -1,6 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.utils.async.AsyncExecutor
 import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -11,8 +12,11 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import ktx.async.KtxAsync
 
 object GameManager {
 
@@ -37,6 +41,7 @@ object GameManager {
 
     var difficultyModifier: Int = 1
     var forwardMarchCounter: Int = 0
+    var marchInProgress = false
 
     var cameraTargetInX: Float = 0f
     var cameraTargetInY: Float = 0f
@@ -57,9 +62,11 @@ object GameManager {
 
     }
 
-    fun forwardMarch(distance: Int) = runBlocking {
+    fun forwardMarch(distance: Int) {
+        marchInProgress = true
         forwardMarchCounter++
-        launch {
+        val movementQueue: MutableList<() -> Unit> = mutableListOf()
+        KtxAsync.launch {
 
             // Make the player pieces move forward one at a time
             // -> Resolve collisions in each of the squares they now occupy
@@ -67,7 +74,6 @@ object GameManager {
             // -> Get valid moves for the enemy pieces
             // -> -> Resolve attacks for the pieces in their new positions.
 
-            val movementQueue: MutableList<() -> Unit> = mutableListOf()
             // Move all pieces up by one square
             pieces.forEach { piece ->
                 val yMovement =
@@ -86,19 +92,22 @@ object GameManager {
             movementQueue.forEach {
                 it.invoke()
             }
-            moveWithinEnvironment()
 
             checkBoardsStatus()
+            moveWithinEnvironment()
 
         }.invokeOnCompletion {
+
             enemyPieces.forEach { enemy ->
                 enemy.getValidMoves { enemy.attack() }
             }
+
+            marchInProgress = false
         }
 
     }
 
-    fun checkBoardsStatus() {
+    private fun checkBoardsStatus() {
         // See if any boards need to be removed, or any new boards appended
         if (boards[0].environmentYPos <= ENVIRONMENT_HEIGHT / 6) {
             removeBoard()
@@ -107,44 +116,50 @@ object GameManager {
 
     }
 
-    fun appendBoard(difficultyModifier: Int) {
+    private fun appendBoard(difficultyModifier: Int) {
+        var board: Board = StandardBoard()
+        val yPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
+        KtxAsync.launch {
+            when (difficultyModifier) {
+                1 -> {
+                    // Choose randomly from very easy boards
+                    board = async {
+                        VeryEasyBoard1(
+                            environmentYPos = yPos
+                        )
+                    }.await()
+//                    // Spawn enemies based on difficulty modifier
+//                    EnemyManager.spawnEnemy(
+//                        PieceTypes.PAWN, (1..8).random(), (1..8).random(), board
+//                    )
+//                    EnemyManager.spawnTrap(
+//                        TrapTypes.SPIKE, (1..8).random(), (1..8).random(), board
+//                    )
 
-        when (difficultyModifier) {
-
-            1 -> {
-                // Choose randomly from very easy boards
-                VeryEasyBoard1(
-                    environmentYPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
-                ).also { board ->
-                    boards.add(board)
-                    // Spawn enemies based on difficulty modifier
-                    EnemyManager.spawnEnemy(
-                        PieceTypes.PAWN, (1..8).random(), (1..8).random(), board
-                    )
-                    EnemyManager.spawnTrap(
-                        TrapTypes.SPIKE, (1..8).random(), (1..8).random(), board
-                    )
                 }
-            }
 
-            2 -> {
-                // Choose randomly from easy boards
-            }
+                2 -> {
+                    // Choose randomly from easy boards
+                }
 
-            3 -> {
-                // Choose randomly from medium boards
+                3 -> {
+                    // Choose randomly from medium boards
+                }
+                // Populate future boards with pieces, traps etc. according to difficulty modifier
             }
-            // Populate future boards with pieces, traps etc. according to difficulty modifier
         }
-        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
-
+            .invokeOnCompletion {
+            boards.add(board)
+            Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+        }
     }
 
-    fun removeBoard() = runBlocking {
+    private fun removeBoard() {
         // If board is entirely off the bottom of the screen, remove from List
         // Remove all board objects from their corresponding lists
         val objectsToRemove: MutableList<BoardObject> = mutableListOf()
-        launch {
+        KtxAsync.launch {
+
             boards[0].squaresList.forEach { square ->
                 square.contents.forEach {
                     Gdx.app.log("game", "Obj to remove: $it")

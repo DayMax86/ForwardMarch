@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
+import com.daymax86.forwardmarch.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_WIDTH
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
@@ -141,7 +142,9 @@ class GameScreen(private val application: MainApplication) : Screen {
 
                     // --------- FOR TESTING ONLY ---------- //
                     (Input.Keys.F) -> {
-                        GameManager.forwardMarch(1)
+                        if (!GameManager.marchInProgress) {
+                            GameManager.forwardMarch(1)
+                        }
                     }
 
                 }

@@ -1,0 +1,15 @@
+bomb_idle_animation.png
+size:2048,512
+repeat:none
+bomb_a
+bounds:2,2,256,256
+bomb_c
+bounds:260,2,256,256
+bomb_e
+bounds:260,2,256,256
+bomb_d
+bounds:518,2,256,256
+bomb_f
+bounds:776,2,256,256
+bomb_b
+bounds:776,2,256,256
