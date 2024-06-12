@@ -12,11 +12,18 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.suspendCancellableCoroutine
+import ktx.async.KTX
 import ktx.async.KtxAsync
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
 
 object GameManager {
 
@@ -66,45 +73,42 @@ object GameManager {
         marchInProgress = true
         forwardMarchCounter++
         val movementQueue: MutableList<() -> Unit> = mutableListOf()
-        KtxAsync.launch {
+        // Make the player pieces move forward one at a time
+        // -> Resolve collisions in each of the squares they now occupy
+        // Once all movements have been resolved...
+        // -> Get valid moves for the enemy pieces
+        // -> -> Resolve attacks for the pieces in their new positions.
 
-            // Make the player pieces move forward one at a time
-            // -> Resolve collisions in each of the squares they now occupy
-            // Once all movements have been resolved...
-            // -> Get valid moves for the enemy pieces
-            // -> -> Resolve attacks for the pieces in their new positions.
-
-            // Move all pieces up by one square
-            pieces.forEach { piece ->
-                val yMovement =
-                    if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
-                val newBoard =
-                    if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
-                movementQueue.add {
-                    piece.move(
-                        piece.boardXpos,
-                        yMovement,
-                        newBoard
-                    )
-                }
+        // Move all pieces up by one square
+        pieces.forEach { piece ->
+            val yMovement =
+                if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
+            val newBoard =
+                if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
+            movementQueue.add {
+                piece.move(
+                    piece.boardXpos,
+                    yMovement,
+                    newBoard
+                )
             }
-
-            movementQueue.forEach {
-                it.invoke()
-            }
-
-            checkBoardsStatus()
-            moveWithinEnvironment()
-
-        }.invokeOnCompletion {
-
-            enemyPieces.forEach { enemy ->
-                enemy.getValidMoves { enemy.attack() }
-            }
-
-            marchInProgress = false
         }
 
+        movementQueue.forEach {
+            it.invoke()
+        }
+
+        moveWithinEnvironment()
+
+        enemyPieces.forEach { enemy ->
+            enemy.getValidMoves { enemy.attack() }
+        }
+
+        marchInProgress = false
+
+//        GlobalScope.launch(Dispatchers.KTX) {
+        checkBoardsStatus()
+//        }
     }
 
     private fun checkBoardsStatus() {
@@ -116,26 +120,37 @@ object GameManager {
 
     }
 
+    private suspend fun myAppendBoard(
+        difficultyModifier: Int,
+    ) = suspendCoroutine { continuation ->
+        val yPos =
+            (BOARD_STARTING_Y + ((boards.size - 1) * SQUARE_HEIGHT * (DIMENSIONS)) - (SQUARE_HEIGHT)).toInt()
+        val board = VeryEasyBoard1(
+            environmentYPos = yPos,
+        )
+        boards.add(board)
+        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+
+        continuation.resume(Unit)
+    }
+
     private fun appendBoard(difficultyModifier: Int) {
         var board: Board = StandardBoard()
-        val yPos = (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
+        val yPos =
+            (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
         KtxAsync.launch {
             when (difficultyModifier) {
                 1 -> {
                     // Choose randomly from very easy boards
-                    board = async {
-                        VeryEasyBoard1(
-                            environmentYPos = yPos
-                        )
-                    }.await()
-//                    // Spawn enemies based on difficulty modifier
-//                    EnemyManager.spawnEnemy(
-//                        PieceTypes.PAWN, (1..8).random(), (1..8).random(), board
-//                    )
-//                    EnemyManager.spawnTrap(
-//                        TrapTypes.SPIKE, (1..8).random(), (1..8).random(), board
-//                    )
-
+                    board = VeryEasyBoard1(environmentYPos = yPos)
+                    // Spawn enemies based on difficulty modifier
+                    EnemyManager.spawnEnemy(
+                        PieceTypes.PAWN,
+                        (1..8).random(),
+                        (1..8).random(),
+                        board
+                    )
+                    EnemyManager.spawnTrap(TrapTypes.SPIKE, (1..8).random(), (1..8).random(), board)
                 }
 
                 2 -> {
@@ -149,9 +164,9 @@ object GameManager {
             }
         }
             .invokeOnCompletion {
-            boards.add(board)
-            Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
-        }
+                boards.add(board)
+                Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+            }
     }
 
     private fun removeBoard() {
@@ -162,7 +177,6 @@ object GameManager {
 
             boards[0].squaresList.forEach { square ->
                 square.contents.forEach {
-                    Gdx.app.log("game", "Obj to remove: $it")
                     objectsToRemove.add(it)
                 }
             }
@@ -254,7 +268,7 @@ object GameManager {
         return allObjects
     }
 
-    // ------------------------------SETUP PLACEMENT--------------------------------------------- //
+// ------------------------------SETUP PLACEMENT--------------------------------------------- //
 
     fun setStartingLayout() {
         // PAWNS

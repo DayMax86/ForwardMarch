@@ -310,7 +310,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             if (element.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
                 element.onHover()
                 if (button >= 0) {
-                    element.onClick(button)
+                    element.onClick()
                 }
             } else {
                 element.onExitHover()

@@ -3,6 +3,8 @@ package com.daymax86.forwardmarch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
@@ -12,24 +14,44 @@ class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
     // Draw everything square to have it display correctly
     val hudElements: MutableList<HUDElement> = mutableListOf()
+    val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"))
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
         gameScreen.windowHeight.toFloat()
     )
 
     init {
+
+
         val testHUDElement =
             HUDElement(
-                "hud_elements/forward_march_button.png",
-                1080 / 2f,
-                1920 / 4f,
-                150f,
-                150f,
-                visible = true
-            )
+                ElementTypes.IMAGE,
+                texturePath = "hud_elements/forward_march_button.png",
+                x = 1080 / 2f,
+                y = 1920 / 4f,
+                width = 150f,
+                height = 150f,
+                visible = true,
+            ) {
+                if (!GameManager.marchInProgress) {
+                    GameManager.forwardMarch(1)
+                }
+            }
         testHUDElement.highlightImage =
             Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
         hudElements.add(testHUDElement)
+
+        val marchCountdownHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = "Example text",
+                x = 1080 / 2f,
+                y = 1920 / 5f,
+                visible = true,
+            ) {
+                Gdx.app.log("HUD", "HUD example text clicked")
+            }
+        hudElements.add(marchCountdownHUDElement)
     }
 
     // Must be called within a batch's begin and end methods!
@@ -37,17 +59,32 @@ class GameHUD(gameScreen: GameScreen) {
         hudElements.forEach { element ->
             if (element.visible) {
                 try {
-                    val img = if (element.highlight) element.highlightImage else element.image
-                    batch.draw(
-                        img, element.x, element.y,
-                        element.width * GameManager.aspectRatio,
-                        element.height * GameManager.aspectRatio
-                    )
+                    when (element.type) {
+                        ElementTypes.IMAGE -> {
+                            val img =
+                                if (element.highlight) element.highlightImage else element.image
+                            batch.draw(
+                                img, element.x, element.y,
+                                element.width * GameManager.aspectRatio,
+                                element.height * GameManager.aspectRatio
+                            )
+                        }
+
+                        ElementTypes.TEXT -> {
+                            font.draw(
+                                batch,
+                                element.text,
+                                element.x,
+                                element.y,
+                            )
+                        }
+                    }
                 } catch (e: Exception) {
                     Gdx.app.log(
                         "HUD",
                         "Error drawing HUD: " +
-                            "Did you try and use the drawHUD method outside of a batch's begin and end methods?"
+                            "Did you try and use the drawHUD method outside of a batch's begin and end methods?" +
+                            "Or did you perhaps set the HUD element to the wrong type?"
                     )
                 }
             }
@@ -60,20 +97,39 @@ class GameHUD(gameScreen: GameScreen) {
         hudCamera.update()
     }
 
+    enum class ElementTypes {
+        IMAGE,
+        TEXT,
+    }
+
     inner class HUDElement(
-        texturePath: String,
+        elementType: ElementTypes,
+        texturePath: String = "",
+        displayText: String = "",
         var x: Float,
         var y: Float,
-        var width: Float,
-        var height: Float,
+        var width: Float = 0f,
+        var height: Float = 0f,
         var visible: Boolean = false,
+        private var onClickBehaviour: () -> Unit,
     ) {
-        var image = Texture(Gdx.files.internal(texturePath))
-        var highlightImage = Texture(Gdx.files.internal(texturePath))
+        val type = elementType
+        lateinit var image: Texture
+        lateinit var highlightImage: Texture
+        var text = displayText
         var boundingBox: BoundingBox = BoundingBox()
         var highlight: Boolean = false
 
         init {
+            if (elementType == ElementTypes.TEXT) {
+                width = GlyphLayout(font, displayText).width
+                height = GlyphLayout(font, displayText).height
+                Gdx.app.log("HUD", "HUD example text width = $width, height = $height")
+            } else {
+                image = Texture(Gdx.files.internal(texturePath))
+                highlightImage = Texture(Gdx.files.internal(texturePath))
+            }
+
             boundingBox = BoundingBox(
                 Vector3(x, y, 0f),
                 Vector3(
@@ -92,14 +148,8 @@ class GameHUD(gameScreen: GameScreen) {
             highlight = false
         }
 
-        fun onClick(button: Int) {
-            when (button) {
-                inputTypes["LMB"] -> {
-                    if (!GameManager.marchInProgress) {
-                        GameManager.forwardMarch(1)
-                    }
-                }
-            }
+        fun onClick() {
+            onClickBehaviour.invoke()
         }
     }
 }
