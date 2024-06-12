@@ -22,7 +22,6 @@ open class RookDefault(
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.ROOK,
-    override var friendly: Boolean = true,
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,

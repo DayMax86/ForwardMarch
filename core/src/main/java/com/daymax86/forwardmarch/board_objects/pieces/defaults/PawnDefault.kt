@@ -22,7 +22,6 @@ open class PawnDefault(
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.PAWN,
-    override var friendly: Boolean = true,
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
@@ -53,7 +52,7 @@ open class PawnDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    override fun getValidMoves(onComplete: () -> Unit): Boolean { // TODO() Can this be optimised?
+    override fun getValidMoves(onComplete: () -> Unit): Boolean {
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
@@ -85,14 +84,14 @@ open class PawnDefault(
                     this.nextBoard!!.squaresList.firstOrNull {
                         it.boardXpos == this.boardXpos - 1 && it.boardYpos == 1
                     }.let { sq ->
-                        if (sq?.contents?.isEmpty() == true) {
+                        if (sq?.contents?.isEmpty() == false) {
                             this@PawnDefault.movement.add(sq)
                         }
                     }
                     this.nextBoard!!.squaresList.firstOrNull {
                         it.boardXpos == this.boardXpos + 1 && it.boardYpos == 1
                     }.let { sq ->
-                        if (sq?.contents?.isEmpty() == true) {
+                        if (sq?.contents?.isEmpty() == false) {
                             this@PawnDefault.movement.add(sq)
                         }
                     }
@@ -105,14 +104,14 @@ open class PawnDefault(
                 this.associatedBoard!!.squaresList.firstOrNull {
                     it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos + 1
                 }.let { sq ->
-                    if (sq?.contents?.isEmpty() == true) {
+                    if (sq?.contents?.isEmpty() == false) {
                         this@PawnDefault.movement.add(sq)
                     }
                 }
                 this.associatedBoard!!.squaresList.firstOrNull {
                     it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos + 1
                 }.let { sq ->
-                    if (sq?.contents?.isEmpty() == true) {
+                    if (sq?.contents?.isEmpty() == false) {
                         this@PawnDefault.movement.add(sq)
                     }
                 }

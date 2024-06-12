@@ -26,7 +26,6 @@ abstract class Piece(
     override var boundingBox: BoundingBox,
 ) : BoardObject() {
     open lateinit var pieceType: PieceTypes
-    open var friendly: Boolean = false
     open val movement: MutableList<Square> = mutableListOf()
     open var nextBoard: Board? = null
     var soundSet: SoundSet = SoundSet()
@@ -39,7 +38,6 @@ abstract class Piece(
     }
 
     override fun onClick(button: Int) {
-        super.onClick(button)
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
@@ -107,7 +105,15 @@ abstract class Piece(
 
     override fun move(x: Int, y: Int, newBoard: Board?) {
         super.move(x, y, newBoard)
-        AudioManager.playRandomSound(this.soundSet.move)
+        if (GameManager.firstMoveComplete) {
+            AudioManager.playRandomSound(this.soundSet.move)
+            if (!this.hostile) {
+                GameManager.moveCounter++
+                if (GameManager.moveCounter >= GameManager.moveLimit) {
+                    GameManager.moveLimitReached = true
+                }
+            }
+        }
     }
 
     override fun kill() {

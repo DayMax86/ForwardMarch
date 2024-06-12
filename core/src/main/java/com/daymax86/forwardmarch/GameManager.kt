@@ -49,6 +49,11 @@ object GameManager {
     var difficultyModifier: Int = 1
     var forwardMarchCounter: Int = 0
     var marchInProgress = false
+    var moveCounter: Int = 0
+    var moveLimit: Int = 3
+    var moveLimitReached: Boolean = false
+    var firstMoveComplete: Boolean = false
+    private var gameState = GameState()
 
     var cameraTargetInX: Float = 0f
     var cameraTargetInY: Float = 0f
@@ -66,49 +71,93 @@ object GameManager {
 
         setStartingLayout()
         setEnemyPieces()
+        saveGameState()
+    }
 
+    private fun saveGameState() {
+        gameState.updateGameState(
+            new_pieces = pieces,
+            new_boards = boards,
+            new_pickups = pickups,
+            new_activeAnimations = activeAnimations,
+            new_selectedPiece = selectedPiece,
+            new_freezeHighlights = freezeHighlights,
+            new_difficultyModifier = difficultyModifier,
+            new_forwardMarchCounter = forwardMarchCounter,
+            new_marchInProgress = marchInProgress,
+            new_moveCounter = moveCounter,
+            new_moveLimit = moveLimit,
+            new_moveLimitReached = moveLimitReached,
+            new_firstMoveComplete = firstMoveComplete,
+        )
     }
 
     fun forwardMarch(distance: Int) {
-        marchInProgress = true
-        forwardMarchCounter++
-        val movementQueue: MutableList<() -> Unit> = mutableListOf()
-        // Make the player pieces move forward one at a time
-        // -> Resolve collisions in each of the squares they now occupy
-        // Once all movements have been resolved...
-        // -> Get valid moves for the enemy pieces
-        // -> -> Resolve attacks for the pieces in their new positions.
+        KtxAsync.launch {
+            marchInProgress = true
+            forwardMarchCounter++
+            val movementQueue: MutableList<() -> Unit> = mutableListOf()
+            // Make the player pieces move forward one at a time
+            // -> Resolve collisions in each of the squares they now occupy
+            // Once all movements have been resolved...
+            // -> Get valid moves for the enemy pieces
+            // -> -> Resolve attacks for the pieces in their new positions.
 
-        // Move all pieces up by one square
-        pieces.forEach { piece ->
-            val yMovement =
-                if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
-            val newBoard =
-                if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
-            movementQueue.add {
-                piece.move(
-                    piece.boardXpos,
-                    yMovement,
-                    newBoard
-                )
+            // Move all pieces up by one square
+            pieces.forEach { piece ->
+                val yMovement =
+                    if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
+                val newBoard =
+                    if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
+                movementQueue.add {
+                    piece.move(
+                        piece.boardXpos,
+                        yMovement,
+                        newBoard
+                    )
+                }
             }
+
+            movementQueue.forEach {
+                it.invoke()
+            }
+
+            moveWithinEnvironment()
+
+            enemyPieces.forEach { enemy ->
+                enemy.getValidMoves { enemy.attack() }
+            }
+
+            marchInProgress = false
+
+            checkBoardsStatus()
+
+            moveLimitReached = false
+            moveCounter = 0
+        }.invokeOnCompletion {
+            saveGameState()
         }
+    }
 
-        movementQueue.forEach {
-            it.invoke()
-        }
-
-        moveWithinEnvironment()
-
-        enemyPieces.forEach { enemy ->
-            enemy.getValidMoves { enemy.attack() }
-        }
-
-        marchInProgress = false
-
-//        GlobalScope.launch(Dispatchers.KTX) {
-        checkBoardsStatus()
-//        }
+    fun revertToLastSavedState() { // TODO elements in the lists are pass by reference? We need value
+        pieces.clear()
+        gameState.state_pieces.forEach { pieces.add(it) }
+        boards.clear()
+        gameState.state_boards.forEach { boards.add(it) }
+        pickups.clear()
+        gameState.state_pickups.forEach { pickups.add(it) }
+        activeAnimations.clear()
+        gameState.state_activeAnimations.forEach { activeAnimations.add(it) }
+        selectedPiece = gameState.state_selectedPiece
+        freezeHighlights = gameState.state_freezeHighlights
+        difficultyModifier = gameState.state_difficultyModifier
+        forwardMarchCounter = gameState.state_forwardMarchCounter
+        marchInProgress = gameState.state_marchInProgress
+        moveCounter = gameState.state_moveCounter
+        moveLimit = gameState.state_moveLimit
+        moveLimitReached = gameState.state_moveLimitReached
+        firstMoveComplete = gameState.state_firstMoveComplete
+        saveGameState()
     }
 
     private fun checkBoardsStatus() {
@@ -226,7 +275,8 @@ object GameManager {
     }
 
     fun selectPiece(piece: Piece) {
-        if (!piece.hostile) {
+        firstMoveComplete = true
+        if (!piece.hostile && !moveLimitReached) {
             selectedPiece = piece
             piece.highlight = true
             piece.getValidMoves()
@@ -310,3 +360,5 @@ object GameManager {
     }
 
 }
+
+

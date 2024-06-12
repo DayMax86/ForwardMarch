@@ -124,26 +124,16 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun keyDown(keycode: Int): Boolean {
                 super.keyDown(keycode)
                 when (keycode) {
-                    (Input.Keys.UP) -> {
-                        gameCamera.translate(0f, 50f)
-                    }
-
-                    (Input.Keys.LEFT) -> {
-                        gameCamera.translate(-50f, 0f)
-                    }
-
-                    (Input.Keys.DOWN) -> {
-                        gameCamera.translate(0f, -50f)
-                    }
-
-                    (Input.Keys.RIGHT) -> {
-                        gameCamera.translate(50f, 0f)
-                    }
-
                     // --------- FOR TESTING ONLY ---------- //
                     (Input.Keys.F) -> {
                         if (!GameManager.marchInProgress) {
                             GameManager.forwardMarch(1)
+                        }
+                    }
+                    (Input.Keys.Z) -> {
+                        if (!GameManager.marchInProgress) {
+                            // Undo moves since last forwardMarch
+                            GameManager.revertToLastSavedState()
                         }
                     }
 
@@ -153,7 +143,6 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
 
     }
-
 
     private fun updateCamera() {
         gameCamera.lerpTo(Vector2(cameraTargetInX, cameraTargetInY), 0.1f)
@@ -179,8 +168,24 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         hudBatch.projectionMatrix = hudCamera.combined
         hudBatch.begin()
-        gameHUD.drawHUD(hudBatch)
+        drawHUD()
         hudBatch.end()
+    }
+
+    private fun drawHUD() {
+        // Update any HUD elements here
+        gameHUD.hudElements.firstOrNull {
+            it.tag == "marchCountdown"
+        }?.update(
+            newDisplayText = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}"
+        )
+        gameHUD.hudElements.firstOrNull {
+            it.tag == "marchTotal"
+        }?.update(
+            newDisplayText = "Forward marches: ${GameManager.forwardMarchCounter}"
+        )
+        //---------------------//
+        gameHUD.drawHUD(hudBatch)
     }
 
     private fun drawBackground() {

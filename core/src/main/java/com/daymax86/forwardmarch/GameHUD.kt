@@ -9,20 +9,42 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 
+val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"))
 
 class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
     // Draw everything square to have it display correctly
     val hudElements: MutableList<HUDElement> = mutableListOf()
-    val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"))
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
         gameScreen.windowHeight.toFloat()
     )
 
     init {
-
-
+        val totalMarchesCounterHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = GameManager.forwardMarchCounter.toString(),
+                x = 1080 / 2f,
+                y = 1920 / 5f,
+                visible = true,
+                tag = "marchTotal"
+            ) {
+                Gdx.app.log("HUD", "HUD marchTotal text clicked")
+            }
+        hudElements.add(totalMarchesCounterHUDElement)
+        val marchCountdownHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}",
+                x = 1080 / 2f,
+                y = 1920 / 6f,
+                visible = true,
+                tag = "marchCountdown"
+            ) {
+                Gdx.app.log("HUD", "HUD marchCountdown text clicked")
+            }
+        hudElements.add(marchCountdownHUDElement)
         val testHUDElement =
             HUDElement(
                 ElementTypes.IMAGE,
@@ -40,18 +62,6 @@ class GameHUD(gameScreen: GameScreen) {
         testHUDElement.highlightImage =
             Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
         hudElements.add(testHUDElement)
-
-        val marchCountdownHUDElement =
-            HUDElement(
-                ElementTypes.TEXT,
-                displayText = "Example text",
-                x = 1080 / 2f,
-                y = 1920 / 5f,
-                visible = true,
-            ) {
-                Gdx.app.log("HUD", "HUD example text clicked")
-            }
-        hudElements.add(marchCountdownHUDElement)
     }
 
     // Must be called within a batch's begin and end methods!
@@ -102,10 +112,11 @@ class GameHUD(gameScreen: GameScreen) {
         TEXT,
     }
 
-    inner class HUDElement(
+    class HUDElement(
         elementType: ElementTypes,
-        texturePath: String = "",
+        var texturePath: String = "",
         displayText: String = "",
+        var tag: String = "", // Used as an identifier for HUD updates
         var x: Float,
         var y: Float,
         var width: Float = 0f,
@@ -138,6 +149,26 @@ class GameHUD(gameScreen: GameScreen) {
                     0f
                 )
             )
+        }
+
+        fun update(
+            newTexturePath: String = texturePath,
+            newDisplayText: String = text,
+            newX: Float = x,
+            newY: Float = y,
+            newWidth: Float = width,
+            newHeight: Float = height,
+            newVisible: Boolean = visible,
+            newOnClickBehaviour: () -> Unit = onClickBehaviour,
+        ) {
+            texturePath = newTexturePath
+            text = newDisplayText
+            x = newX
+            y = newY
+            width = newWidth
+            height = newHeight
+            visible = newVisible
+            onClickBehaviour = newOnClickBehaviour
         }
 
         fun onHover() {
