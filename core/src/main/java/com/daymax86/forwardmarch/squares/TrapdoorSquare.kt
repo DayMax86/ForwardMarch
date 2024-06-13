@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 
 class TrapdoorSquare(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/trapdoor_square_256.png")),
@@ -38,7 +40,9 @@ class TrapdoorSquare(
         super.onEnter(obj)
         when (obj) {
             is Piece -> {
-                obj.kill()
+                KtxAsync.launch {
+                    obj.kill()
+                }
             }
         }
     }

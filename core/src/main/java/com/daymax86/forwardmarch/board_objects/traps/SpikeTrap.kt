@@ -2,6 +2,7 @@ package com.daymax86.forwardmarch.board_objects.traps
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -19,6 +20,8 @@ class SpikeTrap(
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
+    override var currentPosition: Vector2 = Vector2(),
+    override var movementTarget: Vector2 = Vector2(),
 ) : Trap() {
 
     override fun springTrap(sprungBy: BoardObject) {

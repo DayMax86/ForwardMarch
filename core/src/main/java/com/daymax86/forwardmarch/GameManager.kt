@@ -1,7 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.async.AsyncExecutor
+import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -12,18 +12,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.suspendCancellableCoroutine
-import ktx.async.KTX
 import ktx.async.KtxAsync
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 object GameManager {
 
@@ -66,6 +56,7 @@ object GameManager {
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
 
         boards.add(testBoard)
+        EnemyManager.spawnEnemy(PieceTypes.PAWN,5,5,testBoard) // Testing
         boards.add(testBoard2)
         boards.add(testBoard3)
 
@@ -169,24 +160,24 @@ object GameManager {
 
     }
 
-    private suspend fun myAppendBoard(
-        difficultyModifier: Int,
-    ) = suspendCoroutine { continuation ->
-        val yPos =
-            (BOARD_STARTING_Y + ((boards.size - 1) * SQUARE_HEIGHT * (DIMENSIONS)) - (SQUARE_HEIGHT)).toInt()
-        val board = VeryEasyBoard1(
-            environmentYPos = yPos,
-        )
-        boards.add(board)
-        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
-
-        continuation.resume(Unit)
-    }
+//    private suspend fun myAppendBoard(
+//        difficultyModifier: Int,
+//    ) = suspendCoroutine { continuation ->
+//        val yPos =
+//            (BOARD_STARTING_Y + ((boards.size - 1) * SQUARE_HEIGHT * (DIMENSIONS)) - (SQUARE_HEIGHT)).toInt()
+//        val board = VeryEasyBoard1(
+//            environmentYPos = yPos,
+//        )
+//        boards.add(board)
+//        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
+//
+//        continuation.resume(Unit)
+//    }
 
     private fun appendBoard(difficultyModifier: Int) {
         var board: Board = StandardBoard()
         val yPos =
-            (BOARD_STARTING_Y + boards.size * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
+            (BOARD_STARTING_Y + (boards.size -1) * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
         KtxAsync.launch {
             when (difficultyModifier) {
                 1 -> {
@@ -259,18 +250,15 @@ object GameManager {
         }
 
         getAllObjects().forEach { obj ->
-            obj.updateBoundingBox(
-                obj.boundingBox.min.x,
-                obj.boundingBox.min.y - SQUARE_HEIGHT.toInt(),
-                SQUARE_WIDTH,
-                SQUARE_HEIGHT
+            obj.movementTarget = Vector2(
+                obj.currentPosition.x,
+                if (obj.visuallyStatic) {
+                    obj.currentPosition.y - SQUARE_HEIGHT
+                } else {
+                    obj.currentPosition.y
+                }
             )
-        }.also {
-            activeAnimations.forEach { anim ->
-                // Will inactive animations have to be moved too?
-                // I don't think so since when activated they are placed at their current bounding box position
-                anim.y -= SQUARE_HEIGHT
-            }
+            obj.updateBoundingBox()
         }
     }
 
@@ -307,6 +295,9 @@ object GameManager {
         for (piece in this.pieces) {
             piece.getValidMoves()
         }
+        for (enemy in EnemyManager.enemyPieces) {
+            enemy.getValidMoves()
+        }
     }
 
     fun getAllObjects(): MutableList<BoardObject> {
@@ -320,7 +311,7 @@ object GameManager {
 
 // ------------------------------SETUP PLACEMENT--------------------------------------------- //
 
-    fun setStartingLayout() {
+    private fun setStartingLayout() {
         // PAWNS
         placeStartingPawns()
         // ROOKS
@@ -352,7 +343,7 @@ object GameManager {
         }.apply { pieces.add(this) }
     }
 
-    fun setEnemyPieces() {
+    private fun setEnemyPieces() {
         enemyPieces.forEach {
             it.move(it.boardXpos, it.boardYpos, null)
             it.getValidMoves()

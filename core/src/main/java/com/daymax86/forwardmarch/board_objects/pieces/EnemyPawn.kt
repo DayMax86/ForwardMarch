@@ -22,6 +22,7 @@ class EnemyPawn(
     ),
 ) : PawnDefault() {
     override var hostile: Boolean = true
+    override var visuallyStatic: Boolean = true
 
     override fun onHover() {
         super.onHover()

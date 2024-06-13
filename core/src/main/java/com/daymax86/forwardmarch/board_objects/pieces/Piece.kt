@@ -2,17 +2,21 @@ package com.daymax86.forwardmarch.board_objects.pieces
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.AudioManager
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.SoundSet
+import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.squares.Square
-import com.daymax86.forwardmarch.animations.SpriteAnimator
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 
 abstract class Piece(
     override var associatedBoard: Board?,
@@ -25,6 +29,8 @@ abstract class Piece(
     override var hostile: Boolean,
     override var boundingBox: BoundingBox,
 ) : BoardObject() {
+    override var currentPosition: Vector2 = Vector2()
+    override var movementTarget: Vector2 = Vector2()
     open lateinit var pieceType: PieceTypes
     open val movement: MutableList<Square> = mutableListOf()
     open var nextBoard: Board? = null
@@ -62,14 +68,18 @@ abstract class Piece(
     override fun collide(other: BoardObject) {
         super.collide(other)
         if (other.hostile) {
-            this.kill()
+            KtxAsync.launch {
+                this@Piece.kill()
+            }
         }
         Gdx.app.log("collision", "Other in collision is a $other")
         when (other) {
             is Coin -> {
                 // TODO Increase player's coin count
                 Gdx.app.log("collisions", "Coin!")
-                other.kill()
+                KtxAsync.launch {
+                    other.kill()
+                }
             }
 
             is Trap -> {
@@ -82,7 +92,7 @@ abstract class Piece(
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var attacked = false
         this.movement.forEach { square ->
-            if (!attacked) {
+            if (!attacked && !this.hostile) {
                 GameManager.pieces.forEach { piece ->
                     if (square.contents.contains(piece)) {
                         actionQueue.add {
@@ -91,7 +101,26 @@ abstract class Piece(
                                 square.boardYpos,
                                 null
                             ) // What happens across boards?
-                            piece.kill()
+                            KtxAsync.launch {
+                                piece.kill()
+                            }
+                        }
+                        attacked = true
+                    }
+                }
+            } else {
+                // Must be an enemy piece
+                EnemyManager.enemyPieces.forEach { piece ->
+                    if (square.contents.contains(piece)) {
+                        actionQueue.add {
+                            this.move(
+                                square.boardXpos,
+                                square.boardYpos,
+                                null
+                            ) // What happens across boards?
+                            KtxAsync.launch {
+                                piece.kill()
+                            }
                         }
                         attacked = true
                     }
@@ -116,16 +145,19 @@ abstract class Piece(
         }
     }
 
-    override fun kill() {
-        SpriteAnimator.activateAnimation(
-            this.deathAnimation.atlasFilepath,
-            this.deathAnimation.frameDuration,
-            this.deathAnimation.loop,
-            this.boundingBox.min.x,
-            this.boundingBox.min.y
-        )
-        AudioManager.playRandomSound(this.soundSet.death)
-        GameManager.pieces.remove(this)
+    override suspend fun kill() {
+        KtxAsync.launch {
+            StickySpriteAnimator.activateAnimation(
+                deathAnimation.atlasFilepath,
+                deathAnimation.frameDuration,
+                deathAnimation.loop,
+                x = this@Piece.boundingBox.min.x,
+                y = this@Piece.boundingBox.min.y,
+            )
+            AudioManager.playRandomSound(soundSet.death)
+        }.invokeOnCompletion {
+            GameManager.pieces.remove(this)
+        }
     }
 
 }

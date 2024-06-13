@@ -1,15 +1,11 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
-import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
-import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.squares.Square
-import kotlin.reflect.typeOf
 
 abstract class BoardObject() {
 
@@ -26,6 +22,9 @@ abstract class BoardObject() {
     abstract var boundingBox: BoundingBox
     abstract var deathAnimation: SpriteAnimation
     abstract var idleAnimation: SpriteAnimation?
+    abstract var currentPosition: Vector2
+    abstract var movementTarget: Vector2
+    abstract var visuallyStatic: Boolean
 
     open fun onHover() {
         //highlight = true
@@ -39,8 +38,13 @@ abstract class BoardObject() {
         highlight = !highlight
     }
 
-    open fun move(x: Int, y: Int, newBoard: Board?) {
+    fun getAllAnimations(): MutableList<SpriteAnimation?>{
+        return mutableListOf(
+            deathAnimation, idleAnimation
+        )
+    }
 
+    open fun move(x: Int, y: Int, newBoard: Board?) {
         // Remove the object from the old square's 'contents' list
         if (this.associatedBoard != null) {
             this.associatedBoard!!.squaresList.firstOrNull {
@@ -61,9 +65,13 @@ abstract class BoardObject() {
         // Update the bounding box
         this.associatedBoard.let {
             if (it != null) {
-                this.updateBoundingBox(
+                movementTarget = Vector2(
                     it.environmentXPos + (this.boardXpos * GameManager.SQUARE_WIDTH),
-                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT),
+                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT)
+                )
+                this.updateBoundingBox(
+                    currentPosition.x,
+                    currentPosition.y,
                     GameManager.SQUARE_WIDTH,
                     GameManager.SQUARE_HEIGHT,
                 )
@@ -86,10 +94,22 @@ abstract class BoardObject() {
         }
         collisionQueue.forEach { it.invoke() }
 
+        GameManager.deselectPiece()
     }
 
     open fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
         boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
+    }
+
+    open fun updateBoundingBox() {
+        boundingBox = BoundingBox(
+            Vector3(currentPosition.x, currentPosition.y, 0f),
+            Vector3(
+                currentPosition.x + GameManager.SQUARE_WIDTH,
+                currentPosition.y + GameManager.SQUARE_HEIGHT,
+                0f
+            )
+        )
     }
 
     open fun collide(other: BoardObject) {
@@ -100,7 +120,7 @@ abstract class BoardObject() {
         other.onEnter(this)
     }
 
-    open fun kill() {
+    open suspend fun kill() {
         // Dispose of the piece, remove from all lists etc.
     }
 

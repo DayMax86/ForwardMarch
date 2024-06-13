@@ -4,12 +4,10 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.g2d.Animation
 import com.badlogic.gdx.graphics.g2d.TextureAtlas
 import com.badlogic.gdx.graphics.g2d.TextureRegion
-import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
-import java.sql.Time
 
-class SpriteAnimation(
+open class SpriteAnimation(
     val atlasFilepath: String,
     val frameDuration: Float,
     var loop: Boolean,
@@ -19,6 +17,7 @@ class SpriteAnimation(
     var height: Float = GameManager.SQUARE_HEIGHT,
     var elapsedTime: Float = 0f,
     var anim: Animation<TextureRegion> = Animation<TextureRegion>(0f),
+    var source: BoardObject? = null,
 ) {
 
     init {
@@ -37,10 +36,15 @@ class SpriteAnimation(
         }
     }
 
+    fun activate() {
+        GameManager.activeAnimations.add(this)
+    }
+
 }
 
-object SpriteAnimator {
-
+object StickySpriteAnimator {
+    // For when an animation needs to be run in place and not follow the source
+    // e.g. when something is killed and the death animation needs to be played
     fun activateAnimation(
         atlasFilepath: String,
         frameDuration: Float,

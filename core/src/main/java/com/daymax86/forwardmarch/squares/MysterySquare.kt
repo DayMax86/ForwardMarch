@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 
 class MysterySquare(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/mystery_square_256.png")),
@@ -43,7 +45,9 @@ class MysterySquare(
                     when (it) {
                         in 1..3 -> { // Unlucky!
                             Gdx.app.log("square", "Unlucky my friend!")
-                            obj.kill()
+                            KtxAsync.launch {
+                                obj.kill()
+                            }
                         }
                         in 4..6 -> {
                             // Do nothing

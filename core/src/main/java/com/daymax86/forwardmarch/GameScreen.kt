@@ -17,6 +17,7 @@ import com.daymax86.forwardmarch.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_WIDTH
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
+import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
 import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
@@ -199,8 +200,8 @@ class GameScreen(private val application: MainApplication) : Screen {
         anims.forEach { anim ->
             application.batch.draw(
                 anim.anim.getKeyFrame(anim.elapsedTime, anim.loop),
-                anim.x,
-                anim.y,
+                anim.source?.boundingBox?.min?.x?: anim.x,
+                anim.source?.boundingBox?.min?.y?: anim.y,
                 anim.width,
                 anim.height,
             )
@@ -221,12 +222,16 @@ class GameScreen(private val application: MainApplication) : Screen {
             } else {
                 obj.image
             }
+            // If it's not yet in position, keep lerping
+            obj.currentPosition.lerp(obj.movementTarget,0.25f)
+            obj.updateBoundingBox()
+            // Really the above code shouldn't be under the 'drawObjects' title since this isn't drawing!
             application.batch.draw(
                 img,
                 obj.boundingBox.min.x,
                 obj.boundingBox.min.y,
-                GameManager.SQUARE_WIDTH,
-                GameManager.SQUARE_HEIGHT
+                SQUARE_WIDTH,
+                SQUARE_HEIGHT
             )
         }
     }

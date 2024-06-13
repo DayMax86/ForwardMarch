@@ -100,12 +100,7 @@ class VeryEasyBoard1(
             boardYpos = 1,
             clickable = false,
         ).also { coin ->
-            coin.updateBoundingBox(
-                this@VeryEasyBoard1.environmentXPos + coin.boardXpos * GameManager.SQUARE_WIDTH,
-                this@VeryEasyBoard1.environmentYPos + coin.boardYpos * GameManager.SQUARE_HEIGHT,
-                GameManager.SQUARE_WIDTH,
-                GameManager.SQUARE_HEIGHT,
-            )
+            coin.move(3,1,this)
             this@VeryEasyBoard1.squaresList.first { square ->
                 square.boardXpos == coin.boardXpos && square.boardYpos == coin.boardYpos
             }.apply {

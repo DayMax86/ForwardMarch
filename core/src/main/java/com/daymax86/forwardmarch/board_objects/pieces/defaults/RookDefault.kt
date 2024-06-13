@@ -35,6 +35,7 @@ open class RookDefault(
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
+    override var visuallyStatic: Boolean = false,
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

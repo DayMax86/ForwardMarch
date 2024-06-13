@@ -18,7 +18,7 @@ object EnemyManager {
                 pawnToAdd.associatedBoard = board
                 pawnToAdd.boardXpos = x
                 pawnToAdd.boardYpos = y
-                pawnToAdd.move(x, y, null)
+                pawnToAdd.move(x, y, board)
                 enemyPieces.add(pawnToAdd)
             }
 

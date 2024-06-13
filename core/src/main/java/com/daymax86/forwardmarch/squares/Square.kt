@@ -40,7 +40,7 @@ abstract class Square {
                                 GameManager.selectedPiece!!.move(
                                     this.boardXpos,
                                     this.boardYpos,
-                                    this.associatedBoard
+                                    this.associatedBoard,
                                 )
                             } else {
                                 // TODO() Feedback to user that this is an invalid move
