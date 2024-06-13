@@ -2,6 +2,7 @@ package com.daymax86.forwardmarch.board_objects.traps
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
@@ -32,6 +33,7 @@ open class Trap(
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
     override var visuallyStatic: Boolean = true,
+    override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
 
     open fun springTrap(sprungBy: BoardObject) {

@@ -233,7 +233,9 @@ class GameScreen(private val application: MainApplication) : Screen {
                 obj.image
             }
             // If it's not yet in position, keep lerping
-            obj.currentPosition.lerp(obj.movementTarget,0.25f)
+            obj.currentPosition.x = obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x,0.25f)
+            obj.currentPosition.y = obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y,0.25f)
+            //obj.currentPosition.lerp(obj.movementTarget,0.25f)
             obj.updateBoundingBox()
             // Really the above code shouldn't be under the 'drawObjects' title since this isn't drawing!
             application.batch.draw(

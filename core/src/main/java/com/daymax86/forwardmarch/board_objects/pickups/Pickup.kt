@@ -1,5 +1,6 @@
 package com.daymax86.forwardmarch.board_objects.pickups
 
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
@@ -16,8 +17,8 @@ abstract class Pickup(
     override var boundingBox: BoundingBox,
     override var currentPosition: Vector2,
     override var movementTarget: Vector2,
+    override var interpolationType: Interpolation = Interpolation.circle
 ) : BoardObject() {
-
     open fun initialise() {
         associatedBoard?.let {
             this.updateBoundingBox(

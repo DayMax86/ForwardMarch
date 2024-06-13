@@ -1,6 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
@@ -25,6 +26,7 @@ abstract class BoardObject() {
     abstract var currentPosition: Vector2
     abstract var movementTarget: Vector2
     abstract var visuallyStatic: Boolean
+    abstract var interpolationType: Interpolation
 
     open fun onHover() {
         //highlight = true
