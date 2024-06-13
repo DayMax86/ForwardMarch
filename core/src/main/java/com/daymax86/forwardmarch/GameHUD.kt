@@ -21,47 +21,10 @@ class GameHUD(gameScreen: GameScreen) {
     )
 
     init {
-        val totalMarchesCounterHUDElement =
-            HUDElement(
-                ElementTypes.TEXT,
-                displayText = GameManager.forwardMarchCounter.toString(),
-                x = 1080 / 2f,
-                y = 1920 / 5f,
-                visible = true,
-                tag = "marchTotal"
-            ) {
-                Gdx.app.log("HUD", "HUD marchTotal text clicked")
-            }
-        hudElements.add(totalMarchesCounterHUDElement)
-        val marchCountdownHUDElement =
-            HUDElement(
-                ElementTypes.TEXT,
-                displayText = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}",
-                x = 1080 / 2f,
-                y = 1920 / 6f,
-                visible = true,
-                tag = "marchCountdown"
-            ) {
-                Gdx.app.log("HUD", "HUD marchCountdown text clicked")
-            }
-        hudElements.add(marchCountdownHUDElement)
-        val testHUDElement =
-            HUDElement(
-                ElementTypes.IMAGE,
-                texturePath = "hud_elements/forward_march_button.png",
-                x = 1080 / 2f,
-                y = 1920 / 4f,
-                width = 150f,
-                height = 150f,
-                visible = true,
-            ) {
-                if (!GameManager.marchInProgress) {
-                    GameManager.forwardMarch(1)
-                }
-            }
-        testHUDElement.highlightImage =
-            Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
-        hudElements.add(testHUDElement)
+        // March button + info
+        addMarchElements()
+        // Pickup info
+        addPickupElements()
     }
 
     // Must be called within a batch's begin and end methods!
@@ -99,6 +62,100 @@ class GameHUD(gameScreen: GameScreen) {
                 }
             }
         }
+    }
+
+    private fun addMarchElements() {
+        val totalMarchesCounterHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = GameManager.forwardMarchCounter.toString(),
+                x = 1080 / 2f,
+                y = 1920 / 5f,
+                visible = true,
+                tag = "marchTotal"
+            ) {
+                Gdx.app.log("HUD", "HUD marchTotal text clicked")
+            }
+        hudElements.add(totalMarchesCounterHUDElement)
+        val marchCountdownHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}",
+                x = 1080 / 2f,
+                y = 1920 / 6f,
+                visible = true,
+                tag = "marchCountdown"
+            ) {
+                Gdx.app.log("HUD", "HUD marchCountdown text clicked")
+            }
+        hudElements.add(marchCountdownHUDElement)
+        val forwardMarchButtonHUDElement =
+            HUDElement(
+                ElementTypes.IMAGE,
+                texturePath = "hud_elements/forward_march_button.png",
+                x = 1080 / 2f,
+                y = 1920 / 4f,
+                width = 150f,
+                height = 150f,
+                visible = true,
+            ) {
+                if (!GameManager.marchInProgress) {
+                    GameManager.forwardMarch(1)
+                }
+            }
+        forwardMarchButtonHUDElement.highlightImage =
+            Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
+        hudElements.add(forwardMarchButtonHUDElement)
+    }
+    private fun addPickupElements() {
+        // COINS
+        val coinTotalHUDElement =
+            HUDElement(
+                ElementTypes.IMAGE,
+                texturePath = "sprites/coin_front.png",
+                x = 1080 / 2f,
+                y = (1920 / 6) - 200f,
+                width = 50f,
+                height = 50f,
+                visible = true,
+            ) { }
+        coinTotalHUDElement.highlightImage =
+            Texture(Gdx.files.internal("sprites/coin_back.png"))
+        hudElements.add(coinTotalHUDElement)
+        val coinTotalTextHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = "${GameManager.coinTotal}",
+                x = (1080 / 2) + 100f,
+                y = (1920 / 6) - 150f,
+                visible = true,
+                tag = "coinTotal",
+            ) { }
+        hudElements.add(coinTotalTextHUDElement)
+        // BOMBS
+        val bombTotalHUDElement =
+            HUDElement(
+                ElementTypes.IMAGE,
+                texturePath = "sprites/bomb.png",
+                x = 1080 / 2f,
+                y = (1920 / 6) - 300f,
+                width = 50f,
+                height = 50f,
+                visible = true,
+            ) { }
+        bombTotalHUDElement.highlightImage =
+            Texture(Gdx.files.internal("sprites/bomb.png"))
+        hudElements.add(bombTotalHUDElement)
+        val bombTotalTextHUDElement =
+            HUDElement(
+                ElementTypes.TEXT,
+                displayText = "${GameManager.bombTotal}",
+                x = (1080 / 2) + 100f,
+                y = (1920 / 6) - 250f,
+                visible = true,
+                tag = "bombTotal",
+            ) { }
+        hudElements.add(bombTotalTextHUDElement)
     }
 
     fun resize(screenWidth: Float, screenHeight: Float) {

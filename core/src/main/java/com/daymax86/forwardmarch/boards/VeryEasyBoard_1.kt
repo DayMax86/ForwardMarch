@@ -1,24 +1,15 @@
 package com.daymax86.forwardmarch.boards
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.utils.async.AsyncExecutor
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.MysterySquare
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.TrapdoorSquare
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
-import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import ktx.async.AsyncExecutorDispatcher
-import ktx.async.KtxAsync
-import ktx.async.KtxDispatcher
-import ktx.async.newSingleThreadAsyncContext
-import kotlin.system.measureNanoTime
 import kotlin.system.measureTimeMillis
 
 class VeryEasyBoard1(
@@ -94,19 +85,25 @@ class VeryEasyBoard1(
             )
         }
 
-        val testPickup = Coin(
+        val testCoin = Coin(
             associatedBoard = this@VeryEasyBoard1,
             boardXpos = 1,
             boardYpos = 1,
             clickable = false,
         ).also { coin ->
-            coin.move(3,1,this)
-            this@VeryEasyBoard1.squaresList.first { square ->
-                square.boardXpos == coin.boardXpos && square.boardYpos == coin.boardYpos
-            }.apply {
-                this.contents.add(coin)
-            }
+            coin.move(3, 1, this)
         }
-        GameManager.pickups.add(testPickup)
+        GameManager.pickups.add(testCoin)
+
+        val testBomb = Bomb(
+            associatedBoard = this@VeryEasyBoard1,
+            boardXpos = 1,
+            boardYpos = 1,
+            clickable = false,
+        ).also { bomb ->
+            bomb.move(5, 2, this)
+        }
+        GameManager.pickups.add(testBomb)
+
     }
 }

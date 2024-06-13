@@ -11,8 +11,10 @@ import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
+import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
+import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import kotlinx.coroutines.launch
@@ -68,18 +70,18 @@ abstract class Piece(
     override fun collide(other: BoardObject) {
         super.collide(other)
         if (other.hostile) {
-            KtxAsync.launch {
-                this@Piece.kill()
-            }
+            this.kill()
         }
         Gdx.app.log("collision", "Other in collision is a $other")
         when (other) {
-            is Coin -> {
-                // TODO Increase player's coin count
-                Gdx.app.log("collisions", "Coin!")
-                KtxAsync.launch {
-                    other.kill()
+            is Pickup -> {
+                if (other is Coin) {
+                    GameManager.coinTotal++
                 }
+                if (other is Bomb) {
+                    GameManager.bombTotal++
+                }
+                other.kill()
             }
 
             is Trap -> {
@@ -92,35 +94,16 @@ abstract class Piece(
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var attacked = false
         this.movement.forEach { square ->
-            if (!attacked && !this.hostile) {
-                GameManager.pieces.forEach { piece ->
-                    if (square.contents.contains(piece)) {
+            if (!attacked) {
+                square.contents.forEach { obj ->
+                    if (obj is Piece && obj.hostile != this.hostile) {
                         actionQueue.add {
                             this.move(
                                 square.boardXpos,
                                 square.boardYpos,
                                 null
                             ) // What happens across boards?
-                            KtxAsync.launch {
-                                piece.kill()
-                            }
-                        }
-                        attacked = true
-                    }
-                }
-            } else {
-                // Must be an enemy piece
-                EnemyManager.enemyPieces.forEach { piece ->
-                    if (square.contents.contains(piece)) {
-                        actionQueue.add {
-                            this.move(
-                                square.boardXpos,
-                                square.boardYpos,
-                                null
-                            ) // What happens across boards?
-                            KtxAsync.launch {
-                                piece.kill()
-                            }
+                            obj.kill()
                         }
                         attacked = true
                     }
@@ -133,6 +116,11 @@ abstract class Piece(
     }
 
     override fun move(x: Int, y: Int, newBoard: Board?) {
+        this.nextBoard = try {
+            GameManager.boards[GameManager.boards.indexOf(this.associatedBoard) + 1]
+        } catch (e: Exception) {
+            null
+        }
         super.move(x, y, newBoard)
         if (GameManager.firstMoveComplete) {
             AudioManager.playRandomSound(this.soundSet.move)
@@ -145,7 +133,7 @@ abstract class Piece(
         }
     }
 
-    override suspend fun kill() {
+    override fun kill() {
         KtxAsync.launch {
             StickySpriteAnimator.activateAnimation(
                 deathAnimation.atlasFilepath,

@@ -5,11 +5,10 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
-class Coin(
+class Bomb(
     override var image: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
@@ -18,8 +17,8 @@ class Coin(
         loop = false,
     ),
     override var idleAnimation: SpriteAnimation? = SpriteAnimation(
-        atlasFilepath = "atlases/coin_spin_animation.atlas",
-        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION * 2f,
+        atlasFilepath = "atlases/bomb_idle_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION * 4f,
         loop = true,
     ),
     override var visuallyStatic: Boolean = true,
@@ -32,7 +31,7 @@ class Coin(
     override var boundingBox: BoundingBox = BoundingBox(),
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
-) : Pickup(
+): Pickup(
     associatedBoard = associatedBoard,
     highlight = highlight,
     boardXpos = boardXpos,

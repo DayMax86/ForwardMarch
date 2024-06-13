@@ -41,6 +41,10 @@ object GameManager {
     var marchInProgress = false
     var moveCounter: Int = 0
     var moveLimit: Int = 3
+
+    var coinTotal: Int = 0
+    var bombTotal: Int = 0
+
     var moveLimitReached: Boolean = false
     var firstMoveComplete: Boolean = false
     private var gameState = GameState()
@@ -115,17 +119,18 @@ object GameManager {
 
             moveWithinEnvironment()
 
-            enemyPieces.forEach { enemy ->
-                enemy.getValidMoves { enemy.attack() }
-            }
-
-            marchInProgress = false
-
             checkBoardsStatus()
 
             moveLimitReached = false
             moveCounter = 0
+            marchInProgress = false
+
         }.invokeOnCompletion {
+
+            enemyPieces.forEach { enemy ->
+                enemy.getValidMoves { enemy.attack() }
+            }
+
             saveGameState()
         }
     }

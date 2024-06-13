@@ -37,7 +37,7 @@ object EnemyManager {
                 spikesToAdd.associatedBoard = board
                 spikesToAdd.boardXpos = x
                 spikesToAdd.boardYpos = y
-                spikesToAdd.move(x, y, null)
+                spikesToAdd.move(x, y, board)
                 traps.add(spikesToAdd)
             }
         }

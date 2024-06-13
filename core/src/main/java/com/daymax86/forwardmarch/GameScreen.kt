@@ -185,6 +185,16 @@ class GameScreen(private val application: MainApplication) : Screen {
         }?.update(
             newDisplayText = "Forward marches: ${GameManager.forwardMarchCounter}"
         )
+        gameHUD.hudElements.firstOrNull {
+            it.tag == "coinTotal"
+        }?.update(
+            newDisplayText = "${GameManager.coinTotal}"
+        )
+        gameHUD.hudElements.firstOrNull {
+            it.tag == "bombTotal"
+        }?.update(
+            newDisplayText = "${GameManager.bombTotal}"
+        )
         //---------------------//
         gameHUD.drawHUD(hudBatch)
     }

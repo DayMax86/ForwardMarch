@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -55,7 +56,8 @@ class MysterySquare(
                         }
                         else -> {
                             // Do something good!
-                            Gdx.app.log("square", "Lucky you!")
+                            Gdx.app.log("square", "You found a coin. Lucky you!")
+                            GameManager.coinTotal++
                         }
                     }
                 }
