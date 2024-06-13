@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.squares.Square
 
 abstract class Pickup(
     override var associatedBoard: Board?,
@@ -19,6 +20,7 @@ abstract class Pickup(
     override var movementTarget: Vector2,
     override var interpolationType: Interpolation = Interpolation.circle
 ) : BoardObject() {
+
     open fun initialise() {
         associatedBoard?.let {
             this.updateBoundingBox(
@@ -32,6 +34,10 @@ abstract class Pickup(
         idleAnimation?.source = this
         deathAnimation.source = this
         idleAnimation?.activate()
+    }
+
+    open fun use(xPos: Int = boardXpos , yPos: Int = boardYpos, square: Square? = null) {
+
     }
 
     override fun kill() {

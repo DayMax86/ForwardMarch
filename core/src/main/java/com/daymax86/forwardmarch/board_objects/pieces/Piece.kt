@@ -81,7 +81,9 @@ abstract class Piece(
                     GameManager.coinTotal++
                 }
                 if (other is Bomb) {
-                    GameManager.bombTotal++
+                    if (!other.active) {
+                        GameManager.bombTotal++
+                    }
                 }
                 other.kill()
             }

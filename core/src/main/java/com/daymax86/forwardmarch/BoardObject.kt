@@ -40,7 +40,7 @@ abstract class BoardObject() {
         highlight = !highlight
     }
 
-    fun getAllAnimations(): MutableList<SpriteAnimation?>{
+    fun getAllAnimations(): MutableList<SpriteAnimation?> {
         return mutableListOf(
             deathAnimation, idleAnimation
         )
@@ -87,8 +87,10 @@ abstract class BoardObject() {
                 sq.onEnter(this)
                 // Before adding to new square's contents, resolve collisions
                 sq.contents.forEach { other ->
-                    collisionQueue.add {
-                        this.collide(other)
+                    if (other != this) {
+                        collisionQueue.add {
+                            this.collide(other)
+                        }
                     }
                 }
                 sq.contents.add(this)
@@ -116,10 +118,6 @@ abstract class BoardObject() {
 
     open fun collide(other: BoardObject) {
 
-    }
-
-    open fun collide(other: Square) {
-        other.onEnter(this)
     }
 
     open fun kill() {
