@@ -18,7 +18,7 @@ abstract class Pickup(
     override var boundingBox: BoundingBox,
     override var currentPosition: Vector2,
     override var movementTarget: Vector2,
-    override var interpolationType: Interpolation = Interpolation.circle
+    override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
 
     open fun initialise() {

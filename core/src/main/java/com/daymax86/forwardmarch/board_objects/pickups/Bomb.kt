@@ -82,7 +82,7 @@ class Bomb(
 
             TileColours.OTHER -> {}
         }
-        val removeActions = mutableListOf<() -> Unit>()
+
         GameManager.boards.forEach { board ->
             board.squaresList.firstOrNull { square ->
                 square == targetSquare
@@ -97,7 +97,7 @@ class Bomb(
                     )
             }
         }
-        removeActions.forEach { it.invoke() }
+        GameManager.bombTotal -= 1
     }
 
     override fun kill() {
