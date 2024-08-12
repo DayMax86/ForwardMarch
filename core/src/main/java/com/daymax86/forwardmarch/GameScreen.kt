@@ -22,6 +22,7 @@ import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
@@ -138,6 +139,17 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
 
+                    (Input.Keys.S) -> {
+                        //Show the shop
+
+                        if (!GameManager.shops[0].displayShopWindow) {
+                            GameManager.shops[0].enterShop()
+                        } else {
+                            Gdx.app.log("shop", "Exiting shop")
+                            GameManager.shops[0].exitShop()
+                        }
+                    }
+
                 }
                 return true
             }
@@ -166,6 +178,13 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawAnimations(GameManager.activeAnimations)
 
         application.batch.end()
+
+        //Draw any popup windows here...
+        GameManager.shops.forEach { shop ->
+            if (shop.displayShopWindow) {
+                shop.shopWindow.render()
+            }
+        }
 
         hudBatch.projectionMatrix = hudCamera.combined
         hudBatch.begin()
@@ -346,6 +365,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameCamera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
         gameCamera.update()
         gameHUD.resize(hudCamera.viewportWidth, hudCamera.viewportHeight)
+        GameManager.shops.forEach{ shop ->
+            shop.shopWindow.resize(gameCamera.viewportWidth.toInt(), gameCamera.viewportHeight.toInt())
+        }
     }
 
     override fun pause() {

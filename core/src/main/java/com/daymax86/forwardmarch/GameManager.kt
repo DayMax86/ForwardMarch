@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
@@ -33,6 +34,7 @@ object GameManager {
     val boards: MutableList<Board> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
+    val shops: MutableList<Shop> = mutableListOf()
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
@@ -64,6 +66,11 @@ object GameManager {
         EnemyManager.spawnEnemy(PieceTypes.PAWN,5,5,testBoard) // Testing
         boards.add(testBoard2)
         boards.add(testBoard3)
+
+        val testShop = Shop(
+            associatedBoard = GameManager.boards.elementAt(0)
+        )
+        shops.add(testShop)
 
         setStartingLayout()
         setEnemyPieces()

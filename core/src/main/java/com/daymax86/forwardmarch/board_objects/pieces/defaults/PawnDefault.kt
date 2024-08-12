@@ -90,7 +90,7 @@ open class PawnDefault(
                                 upIndex - GameManager.DIMENSIONS
                             ) else upIndex
                         }.let {
-                            if (it.contents.isEmpty()) {
+                            if (it.canBeEntered()) {
                                 this.movement.add(it)
                             } else {
                                 upChecked = true

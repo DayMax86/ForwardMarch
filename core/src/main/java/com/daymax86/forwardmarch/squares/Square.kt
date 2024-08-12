@@ -8,6 +8,7 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
+import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.inputTypes
 
 enum class TileColours {
@@ -36,7 +37,7 @@ abstract class Square {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
-                        if (this.contents.isEmpty()) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
+                        if (this.canBeEntered()) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
                             if (GameManager.selectedPiece!!.movement.contains(this)) {
                                 GameManager.selectedPiece!!.move(
                                     this.boardXpos,
@@ -73,6 +74,15 @@ abstract class Square {
                 }
             }
         }
+    }
+
+    fun canBeEntered() : Boolean {
+        for (bo in this.contents) {
+            if (bo !is Pickup) {
+                return false
+            }
+        }
+        return true
     }
 
     fun onHover() {

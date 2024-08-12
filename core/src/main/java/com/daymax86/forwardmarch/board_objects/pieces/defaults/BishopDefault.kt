@@ -103,7 +103,7 @@ open class BishopDefault(
                     b?.squaresList?.first { square ->
                         square.boardXpos == xPos && square.boardYpos == yPos
                     }?.let {
-                        if (it.contents.isEmpty() && !this.movement.contains(it)) {
+                        if (it.canBeEntered() && !this.movement.contains(it)) {
                             this.movement.add(it)
                         } else {
                             upLeftChecked = true
@@ -132,7 +132,7 @@ open class BishopDefault(
                     b?.squaresList?.first { square ->
                         square.boardXpos == xPos && square.boardYpos == yPos
                     }?.let {
-                        if (it.contents.isEmpty() && !this.movement.contains(it)) {
+                        if (it.canBeEntered() && !this.movement.contains(it)) {
                             this.movement.add(it)
                         } else {
                             upRightChecked = true
@@ -148,7 +148,12 @@ open class BishopDefault(
                     yPos = this.boardYpos - dlIndex
                     if (yPos < 1) {
                         yPos = DIMENSIONS - abs(yPos)
-                        b = GameManager.boards[0] // Boards offscreen will be removed from stack
+                        val bIndex = GameManager.boards.indexOf(this.associatedBoard) - 1
+                        if (bIndex < 0) {
+                            downLeftChecked = true
+                            continue
+                        }
+                        b = GameManager.boards[bIndex]
                     }
 
                     xPos = this.boardXpos - dlIndex
@@ -161,10 +166,10 @@ open class BishopDefault(
                     b?.squaresList?.first { square ->
                         square.boardXpos == xPos && square.boardYpos == yPos
                     }?.let {
-                        if (it.contents.isEmpty() && !this.movement.contains(it)) {
+                        if (it.canBeEntered() && !this.movement.contains(it)) {
                             this.movement.add(it)
                         } else {
-                            upLeftChecked = true
+                            downLeftChecked = true
                         }
                     }
                 }
@@ -178,7 +183,12 @@ open class BishopDefault(
                     yPos = this.boardYpos - drIndex
                     if (yPos < 1) {
                         yPos = DIMENSIONS - abs(yPos)
-                        b = GameManager.boards[0] // Boards offscreen will be removed from stack
+                        val bIndex = GameManager.boards.indexOf(this.associatedBoard) - 1
+                        if (bIndex < 0) {
+                            downRightChecked = true
+                            continue
+                        }
+                        b = GameManager.boards[bIndex]
                     }
 
                     xPos = this.boardXpos + drIndex
@@ -191,10 +201,10 @@ open class BishopDefault(
                     b?.squaresList?.first { square ->
                         square.boardXpos == xPos && square.boardYpos == yPos
                     }?.let {
-                        if (it.contents.isEmpty() && !this.movement.contains(it)) {
+                        if (it.canBeEntered() && !this.movement.contains(it)) {
                             this.movement.add(it)
                         } else {
-                            upLeftChecked = true
+                            downRightChecked = true
                         }
                     }
                 }

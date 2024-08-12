@@ -90,7 +90,7 @@ open class RookDefault(
                     this.associatedBoard!!.squaresList.first { square ->
                         square.boardXpos == leftIndex && square.boardYpos == this.boardYpos
                     }.let {
-                        if (it.contents.isEmpty()) {
+                        if (it.canBeEntered()) {
                             this.movement.add(it)
                         } else {
                             leftChecked = true
@@ -110,7 +110,7 @@ open class RookDefault(
                     this.associatedBoard!!.squaresList.first { square ->
                         square.boardXpos == rightIndex && square.boardYpos == this.boardYpos
                     }.let {
-                        if (it.contents.isEmpty()) {
+                        if (it.canBeEntered()) {
                             this.movement.add(it)
                         } else {
                             rightChecked = true
@@ -137,7 +137,7 @@ open class RookDefault(
                                 upIndex - GameManager.DIMENSIONS
                             ) else upIndex
                         }.let {
-                            if (it.contents.isEmpty()) {
+                            if (it.canBeEntered()) {
                                 this.movement.add(it)
                             } else {
                                 upChecked = true
@@ -163,7 +163,7 @@ open class RookDefault(
                         boardDown.squaresList.first { square ->
                             square.boardXpos == this.boardXpos && square.boardYpos == downIndex1
                         }.let {
-                            if (it.contents.isEmpty()) {
+                            if (it.canBeEntered()) {
                                 this.movement.add(it)
                             } else {
                                 downChecked = true
@@ -179,7 +179,7 @@ open class RookDefault(
                         boardDown.squaresList.first { square ->
                             square.boardXpos == this.boardXpos && square.boardYpos == downIndex2
                         }.let {
-                            if (it.contents.isEmpty()) {
+                            if (it.canBeEntered()) {
                                 this.movement.add(it)
                             } else {
                                 downChecked = true
@@ -196,7 +196,7 @@ open class RookDefault(
                         boardDown.squaresList.first { square ->
                             square.boardXpos == this.boardXpos && square.boardYpos == downIndex3
                         }.let {
-                            if (it.contents.isEmpty()) {
+                            if (it.canBeEntered()) {
                                 this.movement.add(it)
                             } else {
                                 downChecked = true
