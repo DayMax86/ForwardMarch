@@ -62,11 +62,11 @@ abstract class Piece(
     }
 
     override fun onHover() {
-
+        super.onHover()
     }
 
     override fun onExitHover() {
-
+        super.onExitHover()
     }
 
     override fun collide(other: BoardObject) {

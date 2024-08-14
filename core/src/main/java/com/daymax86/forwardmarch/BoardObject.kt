@@ -29,11 +29,11 @@ abstract class BoardObject() {
     abstract var interpolationType: Interpolation
 
     open fun onHover() {
-        //highlight = true
+        highlight = true
     }
 
     open fun onExitHover() {
-
+        highlight = false
     }
 
     open fun onClick(button: Int) {

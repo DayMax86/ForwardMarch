@@ -17,7 +17,7 @@ class GameHUD(gameScreen: GameScreen) {
     val hudElements: MutableList<HUDElement> = mutableListOf()
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
-        gameScreen.windowHeight.toFloat()
+        gameScreen.windowHeight.toFloat(),
     )
 
     init {

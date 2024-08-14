@@ -34,7 +34,7 @@ object GameManager {
     val boards: MutableList<Board> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
-    val shops: MutableList<Shop> = mutableListOf()
+    var currentShop: Shop? = null
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
@@ -68,9 +68,9 @@ object GameManager {
         boards.add(testBoard3)
 
         val testShop = Shop(
-            associatedBoard = GameManager.boards.elementAt(0)
+            associatedBoard = boards.elementAt(0)
         )
-        shops.add(testShop)
+        currentShop = testShop
 
         setStartingLayout()
         setEnemyPieces()

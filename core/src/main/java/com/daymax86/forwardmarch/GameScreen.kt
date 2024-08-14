@@ -132,6 +132,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                             GameManager.forwardMarch(1)
                         }
                     }
+
                     (Input.Keys.Z) -> {
                         if (!GameManager.marchInProgress) {
                             // Undo moves since last forwardMarch
@@ -141,13 +142,33 @@ class GameScreen(private val application: MainApplication) : Screen {
 
                     (Input.Keys.S) -> {
                         //Show the shop
-
-                        if (!GameManager.shops[0].displayShopWindow) {
-                            GameManager.shops[0].enterShop()
-                        } else {
-                            Gdx.app.log("shop", "Exiting shop")
-                            GameManager.shops[0].exitShop()
+                        GameManager.currentShop!!.displayShopWindow =
+                            !GameManager.currentShop!!.displayShopWindow
+                        if (GameManager.currentShop != null) {
+                            if (GameManager.currentShop!!.displayShopWindow) {
+                                GameManager.currentShop!!.enterShop()
+                            } else {
+                                GameManager.currentShop!!.displayShopWindow = false
+                                GameManager.currentShop!!.exitShop()
+                            }
                         }
+                    }
+
+                    (Input.Keys.M) -> {
+                        Gdx.app.log(
+                            "mouse",
+                            "Mouse position (GameScreen) = (${
+                                getMouseBox(
+                                    Gdx.input.x,
+                                    Gdx.input.y,
+                                ).min.x
+                            }, ${
+                                getMouseBox(
+                                    Gdx.input.x,
+                                    Gdx.input.y,
+                                ).min.y
+                            })"
+                        )
                     }
 
                 }
@@ -179,10 +200,9 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         application.batch.end()
 
-        //Draw any popup windows here...
-        GameManager.shops.forEach { shop ->
-            if (shop.displayShopWindow) {
-                shop.shopWindow.render()
+        if (GameManager.currentShop != null) {
+            if (GameManager.currentShop!!.displayShopWindow) {
+                GameManager.currentShop!!.shopWindow.render()
             }
         }
 
@@ -229,8 +249,8 @@ class GameScreen(private val application: MainApplication) : Screen {
         anims.forEach { anim ->
             application.batch.draw(
                 anim.anim.getKeyFrame(anim.elapsedTime, anim.loop),
-                anim.source?.boundingBox?.min?.x?: anim.x,
-                anim.source?.boundingBox?.min?.y?: anim.y,
+                anim.source?.boundingBox?.min?.x ?: anim.x,
+                anim.source?.boundingBox?.min?.y ?: anim.y,
                 anim.width,
                 anim.height,
             )
@@ -252,8 +272,10 @@ class GameScreen(private val application: MainApplication) : Screen {
                 obj.image
             }
             // If it's not yet in position, keep lerping
-            obj.currentPosition.x = obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x,0.25f)
-            obj.currentPosition.y = obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y,0.25f)
+            obj.currentPosition.x =
+                obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x, 0.25f)
+            obj.currentPosition.y =
+                obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y, 0.25f)
             //obj.currentPosition.lerp(obj.movementTarget,0.25f)
             obj.updateBoundingBox()
             // Really the above code shouldn't be under the 'drawObjects' title since this isn't drawing!
@@ -365,9 +387,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameCamera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
         gameCamera.update()
         gameHUD.resize(hudCamera.viewportWidth, hudCamera.viewportHeight)
-        GameManager.shops.forEach{ shop ->
-            shop.shopWindow.resize(gameCamera.viewportWidth.toInt(), gameCamera.viewportHeight.toInt())
-        }
+        // TODO() Resize any popup windows
     }
 
     override fun pause() {

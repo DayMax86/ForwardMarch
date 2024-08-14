@@ -14,8 +14,8 @@ import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.TileColours
 
 class Bomb(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/bomb.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/bomb.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,

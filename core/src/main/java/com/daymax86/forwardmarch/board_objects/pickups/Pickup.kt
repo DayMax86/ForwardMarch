@@ -21,6 +21,14 @@ abstract class Pickup(
     override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
 
+    override fun onHover() {
+        super.onHover()
+    }
+
+    override fun onExitHover() {
+        super.onExitHover()
+    }
+
     open fun initialise() {
         associatedBoard?.let {
             this.updateBoundingBox(
