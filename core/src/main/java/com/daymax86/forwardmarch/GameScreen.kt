@@ -4,10 +4,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
@@ -21,6 +23,7 @@ import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
 import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
+import com.daymax86.forwardmarch.GameManager.currentShop
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.squares.Square
@@ -87,6 +90,13 @@ class GameScreen(private val application: MainApplication) : Screen {
                     )
 
                 }
+
+                if (GameManager.currentShop != null) {
+                    currentShop!!.shopItems.let { items ->
+                        currentShop!!.shopWindow.checkPopupCollisions(items, button)
+                    }
+                }
+
                 return true
             }
 
@@ -148,27 +158,9 @@ class GameScreen(private val application: MainApplication) : Screen {
                             if (GameManager.currentShop!!.displayShopWindow) {
                                 GameManager.currentShop!!.enterShop()
                             } else {
-                                GameManager.currentShop!!.displayShopWindow = false
                                 GameManager.currentShop!!.exitShop()
                             }
                         }
-                    }
-
-                    (Input.Keys.M) -> {
-                        Gdx.app.log(
-                            "mouse",
-                            "Mouse position (GameScreen) = (${
-                                getMouseBox(
-                                    Gdx.input.x,
-                                    Gdx.input.y,
-                                ).min.x
-                            }, ${
-                                getMouseBox(
-                                    Gdx.input.x,
-                                    Gdx.input.y,
-                                ).min.y
-                            })"
-                        )
                     }
 
                 }
@@ -197,6 +189,24 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         drawBoardObjects(GameManager.getAllObjects())
         drawAnimations(GameManager.activeAnimations)
+
+//        // TESTING --------------------------
+//        val shapeRenderer = ShapeRenderer()
+//        shapeRenderer.projectionMatrix = gameCamera.combined
+//        GameManager.pieces.forEach { piece ->
+//                shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+//                shapeRenderer.color = Color.RED
+//                shapeRenderer.rect(
+//                    piece.boundingBox.min.x,
+//                    piece.boundingBox.min.y,
+//                    SQUARE_WIDTH,
+//                    SQUARE_HEIGHT,
+//                )
+//                shapeRenderer.end()
+//            }
+//
+//        //----------------------------------
+
 
         application.batch.end()
 
@@ -387,7 +397,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameCamera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
         gameCamera.update()
         gameHUD.resize(hudCamera.viewportWidth, hudCamera.viewportHeight)
-        // TODO() Resize any popup windows
+        if (GameManager.currentShop != null) {
+            GameManager.currentShop!!.shopWindow.resize(width, height)
+        }
     }
 
     override fun pause() {

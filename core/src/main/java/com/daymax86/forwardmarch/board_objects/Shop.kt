@@ -7,11 +7,12 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameHUD
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.PopupWindow
+import com.daymax86.forwardmarch.ShopPopup
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
 
 class Shop(
@@ -41,10 +42,13 @@ class Shop(
 ) : BoardObject() {
 
     var displayShopWindow: Boolean = false
-    val shopWindow = PopupWindow()
+    val shopWindow = ShopPopup()
 
     val shopItems: MutableList<BoardObject> =
         mutableListOf() // If non-board items can be bought this will need updating!
+
+    // Remember which objects were clickable before opening shop
+    private val clickables: MutableList<BoardObject> = mutableListOf()
 
     init {
         shopWindow.backgroundImage = Texture(Gdx.files.internal("shop/shop_background.png"))
@@ -55,29 +59,36 @@ class Shop(
         stockShop()
         GameManager.currentShop = this
         displayShopWindow = true
+        clickables.clear()
+        GameManager.getAllObjects().forEach { obj ->
+            if (obj.clickable) {
+                clickables.add(obj)
+            }
+            obj.clickable = false
+        }
     }
 
     private fun stockShop() {
         shopItems.add(Bomb())
-        shopItems.add(PawnDefault())
-
-        var i = 1
+        shopItems.add(BishopDefault())
         shopItems.forEach { item ->
-            item.updateBoundingBox(
-                x = GameManager.EDGE_BUFFER + (GameManager.ENVIRONMENT_WIDTH / 4 * i),
-                y = GameManager.ENVIRONMENT_HEIGHT / 6,
-                width = GameManager.SQUARE_WIDTH,
-                height = GameManager.SQUARE_HEIGHT,
-            )
-            i++
-        }.apply { i = 1 }
+            item.clickable = true
+        }
     }
 
     fun exitShop() {
         displayShopWindow = false
+        this.shopItems.forEach { item ->
+            if (item is Piece) {
+                clickables.add(item)
+            }
+        }
+        this.shopItems.clear()
         GameManager.currentShop = null
+        GameManager.getAllObjects().forEach { obj ->
+            obj.clickable = clickables.contains(obj)
+        }
         shopWindow.dispose()
-
     }
 
 }

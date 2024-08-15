@@ -48,17 +48,22 @@ abstract class Piece(
     }
 
     override fun onClick(button: Int) {
-        if (clickable) {
+        if (this.clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
                     if (GameManager.selectedPiece == null) {
-                        GameManager.selectPiece(this)
+                        GameManager.selectPiece(this, false)
                     } else {
                         GameManager.deselectPiece()
                     }
                 }
             }
         }
+    }
+
+    override fun onShopClick(button: Int) {
+        GameManager.pieces.add(this)
+        GameManager.selectPiece(this, true)
     }
 
     override fun onHover() {

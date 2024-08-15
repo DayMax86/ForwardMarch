@@ -63,7 +63,7 @@ object GameManager {
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
 
         boards.add(testBoard)
-        EnemyManager.spawnEnemy(PieceTypes.PAWN,5,5,testBoard) // Testing
+        EnemyManager.spawnEnemy(PieceTypes.PAWN, 5, 5, testBoard) // Testing
         boards.add(testBoard2)
         boards.add(testBoard3)
 
@@ -190,7 +190,7 @@ object GameManager {
     private fun appendBoard(difficultyModifier: Int) {
         var board: Board = StandardBoard()
         val yPos =
-            (BOARD_STARTING_Y + (boards.size -1) * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
+            (BOARD_STARTING_Y + (boards.size - 1) * SQUARE_HEIGHT * (DIMENSIONS) - (SQUARE_HEIGHT)).toInt()
         KtxAsync.launch {
             when (difficultyModifier) {
                 1 -> {
@@ -275,18 +275,33 @@ object GameManager {
         }
     }
 
-    fun selectPiece(piece: Piece) {
-        firstMoveComplete = true
-        if (!piece.hostile && !moveLimitReached) {
+    fun selectPiece(piece: Piece, shopPurchase: Boolean) {
+        if (!shopPurchase) {
+            firstMoveComplete = true
+            if (!piece.hostile && !moveLimitReached) {
+                selectedPiece = piece
+                piece.highlight = true
+                updateValidMoves()
+                for (board in boards) {
+                    for (square in board.squaresList) {
+                        if (piece.movement.contains(square)) {
+                            square.swapToAltHighlight(true)
+                            square.highlight = true
+                        }
+                    }
+                }
+                freezeHighlights = true
+            }
+        } else {
+            // Must've been bought in the shop
             selectedPiece = piece
             piece.highlight = true
-            piece.getValidMoves()
+            // Player must place their new piece behind or in line with the king
             for (board in boards) {
                 for (square in board.squaresList) {
-                    if (piece.movement.contains(square)) {
-                        square.swapToAltHighlight(true)
-                        square.highlight = true
-                    }
+                    square.swapToAltHighlight(true)
+                    square.highlight = true
+                    selectedPiece!!.movement.add(square)
                 }
             }
             freezeHighlights = true
@@ -299,6 +314,13 @@ object GameManager {
             freezeHighlights = false
             selectedPiece!!.movement.forEach {
                 it.highlight = false
+            }
+            if (currentShop != null) {
+                currentShop!!.shopItems.filter { p ->
+                    p == selectedPiece
+                }.apply {
+                    currentShop!!.exitShop()
+                }
             }
         }
         selectedPiece = null
@@ -330,7 +352,7 @@ object GameManager {
         // ROOKS
         placeStartingRooks()
         // BISHOPS
-        placeStartingBishops()
+        //placeStartingBishops()
     }
 
     private fun placeStartingPawns() {

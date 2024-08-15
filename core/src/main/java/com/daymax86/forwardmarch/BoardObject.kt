@@ -40,6 +40,10 @@ abstract class BoardObject() {
         highlight = !highlight
     }
 
+    open fun onShopClick(button: Int) {
+
+    }
+
     fun getAllAnimations(): MutableList<SpriteAnimation?> {
         return mutableListOf(
             deathAnimation, idleAnimation
