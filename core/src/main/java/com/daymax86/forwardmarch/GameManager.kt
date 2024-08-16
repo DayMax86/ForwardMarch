@@ -34,6 +34,7 @@ object GameManager {
     val boards: MutableList<Board> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
+    val shops: MutableList<Shop> = mutableListOf()
     var currentShop: Shop? = null
 
     var selectedPiece: Piece? = null
@@ -68,9 +69,12 @@ object GameManager {
         boards.add(testBoard3)
 
         val testShop = Shop(
-            associatedBoard = boards.elementAt(0)
+            associatedBoard = testBoard,
+            boardXpos = 1,
+            boardYpos = 4,
         )
-        currentShop = testShop
+        shops.add(testShop)
+        //currentShop = testShop This should be set on collision with the shop.
 
         setStartingLayout()
         setEnemyPieces()
@@ -318,8 +322,10 @@ object GameManager {
             if (currentShop != null) {
                 currentShop!!.shopItems.filter { p ->
                     p == selectedPiece
-                }.apply {
-                    currentShop!!.exitShop()
+                }.let {
+                    if (it.isNotEmpty()) {
+                        currentShop!!.exitShop()
+                    }
                 }
             }
         }
@@ -341,6 +347,7 @@ object GameManager {
         traps.forEach { allObjects.add(it) }
         enemyPieces.forEach { allObjects.add(it) }
         pickups.forEach { allObjects.add(it) }
+        shops.forEach { allObjects.add(it) }
         return allObjects
     }
 
@@ -352,7 +359,7 @@ object GameManager {
         // ROOKS
         placeStartingRooks()
         // BISHOPS
-        //placeStartingBishops()
+        placeStartingBishops()
     }
 
     private fun placeStartingPawns() {
@@ -389,7 +396,7 @@ object GameManager {
         BishopDefault().also {
             it.associatedBoard = boards[0]
             it.nextBoard = boards[1]
-            it.move(2, 5, null)
+            it.move(6, 1, null)
         }.apply { pieces.add(this) }
     }
 

@@ -17,8 +17,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
 
 class Shop(
     override var associatedBoard: Board?,
-    override var image: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/shop.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/shop.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -52,12 +52,12 @@ class Shop(
 
     init {
         shopWindow.backgroundImage = Texture(Gdx.files.internal("shop/shop_background.png"))
+        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0))
     }
 
     fun enterShop() {
         // Load a new screen within the game screen that can be interacted with
         stockShop()
-        GameManager.currentShop = this
         displayShopWindow = true
         clickables.clear()
         GameManager.getAllObjects().forEach { obj ->
@@ -70,7 +70,7 @@ class Shop(
 
     private fun stockShop() {
         shopItems.add(Bomb())
-        shopItems.add(BishopDefault())
+        shopItems.add(PawnDefault())
         shopItems.forEach { item ->
             item.clickable = true
         }
@@ -83,7 +83,23 @@ class Shop(
                 clickables.add(item)
             }
         }
-        this.shopItems.clear()
+
+        var shopToRemove: Shop? = null
+        GameManager.shops.filter { shop ->
+            shop == this
+        }.let {
+            if (it.isNotEmpty()) {
+                shopToRemove = it[0]
+            }
+        }.also {
+            GameManager.shops.remove(shopToRemove)
+            if (this.associatedBoard != null) {
+                this.associatedBoard!!.squaresList.firstOrNull { square ->
+                    square.boardXpos == shopToRemove!!.boardXpos && square.boardYpos == shopToRemove!!.boardYpos
+                }?.contents?.remove(this)
+            }
+        }
+
         GameManager.currentShop = null
         GameManager.getAllObjects().forEach { obj ->
             obj.clickable = clickables.contains(obj)

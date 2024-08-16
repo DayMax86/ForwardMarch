@@ -12,6 +12,7 @@ import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
+import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
@@ -95,6 +96,11 @@ abstract class Piece(
 
             is Trap -> {
                 other.springTrap(this)
+            }
+
+            is Shop -> {
+                GameManager.currentShop = other
+                GameManager.currentShop!!.enterShop()
             }
         }
     }

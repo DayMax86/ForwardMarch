@@ -54,7 +54,7 @@ open class PawnDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 1 // Set a default value for friendly rook's movement
+    open var range: Int = 1 // Set a default value for friendly pawn's movement
     // Can be overridden by individual pieces
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
@@ -146,7 +146,7 @@ open class PawnDefault(
             // Remove any occupied squares //TODO Account for pickups
             val toRemoveList: MutableList<Square> = mutableListOf()
             this.movement.forEach { sq ->
-                if (this.movement.contains(sq) && sq.contents.isNotEmpty()) {
+                if (this.movement.contains(sq) && !sq.canBeEntered()) {
                     toRemoveList.add(sq)
                 }
             }.also {

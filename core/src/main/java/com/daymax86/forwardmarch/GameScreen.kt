@@ -150,18 +150,18 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
 
-                    (Input.Keys.S) -> {
-                        //Show the shop
-                        GameManager.currentShop!!.displayShopWindow =
-                            !GameManager.currentShop!!.displayShopWindow
-                        if (GameManager.currentShop != null) {
-                            if (GameManager.currentShop!!.displayShopWindow) {
-                                GameManager.currentShop!!.enterShop()
-                            } else {
-                                GameManager.currentShop!!.exitShop()
-                            }
-                        }
-                    }
+//                    (Input.Keys.S) -> {
+//                        //Show the shop
+//                        GameManager.currentShop!!.displayShopWindow =
+//                            !GameManager.currentShop!!.displayShopWindow
+//                        if (GameManager.currentShop != null) {
+//                            if (GameManager.currentShop!!.displayShopWindow) {
+//                                GameManager.currentShop!!.enterShop()
+//                            } else {
+//                                GameManager.currentShop!!.exitShop()
+//                            }
+//                        }
+//                    }
 
                 }
                 return true
@@ -212,7 +212,11 @@ class GameScreen(private val application: MainApplication) : Screen {
 
         if (GameManager.currentShop != null) {
             if (GameManager.currentShop!!.displayShopWindow) {
-                GameManager.currentShop!!.shopWindow.render()
+                try {
+                    GameManager.currentShop!!.shopWindow.render()
+                } catch (e: Exception) {
+                    Gdx.app.log("shop", "Problem calling render on shop (is currentShop set to null properly?)")
+                }
             }
         }
 

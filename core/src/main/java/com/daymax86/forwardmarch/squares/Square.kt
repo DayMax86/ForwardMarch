@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.inputTypes
@@ -78,7 +79,7 @@ abstract class Square {
 
     fun canBeEntered() : Boolean {
         for (bo in this.contents) {
-            if (bo !is Pickup) {
+            if (bo !is Pickup && bo !is Shop) {
                 return false
             }
         }
