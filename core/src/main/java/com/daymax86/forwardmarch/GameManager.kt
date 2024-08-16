@@ -10,6 +10,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
@@ -360,6 +361,8 @@ object GameManager {
         placeStartingRooks()
         // BISHOPS
         placeStartingBishops()
+        // KNIGHTS
+        placeStartingKnights()
     }
 
     private fun placeStartingPawns() {
@@ -420,6 +423,28 @@ object GameManager {
             it.associatedBoard = boards[0]
             it.nextBoard = boards[1]
             it.move(4, 6, null)
+        }.apply { pieces.add(this) }
+        // -----------------------------
+    }
+
+    private fun placeStartingKnights() {
+        KnightDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(2, 1, null)
+        }.apply { pieces.add(this) }
+
+        KnightDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(7, 1, null)
+        }.apply { pieces.add(this) }
+
+        // TESTING ---------------------
+        KnightDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(6, 6, null)
         }.apply { pieces.add(this) }
         // -----------------------------
     }

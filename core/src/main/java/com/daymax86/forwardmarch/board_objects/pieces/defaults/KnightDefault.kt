@@ -1,0 +1,78 @@
+package com.daymax86.forwardmarch.board_objects.pieces.defaults
+
+import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.math.MathUtils
+import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Movement
+import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.MovementTypes
+import com.daymax86.forwardmarch.squares.Square
+import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import kotlin.math.abs
+
+open class KnightDefault(
+    override var image: Texture = Texture(Gdx.files.internal("sprites/black_knight_256.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_knight_256_highlighted.png")),
+    override var highlight: Boolean = false,
+    override var boardXpos: Int = -1,
+    override var boardYpos: Int = -1,
+    override var clickable: Boolean = true,
+    override var hostile: Boolean = false,
+    override var boundingBox: BoundingBox = BoundingBox(),
+    override var pieceType: PieceTypes = PieceTypes.KNIGHT,
+    override val movement: MutableList<Square> = mutableListOf(),
+    override var associatedBoard: Board? = null,
+    override var nextBoard: Board? = null,
+    override var deathAnimation: SpriteAnimation = SpriteAnimation(
+        atlasFilepath = "atlases/black_pawn_death_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
+        loop = false,
+    ),
+    override var idleAnimation: SpriteAnimation? = SpriteAnimation(
+        atlasFilepath = "atlases/coin_spin_animation.atlas",
+        frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
+        loop = true,
+    ),
+    override var visuallyStatic: Boolean = false,
+) : Piece(
+    image = image,
+    highlightedImage = highlightedImage,
+    highlight = highlight,
+    boardXpos = boardXpos,
+    boardYpos = boardYpos,
+    clickable = clickable,
+    hostile = hostile,
+    boundingBox = boundingBox,
+    associatedBoard = associatedBoard,
+) {
+
+    init {
+        this.soundSet.move.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/move_default.ogg")))
+        this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
+    }
+
+    open var range: Int = 0 // Set a default value for friendly knight's movement
+    // Knight's range works differently so set to 0
+
+    override fun getValidMoves(onComplete: () -> Unit): Boolean {
+
+        this.movement.clear() // Reset movement array
+
+        Movement.getMovement(
+            this,
+            MovementTypes.KNIGHT,
+            range,
+            mutableListOf()
+        ).forEach { square ->
+            this.movement.add(square)
+        }.apply {
+            onComplete.invoke()
+        }
+        return this.movement.isNotEmpty() // No valid moves if array is empty
+    }
+}

@@ -1,6 +1,5 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.squares.Square
 import kotlin.math.abs
@@ -158,11 +157,13 @@ object Movement {
                                 }
                             }
                         }
+
                         else -> {/* Do nothing...*/
                         }
                     }
                 }
             }
+
             MovementTypes.BISHOP -> { // --------------------- BISHOP ------------------------------
                 // ---------------------------------------------------------------------------------
                 directions.forEach { direction ->
@@ -315,14 +316,200 @@ object Movement {
                                 }
                             }
                         }
+
                         else -> {}
                     }
                 }
 
             }
 
-            else -> {}
+            MovementTypes.KNIGHT -> {
+                // Check the 8 possible locations the knight can move to
+                var x = piece.boardXpos
+                var y = piece.boardYpos
+                var board: Board? = piece.associatedBoard
 
+                // --------------------(-1 , +2)---------------------------------
+                x = piece.boardXpos - 1
+                y = piece.boardYpos + 2
+                board = piece.associatedBoard
+                if (x > 0) {
+                    // The square isn't off the edge of the board
+                    if (y > GameManager.DIMENSIONS) {
+                        // Must be onto the next board
+                        board = piece.nextBoard
+                        y -= GameManager.DIMENSIONS
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(+1 , +2)---------------------------------
+                x = piece.boardXpos + 1
+                y = piece.boardYpos + 2
+                board = piece.associatedBoard
+                if (x <= GameManager.DIMENSIONS) {
+                    // The square isn't off the edge of the board
+                    if (y > GameManager.DIMENSIONS) {
+                        // Must be onto the next board
+                        board = piece.nextBoard
+                        y -= GameManager.DIMENSIONS
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(+2 , +1)---------------------------------
+                x = piece.boardXpos + 2
+                y = piece.boardYpos + 1
+                board = piece.associatedBoard
+                if (x <= GameManager.DIMENSIONS) {
+                    // The square isn't off the edge of the board
+                    if (y > GameManager.DIMENSIONS) {
+                        // Must be onto the next board
+                        board = piece.nextBoard
+                        y -= GameManager.DIMENSIONS
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(+2 , -1)---------------------------------
+                x = piece.boardXpos + 2
+                y = piece.boardYpos - 1
+                board = piece.associatedBoard
+                if (x <= GameManager.DIMENSIONS) {
+                    // The square isn't off the edge of the board
+                    if (y < 1) {
+                        // Must be onto the previous board
+                        try {
+                            board =
+                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                        } catch (e: IndexOutOfBoundsException) {
+                            // Do something...
+                        }
+                        y = GameManager.DIMENSIONS - abs(y)
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(+1 , -2)---------------------------------
+                x = piece.boardXpos + 1
+                y = piece.boardYpos - 2
+                board = piece.associatedBoard
+                if (x <= GameManager.DIMENSIONS) {
+                    // The square isn't off the edge of the board
+                    if (y < 1) {
+                        // Must be onto the previous board
+                        try {
+                            board =
+                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                        } catch (e: IndexOutOfBoundsException) {
+                            // Do something...
+                        }
+                        y = GameManager.DIMENSIONS - abs(y)
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(-1 , -2)---------------------------------
+                x = piece.boardXpos - 1
+                y = piece.boardYpos - 2
+                board = piece.associatedBoard
+                if (x > 0) {
+                    // The square isn't off the edge of the board
+                    if (y < 1) {
+                        // Must be onto the previous board
+                        try {
+                            board =
+                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                        } catch (e: IndexOutOfBoundsException) {
+                            // Do something...
+                        }
+                        y = GameManager.DIMENSIONS - abs(y)
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(-2 , -1)---------------------------------
+                x = piece.boardXpos - 2
+                y = piece.boardYpos - 1
+                board = piece.associatedBoard
+                if (x > 0) {
+                    // The square isn't off the edge of the board
+                    if (y < 1) {
+                        // Must be onto the previous board
+                        try {
+                            board =
+                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                        } catch (e: IndexOutOfBoundsException) {
+                            // Do something...
+                        }
+                        y = GameManager.DIMENSIONS - abs(y)
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+                // --------------------(-2 , +1)---------------------------------
+                x = piece.boardXpos - 2
+                y = piece.boardYpos + 1
+                board = piece.associatedBoard
+                if (x > 0) {
+                    // The square isn't off the edge of the board
+                    if (y > GameManager.DIMENSIONS) {
+                        // Must be onto the next board
+                        board = piece.nextBoard
+                        y -= GameManager.DIMENSIONS
+                    }
+                    board?.squaresList?.firstOrNull { square ->
+                        square.boardXpos == x
+                            && square.boardYpos == y
+                    }.let { sq ->
+                        if (sq?.canBeEntered() == true) {
+                            movementList.add(sq)
+                        }
+                    }
+                }
+            }
         }
         return movementList
     }
