@@ -370,6 +370,14 @@ object GameManager {
                 it.move(x, 2, null)
             }.apply { pieces.add(this) }
         }
+        // TESTING ---------------------
+        BlackPawn().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(7, 8, null)
+        }.apply { pieces.add(this) }
+        // -----------------------------
+
     }
 
     private fun placeStartingRooks() {
@@ -384,6 +392,14 @@ object GameManager {
             it.nextBoard = boards[1]
             it.move(8, 1, null)
         }.apply { pieces.add(this) }
+
+        // TESTING ---------------------
+        RookDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(6, 8, null)
+        }.apply { pieces.add(this) }
+        // -----------------------------
     }
 
     private fun placeStartingBishops() {
@@ -398,6 +414,14 @@ object GameManager {
             it.nextBoard = boards[1]
             it.move(6, 1, null)
         }.apply { pieces.add(this) }
+
+        // TESTING ---------------------
+        BishopDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(4, 6, null)
+        }.apply { pieces.add(this) }
+        // -----------------------------
     }
 
     private fun setEnemyPieces() {

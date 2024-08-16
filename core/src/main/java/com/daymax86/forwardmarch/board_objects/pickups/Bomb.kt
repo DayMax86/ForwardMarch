@@ -9,6 +9,7 @@ import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.TileColours
@@ -93,6 +94,15 @@ class Bomb(
                 square == targetSquare
             }?.let { oldSquare ->
                 val oldIndex = board.squaresList.indexOf(oldSquare)
+
+                board.squaresList[oldIndex].contents.forEach { bo ->
+                    if (bo is Piece) {
+                        bo.kill()
+                    }
+                }.also {
+                    board.squaresList[oldIndex].contents.clear()
+                }
+
                 board.squaresList[oldIndex] =
                     BrokenSquare(
                         tileImage = img,

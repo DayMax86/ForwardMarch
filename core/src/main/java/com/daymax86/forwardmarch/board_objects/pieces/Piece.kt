@@ -159,7 +159,11 @@ abstract class Piece(
             )
             AudioManager.playRandomSound(soundSet.death)
         }.invokeOnCompletion {
-            GameManager.pieces.remove(this)
+            if (this.hostile) {
+                EnemyManager.enemyPieces.remove(this)
+            } else {
+                GameManager.pieces.remove(this)
+            }
         }
     }
 

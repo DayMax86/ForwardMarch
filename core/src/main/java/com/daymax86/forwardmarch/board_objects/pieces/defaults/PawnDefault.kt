@@ -5,6 +5,9 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Movement
+import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
@@ -59,104 +62,18 @@ open class PawnDefault(
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
-        if (this.associatedBoard != null) { // No need to check if piece is not on a board
-            // and this allows for safe !! usage
-            this.movement.clear() // Reset movement array
-            /* Use piece's XY positions on the board
+        this.movement.clear() // Reset movement array
 
-                    * ----------- PAWN --
-                    * ----?-0-?----------
-                    * ------X------------
-                    * -------------------
-                    */
-
-            var upChecked = false
-
-            // UP
-            // Manage movement across boards
-            var boardUp: Board
-            var acrossBoardsUp = false
-            if (this.nextBoard != null) {
-                for (upIndex in this.boardYpos + 1..this.boardYpos + range) {
-                    if (!upChecked) {
-                        // For i in range ( pieceY +1 <= pieceY + 4)
-                        boardUp =
-                            if (upIndex - GameManager.DIMENSIONS < 1) this.associatedBoard!! else this.nextBoard!!.also {
-                                acrossBoardsUp = true
-                            }
-                        boardUp.squaresList.first { square ->
-                            // Find the square that is pieceY + 1 in y-axis, and no change in x-axis
-                            square.boardXpos == this.boardXpos && square.boardYpos == if (acrossBoardsUp) abs(
-                                upIndex - GameManager.DIMENSIONS
-                            ) else upIndex
-                        }.let {
-                            if (it.canBeEntered()) {
-                                this.movement.add(it)
-                            } else {
-                                upChecked = true
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Determine if the movement will straddle across 2 (or more?) boards
-            // For a pawn this will only be the case if it's in the 8th row
-            if (this.boardYpos == 8) {
-                // Pawn must be at the very top of one board
-                if (this.nextBoard != null) {
-
-                    // DIAGONALS //TODO These will need changing if a square's contents can contain more than one thing
-                    this.nextBoard!!.squaresList.firstOrNull {
-                        it.boardXpos == this.boardXpos - 1 && it.boardYpos == 1
-                    }.let { sq ->
-                        if (sq?.contents?.isEmpty() == false) {
-                            this@PawnDefault.movement.add(sq)
-                        }
-                    }
-                    this.nextBoard!!.squaresList.firstOrNull {
-                        it.boardXpos == this.boardXpos + 1 && it.boardYpos == 1
-                    }.let { sq ->
-                        if (sq?.contents?.isEmpty() == false) {
-                            this@PawnDefault.movement.add(sq)
-                        }
-                    }
-                }
-
-            } else { // Must be contained within one board
-
-                // First check for diagonal spaces to see if there are any hostile pieces
-                // DIAGONALS //TODO These will need changing if a square's contents can contain more than one thing
-                this.associatedBoard!!.squaresList.firstOrNull {
-                    it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos + 1
-                }.let { sq ->
-                    if (sq?.contents?.isEmpty() == false) {
-                        this@PawnDefault.movement.add(sq)
-                    }
-                }
-                this.associatedBoard!!.squaresList.firstOrNull {
-                    it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos + 1
-                }.let { sq ->
-                    if (sq?.contents?.isEmpty() == false) {
-                        this@PawnDefault.movement.add(sq)
-                    }
-                }
-            }
-
-            // Remove any occupied squares //TODO Account for pickups
-            val toRemoveList: MutableList<Square> = mutableListOf()
-            this.movement.forEach { sq ->
-                if (this.movement.contains(sq) && !sq.canBeEntered()) {
-                    toRemoveList.add(sq)
-                }
-            }.also {
-                toRemoveList.forEach { trsq ->
-                    this.movement.remove(trsq)
-                }
-            }
-
+        Movement.getMovement(
+            this,
+            MovementTypes.ROOK,
+            range,
+            mutableListOf(MovementDirections.UP)
+        ).forEach { square ->
+            this.movement.add(square)
+        }.apply {
+            onComplete.invoke()
         }
-        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 }

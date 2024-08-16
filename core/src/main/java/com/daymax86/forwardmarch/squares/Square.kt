@@ -38,7 +38,7 @@ abstract class Square {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
-                        if (this.canBeEntered()) { // Make sure the square isn't occupied (assuming pieces can't share a square with anything else - will need updating if not)
+                        if (this.canBeEntered()) {
                             if (GameManager.selectedPiece!!.movement.contains(this)) {
                                 GameManager.selectedPiece!!.move(
                                     this.boardXpos,

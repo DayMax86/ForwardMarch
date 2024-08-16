@@ -6,6 +6,9 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.Movement
+import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
@@ -53,166 +56,28 @@ open class BishopDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 4 // Set a default value for friendly bishop's movement
+    open var range: Int = 3 // Set a default value for friendly bishop's movement
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
-        if (this.associatedBoard != null) { // No need to check if piece is not on a board
-            // and this allows for safe !! usage
-            this.movement.clear() // Reset movement array
-            /* Use piece's XY positions on the board
+        // and this allows for safe !! usage
+        this.movement.clear() // Reset movement array
 
-                    * --------- BISHOP --
-                    * ------0-----0------
-                    * -------0---0-------
-                    * --------0-0--------
-                    * ---------X---------
-                    * --------0-0--------
-                    * -------0---0-------
-                    * ------0-----0------
-                    */
-
-            // Start from piece's location and go outwards in the diagonals directions,
-            // this way we can stop in that direction if their path is blocked
-
-            var upLeftChecked = false
-            var upRightChecked = false
-            var downLeftChecked = false
-            var downRightChecked = false
-
-            var yPos = this.boardYpos
-            var xPos = this.boardXpos
-            var b = this.associatedBoard
-
-            // UP-LEFT
-            for (ulIndex in 1..range) { // Check n times, where n is the piece's movement range
-                if (!upLeftChecked) {
-                    b = this.associatedBoard
-                    yPos = this.boardYpos + ulIndex
-                    if (yPos > DIMENSIONS) {
-                        yPos = this.boardYpos + ulIndex - DIMENSIONS
-                        b = this.nextBoard
-                    }
-
-                    xPos = this.boardXpos - ulIndex
-                    if (xPos < 1) {
-                        upLeftChecked = true
-                        continue
-                    }
-
-                    // Get the square at the correct coordinates
-                    b?.squaresList?.first { square ->
-                        square.boardXpos == xPos && square.boardYpos == yPos
-                    }?.let {
-                        if (it.canBeEntered() && !this.movement.contains(it)) {
-                            this.movement.add(it)
-                        } else {
-                            upLeftChecked = true
-                        }
-                    }
-                }
-            }
-
-            // UP-RIGHT
-            for (urIndex in 1..range) { // Check n times, where n is the piece's movement range
-                if (!upRightChecked) {
-                    b = this.associatedBoard
-                    yPos = this.boardYpos + urIndex
-                    if (yPos > DIMENSIONS) {
-                        yPos = this.boardYpos + urIndex - DIMENSIONS
-                        b = this.nextBoard
-                    }
-
-                    xPos = this.boardXpos + urIndex
-                    if (xPos > DIMENSIONS) {
-                        upRightChecked = true
-                        continue
-                    }
-
-                    // Get the square at the correct coordinates
-                    b?.squaresList?.first { square ->
-                        square.boardXpos == xPos && square.boardYpos == yPos
-                    }?.let {
-                        if (it.canBeEntered() && !this.movement.contains(it)) {
-                            this.movement.add(it)
-                        } else {
-                            upRightChecked = true
-                        }
-                    }
-                }
-            }
-
-            // DOWN-LEFT
-            for (dlIndex in 1..range) { // Check n times, where n is the piece's movement range
-                if (!downLeftChecked) {
-                    b = this.associatedBoard
-                    yPos = this.boardYpos - dlIndex
-                    if (yPos < 1) {
-                        yPos = DIMENSIONS - abs(yPos)
-                        val bIndex = GameManager.boards.indexOf(this.associatedBoard) - 1
-                        if (bIndex < 0) {
-                            downLeftChecked = true
-                            continue
-                        }
-                        b = GameManager.boards[bIndex]
-                    }
-
-                    xPos = this.boardXpos - dlIndex
-                    if (xPos < 1) {
-                        downLeftChecked = true
-                        continue
-                    }
-
-                    // Get the square at the correct coordinates
-                    b?.squaresList?.first { square ->
-                        square.boardXpos == xPos && square.boardYpos == yPos
-                    }?.let {
-                        if (it.canBeEntered() && !this.movement.contains(it)) {
-                            this.movement.add(it)
-                        } else {
-                            downLeftChecked = true
-                        }
-                    }
-                }
-
-            }
-
-            // DOWN-RIGHT
-            for (drIndex in 1..range) { // Check n times, where n is the piece's movement range
-                if (!downRightChecked) {
-                    b = this.associatedBoard
-                    yPos = this.boardYpos - drIndex
-                    if (yPos < 1) {
-                        yPos = DIMENSIONS - abs(yPos)
-                        val bIndex = GameManager.boards.indexOf(this.associatedBoard) - 1
-                        if (bIndex < 0) {
-                            downRightChecked = true
-                            continue
-                        }
-                        b = GameManager.boards[bIndex]
-                    }
-
-                    xPos = this.boardXpos + drIndex
-                    if (xPos > DIMENSIONS) {
-                        downRightChecked = true
-                        continue
-                    }
-
-                    // Get the square at the correct coordinates
-                    b?.squaresList?.first { square ->
-                        square.boardXpos == xPos && square.boardYpos == yPos
-                    }?.let {
-                        if (it.canBeEntered() && !this.movement.contains(it)) {
-                            this.movement.add(it)
-                        } else {
-                            downRightChecked = true
-                        }
-                    }
-                }
-
-
-            }
+        Movement.getMovement(
+            this,
+            MovementTypes.BISHOP,
+            range,
+            mutableListOf(
+                MovementDirections.UL,
+                MovementDirections.UR,
+                MovementDirections.DL,
+                MovementDirections.DR,
+            )
+        ).forEach { square ->
+            this.movement.add(square)
+        }.apply {
+            onComplete.invoke()
         }
-        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
+
     }
 }
