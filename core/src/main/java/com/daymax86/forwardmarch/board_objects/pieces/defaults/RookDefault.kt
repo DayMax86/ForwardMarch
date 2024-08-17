@@ -28,6 +28,13 @@ open class RookDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
+    override var movementType: MovementTypes = MovementTypes.ROOK,
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(
+        MovementDirections.UP,
+        MovementDirections.DOWN,
+        MovementDirections.LEFT,
+        MovementDirections.RIGHT,
+    ),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -56,7 +63,7 @@ open class RookDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 4 // Set a default value for friendly rook's movement
+    override var range: Int = 4 // Set a default value for friendly rook's movement
     // Can be overridden by individual pieces
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {

@@ -13,6 +13,7 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.items.MovementModifierItem
 import kotlin.math.abs
 
 open class PawnDefault(
@@ -29,6 +30,8 @@ open class PawnDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
+    override var movementType: MovementTypes = MovementTypes.ROOK,
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(MovementDirections.UP),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -57,23 +60,35 @@ open class PawnDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 1 // Set a default value for friendly pawn's movement
+    override var range: Int = 1 // Set a default value for friendly pawn's movement
     // Can be overridden by individual pieces
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
         // TODO() Allow for first-move rule where pawn can move 2 spaces forward. En passant too?
         this.movement.clear() // Reset movement array
 
-        Movement.getMovement(
-            this,
-            MovementTypes.ROOK,
-            range,
-            mutableListOf(MovementDirections.UP)
-        ).forEach { square ->
-            this.movement.add(square)
-        }.apply {
-            onComplete.invoke()
+        var movementModified: Boolean = false
+        GameManager.playerItems.forEach { item ->
+            if (item is MovementModifierItem) {
+                item.applyMovementModifier(this).forEach { square ->
+                    this.movement.add(square)
+                }
+                movementModified = true
+            }
         }
+
+        if (!movementModified) { // Default if no movement modifications on this piece
+            Movement.getMovement(
+                this,
+                MovementTypes.ROOK,
+                range,
+                mutableListOf(MovementDirections.UP)
+            ).forEach { square ->
+                this.movement.add(square)
+            }
+        }
+
+        onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
 }

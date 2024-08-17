@@ -10,6 +10,8 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.Shop
@@ -34,6 +36,9 @@ abstract class Piece(
     override var boundingBox: BoundingBox,
     override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
+    open lateinit var movementType: MovementTypes
+    open val movementDirections: MutableList<MovementDirections> = mutableListOf()
+    open var range: Int = 0
     override var currentPosition: Vector2 = Vector2()
     override var movementTarget: Vector2 = Vector2()
     open lateinit var pieceType: PieceTypes

@@ -28,6 +28,13 @@ open class BishopDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
+    override var movementType: MovementTypes = MovementTypes.BISHOP,
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(
+        MovementDirections.UL,
+        MovementDirections.UR,
+        MovementDirections.DL,
+        MovementDirections.DR,
+    ),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -56,7 +63,7 @@ open class BishopDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 3 // Set a default value for friendly bishop's movement
+    override var range: Int = 3 // Set a default value for friendly bishop's movement
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
         // and this allows for safe !! usage

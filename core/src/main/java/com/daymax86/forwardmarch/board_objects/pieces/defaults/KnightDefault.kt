@@ -28,6 +28,8 @@ open class KnightDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
+    override var movementType: MovementTypes = MovementTypes.KNIGHT,
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -56,7 +58,7 @@ open class KnightDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    open var range: Int = 0 // Set a default value for friendly knight's movement
+    override var range: Int = 0 // Set a default value for friendly knight's movement
     // Knight's range works differently so set to 0
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {

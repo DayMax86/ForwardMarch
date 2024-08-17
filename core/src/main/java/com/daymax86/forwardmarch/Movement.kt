@@ -1,6 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.items.MovementModifierItem
 import com.daymax86.forwardmarch.squares.Square
 import kotlin.math.abs
 
@@ -513,4 +514,5 @@ object Movement {
         }
         return movementList
     }
+
 }

@@ -15,6 +15,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import com.daymax86.forwardmarch.items.ReverseCard
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -38,6 +39,9 @@ object GameManager {
     val shops: MutableList<Shop> = mutableListOf()
     var currentShop: Shop? = null
 
+    // Item-based collections
+    val playerItems: MutableList<Item> = mutableListOf()
+
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
 
@@ -58,6 +62,7 @@ object GameManager {
     var cameraTargetInY: Float = 0f
 
     init {
+        // TESTING ----------------------------------------------------------------------------------------
         val testBoard = StandardBoard(environmentYPos = BOARD_STARTING_Y)
         val testBoard2 =
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * SQUARE_HEIGHT).toInt())
@@ -75,7 +80,8 @@ object GameManager {
             boardYpos = 4,
         )
         shops.add(testShop)
-        //currentShop = testShop This should be set on collision with the shop.
+        playerItems.add(ReverseCard())
+        // ------------------------------------------------------------------------------------------------
 
         setStartingLayout()
         setEnemyPieces()
