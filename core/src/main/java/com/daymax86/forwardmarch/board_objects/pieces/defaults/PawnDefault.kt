@@ -8,12 +8,13 @@ import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import com.daymax86.forwardmarch.items.MovementModifierItem
+import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 import kotlin.math.abs
 
 open class PawnDefault(
@@ -68,7 +69,7 @@ open class PawnDefault(
         this.movement.clear() // Reset movement array
 
         var movementModified: Boolean = false
-        GameManager.playerItems.forEach { item ->
+        Player.playerItems.forEach { item ->
             if (item is MovementModifierItem) {
                 item.applyMovementModifier(this).forEach { square ->
                     this.movement.add(square)

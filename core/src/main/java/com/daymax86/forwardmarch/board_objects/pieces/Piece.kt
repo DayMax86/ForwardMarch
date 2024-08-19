@@ -12,6 +12,7 @@ import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.Shop
@@ -89,11 +90,11 @@ abstract class Piece(
         when (other) {
             is Pickup -> {
                 if (other is Coin) {
-                    GameManager.coinTotal++
+                    Player.changeCoinTotal(1)
                 }
                 if (other is Bomb) {
                     if (!other.active) {
-                        GameManager.bombTotal++
+                        Player.changeBombTotal(1)
                     }
                 }
                 other.kill()

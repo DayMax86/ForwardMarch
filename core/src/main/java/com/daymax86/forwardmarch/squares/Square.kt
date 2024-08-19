@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
@@ -55,7 +56,7 @@ abstract class Square {
                 inputTypes["RMB"] -> {
                     Gdx.app.log("square", "OnClick event for square and RMB")
                     //------------------------FOR TESTING--------------------//
-                    if (GameManager.bombTotal > 0) {
+                    if (Player.bombTotal > 0) {
                         val bomb = Bomb()
                         bomb.move(this.boardXpos, this.boardYpos, this.associatedBoard)
                         bomb.use()

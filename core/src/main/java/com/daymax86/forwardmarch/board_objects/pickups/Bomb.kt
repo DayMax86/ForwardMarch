@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
@@ -55,7 +56,7 @@ class Bomb(
     }
 
     override fun onShopClick(button: Int) {
-        GameManager.bombTotal += 1
+        Player.changeBombTotal(1)
         GameManager.currentShop!!.exitShop()
     }
 
@@ -112,7 +113,7 @@ class Bomb(
                     )
             }
         }
-        GameManager.bombTotal -= 1
+        Player.changeBombTotal(-1)
     }
 
     override fun kill() {

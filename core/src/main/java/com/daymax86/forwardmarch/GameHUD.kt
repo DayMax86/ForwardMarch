@@ -25,6 +25,8 @@ class GameHUD(gameScreen: GameScreen) {
         addMarchElements()
         // Pickup info
         addPickupElements()
+        // Player items
+        addItemsElements()
     }
 
     // Must be called within a batch's begin and end methods!
@@ -61,6 +63,26 @@ class GameHUD(gameScreen: GameScreen) {
                     )
                 }
             }
+        }
+    }
+
+    private fun addItemsElements() {
+        var i = 1
+        Player.playerItems.forEach { item ->
+            val itemContainerHUDElement =
+                HUDElement(
+                    ElementTypes.IMAGE,
+                    image = item.image,
+                    x = 1080 - 180f,
+                    y = 120f * i,
+                    width = 50f,
+                    height = 50f,
+                    visible = true,
+                ) {
+                    Gdx.app.log("HUD", "HUD item ($item) clicked")
+                }
+            i++
+            hudElements.add(itemContainerHUDElement)
         }
     }
 
@@ -107,6 +129,7 @@ class GameHUD(gameScreen: GameScreen) {
             Texture(Gdx.files.internal("hud_elements/forward_march_button_highlighted.png"))
         hudElements.add(forwardMarchButtonHUDElement)
     }
+
     private fun addPickupElements() {
         // COINS
         val coinTotalHUDElement =
@@ -125,7 +148,7 @@ class GameHUD(gameScreen: GameScreen) {
         val coinTotalTextHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = "${GameManager.coinTotal}",
+                displayText = "${Player.coinTotal}",
                 x = (1080 / 2) + 100f,
                 y = (1920 / 6) - 150f,
                 visible = true,
@@ -149,7 +172,7 @@ class GameHUD(gameScreen: GameScreen) {
         val bombTotalTextHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = "${GameManager.bombTotal}",
+                displayText = "${Player.bombTotal}",
                 x = (1080 / 2) + 100f,
                 y = (1920 / 6) - 250f,
                 visible = true,
@@ -172,6 +195,7 @@ class GameHUD(gameScreen: GameScreen) {
     class HUDElement(
         elementType: ElementTypes,
         var texturePath: String = "",
+        var image: Texture = Texture(Gdx.files.internal("sprites/bomb.png")),
         displayText: String = "",
         var tag: String = "", // Used as an identifier for HUD updates
         var x: Float,
@@ -182,8 +206,7 @@ class GameHUD(gameScreen: GameScreen) {
         private var onClickBehaviour: () -> Unit,
     ) {
         val type = elementType
-        lateinit var image: Texture
-        lateinit var highlightImage: Texture
+        var highlightImage: Texture = if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
         var text = displayText
         var boundingBox: BoundingBox = BoundingBox()
         var highlight: Boolean = false
@@ -194,8 +217,8 @@ class GameHUD(gameScreen: GameScreen) {
                 height = GlyphLayout(font, displayText).height
                 Gdx.app.log("HUD", "HUD example text width = $width, height = $height")
             } else {
-                image = Texture(Gdx.files.internal(texturePath))
-                highlightImage = Texture(Gdx.files.internal(texturePath))
+                image = if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
+                highlightImage = if (texturePath == "") highlightImage else image
             }
 
             boundingBox = BoundingBox(

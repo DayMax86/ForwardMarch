@@ -6,17 +6,13 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.Movement
-import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
-import com.daymax86.forwardmarch.squares.Square
+import com.daymax86.forwardmarch.items.base_classes.StatsModifierItem
 
-class ReverseCard(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
+class Knightshoe(
+    override var image: Texture = Texture(Gdx.files.internal("sprites/items/knightshoe.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/knightshoe.png")),
     override var highlight: Boolean = false,
     override var clickable: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -33,21 +29,10 @@ class ReverseCard(
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
-) : MovementModifierItem() {
+) : StatsModifierItem() {
 
-    override fun applyMovementModifier(piece: Piece): MutableList<Square> {
-        val dirs: MutableList<MovementDirections> = mutableListOf()
-        piece.movementDirections.forEach { d ->
-            dirs.add(d)
-        }
-        dirs.add(MovementDirections.DOWN)
-
-        return Movement.getMovement(
-            piece,
-            piece.movementType,
-            piece.range,
-            dirs,
-        )
+    override fun applyStatsModifier() {
+        Player.changeLuck(15)
     }
 
 }

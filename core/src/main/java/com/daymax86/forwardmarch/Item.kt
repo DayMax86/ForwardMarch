@@ -9,6 +9,8 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 enum class ItemTypes {
     MOVEMENT_MODIFIER,
+    STATS_MODIFIER,
+    DEATH_MODIFIER,
 }
 
 abstract class Item() {
@@ -48,10 +50,6 @@ abstract class Item() {
 
     open fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
         boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
-    }
-
-    open fun giveToPlayer() {
-
     }
 
     open fun use() {

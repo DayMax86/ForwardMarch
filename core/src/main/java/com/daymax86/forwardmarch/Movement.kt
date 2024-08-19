@@ -1,7 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.items.MovementModifierItem
+import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 import com.daymax86.forwardmarch.squares.Square
 import kotlin.math.abs
 
@@ -325,15 +325,11 @@ object Movement {
             }
 
             MovementTypes.KNIGHT -> {
-                // Check the 8 possible locations the knight can move to
-                var x = piece.boardXpos
-                var y = piece.boardYpos
-                var board: Board? = piece.associatedBoard
-
                 // --------------------(-1 , +2)---------------------------------
-                x = piece.boardXpos - 1
-                y = piece.boardYpos + 2
-                board = piece.associatedBoard
+                // Check the 8 possible locations the knight can move to
+                var x: Int = piece.boardXpos - 1
+                var y = piece.boardYpos + 2
+                var board: Board? = piece.associatedBoard
                 if (x > 0) {
                     // The square isn't off the edge of the board
                     if (y > GameManager.DIMENSIONS) {

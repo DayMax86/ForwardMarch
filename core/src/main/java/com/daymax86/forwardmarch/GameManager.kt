@@ -15,6 +15,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -40,8 +41,6 @@ object GameManager {
     var currentShop: Shop? = null
 
     // Item-based collections
-    val playerItems: MutableList<Item> = mutableListOf()
-
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
 
@@ -50,9 +49,6 @@ object GameManager {
     var marchInProgress = false
     var moveCounter: Int = 0
     var moveLimit: Int = 3
-
-    var coinTotal: Int = 0
-    var bombTotal: Int = 0
 
     var moveLimitReached: Boolean = false
     var firstMoveComplete: Boolean = false
@@ -80,7 +76,8 @@ object GameManager {
             boardYpos = 4,
         )
         shops.add(testShop)
-        playerItems.add(ReverseCard())
+        Player.playerItems.add(ReverseCard())
+        Player.playerItems.add(Knightshoe())
         // ------------------------------------------------------------------------------------------------
 
         setStartingLayout()

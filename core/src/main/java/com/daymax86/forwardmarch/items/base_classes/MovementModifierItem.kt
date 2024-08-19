@@ -1,4 +1,4 @@
-package com.daymax86.forwardmarch.items
+package com.daymax86.forwardmarch.items.base_classes
 
 import com.daymax86.forwardmarch.Item
 import com.daymax86.forwardmarch.ItemTypes
@@ -10,8 +10,6 @@ import com.daymax86.forwardmarch.squares.Square
 abstract class MovementModifierItem(
     override var itemType: ItemTypes = ItemTypes.MOVEMENT_MODIFIER
 ) : Item() {
-
-    open val piecesAffected: MutableList<PieceTypes> = mutableListOf()
 
     open fun applyMovementModifier(
         piece: Piece,

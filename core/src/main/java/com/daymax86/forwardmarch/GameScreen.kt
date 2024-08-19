@@ -241,12 +241,12 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameHUD.hudElements.firstOrNull {
             it.tag == "coinTotal"
         }?.update(
-            newDisplayText = "${GameManager.coinTotal}"
+            newDisplayText = "${Player.coinTotal}"
         )
         gameHUD.hudElements.firstOrNull {
             it.tag == "bombTotal"
         }?.update(
-            newDisplayText = "${GameManager.bombTotal}"
+            newDisplayText = "${Player.bombTotal}"
         )
         //---------------------//
         gameHUD.drawHUD(hudBatch)

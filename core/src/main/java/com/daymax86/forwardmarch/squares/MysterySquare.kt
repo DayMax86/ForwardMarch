@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -31,7 +31,8 @@ class MysterySquare(
                 Texture(Gdx.files.internal("sprites/mystery_square_256_highlighted.png"))
             altHighlight = true
         } else {
-            highlightedTileImage = Texture(Gdx.files.internal("sprites/mystery_square_256_highlighted.png"))
+            highlightedTileImage =
+                Texture(Gdx.files.internal("sprites/mystery_square_256_highlighted.png"))
             altHighlight = false
         }
     }
@@ -41,23 +42,45 @@ class MysterySquare(
         when (obj) {
             is Piece -> {
                 Gdx.app.log("square", "Trapdoor entered by instance of Piece")
-                val rnd = (1..10).random()
-                rnd.let {
-                    when (it) {
-                        in 1..3 -> { // Unlucky!
-                            Gdx.app.log("square", "Unlucky my friend!")
-                            KtxAsync.launch {
-                                obj.kill()
+                val rnd = (1..100).random()
+                rnd.let { percent ->
+                    if (percent in 1..Player.luckStat) { // Positive effects
+
+                        val goodRnd = (1..100).random()
+                        goodRnd.let {
+                            when (it) {
+                                in 1..50 -> {
+                                    Player.changeCoinTotal(1)
+                                }
+
+                                in 51..75 -> {
+                                    Player.changeBombTotal(1)
+                                }
+
+                                else -> {
+                                    Player.changeLuck(1)
+                                }
+
                             }
                         }
-                        in 4..6 -> {
-                            // Do nothing
-                            Gdx.app.log("square", "Nothing seems to have happened.?.?.?.")
-                        }
-                        else -> {
-                            // Do something good!
-                            Gdx.app.log("square", "You found a coin. Lucky you!")
-                            GameManager.coinTotal++
+                    } else { // Negative effects
+                        val badRnd = (1..100).random()
+                        badRnd.let {
+                            when (it) {
+                                in 1..50 -> {
+                                    Player.changeCoinTotal(-1)
+                                }
+
+                                in 51..75 -> {
+                                    Player.changeBombTotal(-1)
+                                }
+
+                                else -> {
+                                    KtxAsync.launch {
+                                        obj.kill()
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -66,3 +89,5 @@ class MysterySquare(
     }
 
 }
+
+
