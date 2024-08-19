@@ -8,41 +8,19 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.squares.Square
 
-abstract class BoardObject() {
-
+abstract class BoardObject(): GameObject() {
     // All items to appear on the board should be children of this class,
     // including pieces, traps, pickups, interactibles etc.
     abstract var associatedBoard: Board?
-    abstract var image: Texture
-    abstract var highlightedImage: Texture
-    abstract var highlight: Boolean
     abstract var boardXpos: Int
     abstract var boardYpos: Int
-    abstract var clickable: Boolean
     abstract var hostile: Boolean
-    abstract var boundingBox: BoundingBox
     abstract var deathAnimation: SpriteAnimation
     abstract var idleAnimation: SpriteAnimation?
     abstract var currentPosition: Vector2
     abstract var movementTarget: Vector2
     abstract var visuallyStatic: Boolean
     abstract var interpolationType: Interpolation
-
-    open fun onHover() {
-        highlight = true
-    }
-
-    open fun onExitHover() {
-        highlight = false
-    }
-
-    open fun onClick(button: Int) {
-        highlight = !highlight
-    }
-
-    open fun onShopClick(button: Int) {
-
-    }
 
     fun getAllAnimations(): MutableList<SpriteAnimation?> {
         return mutableListOf(
@@ -105,9 +83,7 @@ abstract class BoardObject() {
         GameManager.deselectPiece()
     }
 
-    open fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
-        boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
-    }
+
 
     open fun updateBoundingBox() {
         boundingBox = BoundingBox(

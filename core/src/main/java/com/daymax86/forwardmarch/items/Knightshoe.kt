@@ -12,7 +12,7 @@ import com.daymax86.forwardmarch.items.base_classes.StatsModifierItem
 
 class Knightshoe(
     override var image: Texture = Texture(Gdx.files.internal("sprites/items/knightshoe.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/knightshoe.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/knightshoe_highlighted.png")),
     override var highlight: Boolean = false,
     override var clickable: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),

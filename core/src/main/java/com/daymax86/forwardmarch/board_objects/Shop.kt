@@ -8,12 +8,14 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.GameObject
 import com.daymax86.forwardmarch.ShopPopup
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
+import com.daymax86.forwardmarch.items.Knightshoe
 
 class Shop(
     override var associatedBoard: Board?,
@@ -44,8 +46,7 @@ class Shop(
     var displayShopWindow: Boolean = false
     val shopWindow = ShopPopup()
 
-    val shopItems: MutableList<BoardObject> =
-        mutableListOf() // If non-board items can be bought this will need updating!
+    val shopItems: MutableList<GameObject> = mutableListOf()
 
     // Remember which objects were clickable before opening shop
     private val clickables: MutableList<BoardObject> = mutableListOf()
@@ -71,6 +72,7 @@ class Shop(
     private fun stockShop() {
         shopItems.add(Bomb())
         shopItems.add(PawnDefault())
+        shopItems.add(Knightshoe())
         shopItems.forEach { item ->
             item.clickable = true
         }

@@ -15,6 +15,7 @@ class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
     // Draw everything square to have it display correctly
     val hudElements: MutableList<HUDElement> = mutableListOf()
+    val hudItemElements: MutableList<HUDElement> = mutableListOf()
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
         gameScreen.windowHeight.toFloat(),
@@ -26,11 +27,30 @@ class GameHUD(gameScreen: GameScreen) {
         // Pickup info
         addPickupElements()
         // Player items
-        addItemsElements()
+        checkForItemChanges()
+    }
+
+    private fun checkForItemChanges() {
+        if (Player.playerItems.size != hudItemElements.size) {
+            hudElements.clear()
+            hudItemElements.clear()
+            Player.playerItems.forEach { item ->
+                addItemElement(item)
+            }.also {
+                addMarchElements()
+                addPickupElements()
+                hudItemElements.forEach { hi ->
+                    hudElements.add(hi)
+                }
+            }
+        }
     }
 
     // Must be called within a batch's begin and end methods!
     fun drawHUD(batch: SpriteBatch) {
+
+        checkForItemChanges()
+
         hudElements.forEach { element ->
             if (element.visible) {
                 try {
@@ -66,24 +86,20 @@ class GameHUD(gameScreen: GameScreen) {
         }
     }
 
-    private fun addItemsElements() {
-        var i = 1
-        Player.playerItems.forEach { item ->
-            val itemContainerHUDElement =
-                HUDElement(
-                    ElementTypes.IMAGE,
-                    image = item.image,
-                    x = 1080 - 180f,
-                    y = 120f * i,
-                    width = 50f,
-                    height = 50f,
-                    visible = true,
-                ) {
-                    Gdx.app.log("HUD", "HUD item ($item) clicked")
-                }
-            i++
-            hudElements.add(itemContainerHUDElement)
-        }
+    private fun addItemElement(item: Item) {
+        val itemContainerHUDElement =
+            HUDElement(
+                ElementTypes.IMAGE,
+                image = item.image,
+                x = 1080 - 180f,
+                y = 120f * Player.playerItems.indexOf(item),
+                width = 50f,
+                height = 50f,
+                visible = true,
+            ) {
+                Gdx.app.log("HUD", "HUD item ($item) clicked")
+            }
+        hudItemElements.add(itemContainerHUDElement)
     }
 
     private fun addMarchElements() {
@@ -206,7 +222,8 @@ class GameHUD(gameScreen: GameScreen) {
         private var onClickBehaviour: () -> Unit,
     ) {
         val type = elementType
-        var highlightImage: Texture = if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
+        var highlightImage: Texture =
+            if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
         var text = displayText
         var boundingBox: BoundingBox = BoundingBox()
         var highlight: Boolean = false

@@ -17,6 +17,7 @@ import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
+import com.daymax86.forwardmarch.items.VoodooTotem
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -77,7 +78,7 @@ object GameManager {
         )
         shops.add(testShop)
         Player.playerItems.add(ReverseCard())
-        Player.playerItems.add(Knightshoe())
+        Player.playerItems.add(VoodooTotem())
         // ------------------------------------------------------------------------------------------------
 
         setStartingLayout()

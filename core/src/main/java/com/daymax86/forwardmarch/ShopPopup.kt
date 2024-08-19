@@ -101,7 +101,7 @@ class ShopPopup : Disposable {
     }
 
     fun checkPopupCollisions(
-        collection: List<BoardObject>,
+        collection: List<GameObject>,
         button: Int = -1
     ) {
         collection.forEach { obj ->
