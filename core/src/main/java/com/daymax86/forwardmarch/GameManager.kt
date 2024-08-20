@@ -6,6 +6,7 @@ import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.Shop
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
@@ -42,6 +43,10 @@ object GameManager {
     var currentShop: Shop? = null
 
     // Item-based collections
+    val allItems: MutableList<Item> = mutableListOf()
+
+    var toast: Toast? = null
+
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false
 
@@ -72,18 +77,71 @@ object GameManager {
         boards.add(testBoard3)
 
         val testShop = Shop(
-            associatedBoard = testBoard,
+            associatedBoard = testBoard2,
             boardXpos = 1,
             boardYpos = 4,
         )
         shops.add(testShop)
-        Player.playerItems.add(ReverseCard())
-        Player.playerItems.add(VoodooTotem())
+
+        val testCoin = Coin(
+            associatedBoard = boards[0],
+            boardXpos = 1,
+            boardYpos = 7,
+            clickable = false,
+        ).also { coin ->
+            coin.move(1, 7, boards[0])
+        }
+        pickups.add(testCoin)
+        val testCoin1 = Coin(
+            associatedBoard = boards[0],
+            boardXpos = 2,
+            boardYpos = 7,
+            clickable = false,
+        ).also { coin ->
+            coin.move(2, 7, boards[0])
+        }
+        pickups.add(testCoin1)
+        val testCoin2 = Coin(
+            associatedBoard = boards[0],
+            boardXpos = 3,
+            boardYpos = 7,
+            clickable = false,
+        ).also { coin ->
+            coin.move(3, 7, boards[0])
+        }
+        pickups.add(testCoin2)
+        val testCoin3 = Coin(
+            associatedBoard = boards[0],
+            boardXpos = 4,
+            boardYpos = 7,
+            clickable = false,
+        ).also { coin ->
+            coin.move(4, 7, boards[0])
+        }
+        pickups.add(testCoin3)
+        val testCoin4 = Coin(
+            associatedBoard = boards[0],
+            boardXpos = 5,
+            boardYpos = 7,
+            clickable = false,
+        ).also { coin ->
+            coin.move(5, 7, boards[0])
+        }
+        pickups.add(testCoin4)
+
         // ------------------------------------------------------------------------------------------------
+
+        loadAllItems()
 
         setStartingLayout()
         setEnemyPieces()
         saveGameState()
+    }
+
+    private fun loadAllItems() { // TODO This should be read from a file instead of manually listed here
+        allItems.add(Knightshoe())
+        allItems.add(ReverseCard())
+        allItems.add(VoodooTotem())
     }
 
     private fun saveGameState() {

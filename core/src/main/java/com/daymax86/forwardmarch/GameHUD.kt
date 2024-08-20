@@ -1,6 +1,7 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
+import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -9,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 
-val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"))
+val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"), Gdx.files.internal("fonts/default.png"), false)
 
 class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
@@ -46,10 +47,38 @@ class GameHUD(gameScreen: GameScreen) {
         }
     }
 
+    private fun checkForToast() {
+        val toast = GameManager.toast
+        if (toast != null) {
+            toast.tick()
+            hudElements.removeAll { element ->
+                element.tag == "toast"
+            }
+            if (!toast.isFinished()) {
+                val toastHUDElement =
+                    HUDElement(
+                        ElementTypes.TOAST,
+                        image = toast.backgroundImage,
+                        displayText = toast.text,
+                        x = (1080 / 16).toFloat(),
+                        y = 120f,
+                        width = GlyphLayout(font, toast.text).width,
+                        height = GlyphLayout(font, toast.text).height * 2,
+                        visible = true,
+                        tag = "toast"
+                    ) {
+                        // On click toast should do nothing
+                    }
+                hudElements.add(toastHUDElement)
+            }
+        }
+    }
+
     // Must be called within a batch's begin and end methods!
     fun drawHUD(batch: SpriteBatch) {
 
         checkForItemChanges()
+        checkForToast()
 
         hudElements.forEach { element ->
             if (element.visible) {
@@ -72,6 +101,46 @@ class GameHUD(gameScreen: GameScreen) {
                                 element.x,
                                 element.y,
                             )
+                        }
+
+                        ElementTypes.TOAST -> {
+                            val img =
+                                if (element.highlight) element.highlightImage else element.image
+                            if (GameManager.toast != null) {
+                                // Set alpha value to fade message out over time
+                                batch.setColor(
+                                    batch.color.r,
+                                    batch.color.g,
+                                    batch.color.b,
+                                    1 - (GameManager.toast!!.timeElapsed / GameManager.toast!!.duration) * 1f
+                                )
+                            }
+                            batch.draw(
+                                img, element.x, element.y,
+                                element.width * GameManager.aspectRatio,
+                                element.height * GameManager.aspectRatio,
+                            )
+                            // Return alpha value to full
+                            batch.setColor(
+                                batch.color.r,
+                                batch.color.g,
+                                batch.color.b,
+                                1f
+                            )
+
+                            font.setColor(
+                                255f,
+                                255f,
+                                255f,
+                                1 - (GameManager.toast!!.timeElapsed / GameManager.toast!!.duration) * 1f
+                            )
+                            font.draw(
+                                batch,
+                                element.text,
+                                element.x,
+                                element.y + 2 *GlyphLayout(font, element.text).height,
+                            )
+                            font.setColor(0f, 0f, 0f, 1f)
                         }
                     }
                 } catch (e: Exception) {
@@ -206,6 +275,7 @@ class GameHUD(gameScreen: GameScreen) {
     enum class ElementTypes {
         IMAGE,
         TEXT,
+        TOAST,
     }
 
     class HUDElement(

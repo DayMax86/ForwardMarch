@@ -9,6 +9,7 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.GameObject
+import com.daymax86.forwardmarch.ItemPools
 import com.daymax86.forwardmarch.ShopPopup
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
@@ -53,7 +54,7 @@ class Shop(
 
     init {
         shopWindow.backgroundImage = Texture(Gdx.files.internal("shop/shop_background.png"))
-        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0))
+        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0)) // For TESTING ------
     }
 
     fun enterShop() {
@@ -72,7 +73,9 @@ class Shop(
     private fun stockShop() {
         shopItems.add(Bomb())
         shopItems.add(PawnDefault())
-        shopItems.add(Knightshoe())
+        shopItems.add(GameManager.allItems.filter { item ->
+            item.itemPools.contains(ItemPools.SHOP)
+        }.random())
         shopItems.forEach { item ->
             item.clickable = true
         }

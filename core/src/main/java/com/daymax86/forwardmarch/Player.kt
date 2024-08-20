@@ -18,10 +18,20 @@ object Player {
 
     fun changeCoinTotal(amount: Int) {
         coinTotal += amount
+        if (coinTotal < 0) {
+            coinTotal = 0
+        }
     }
 
     fun changeBombTotal(amount: Int) {
         bombTotal += amount
+        if (bombTotal < 0) {
+            bombTotal = 0
+        }
+    }
+
+    fun canAfford(item: Item): Boolean { // This can be modified if an item reduces shop prices for example
+        return coinTotal >= item.shopPrice
     }
 
 }

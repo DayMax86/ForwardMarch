@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.ItemPools
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.animations.SpriteAnimation
@@ -16,7 +17,7 @@ import com.daymax86.forwardmarch.squares.Square
 
 class ReverseCard(
     override var image: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card_highlighted.png")),
     override var highlight: Boolean = false,
     override var clickable: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -33,6 +34,8 @@ class ReverseCard(
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
+    override var itemPools: MutableList<ItemPools> = mutableListOf(ItemPools.SHOP),
+    override var shopPrice: Int = 5,
 ) : MovementModifierItem() {
 
     override fun applyMovementModifier(piece: Piece): MutableList<Square> {

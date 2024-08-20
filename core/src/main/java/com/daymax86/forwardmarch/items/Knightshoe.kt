@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.ItemPools
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.items.base_classes.StatsModifierItem
@@ -29,6 +30,8 @@ class Knightshoe(
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
     ),
+    override var itemPools: MutableList<ItemPools> = mutableListOf(ItemPools.SHOP),
+    override var shopPrice: Int = 5,
 ) : StatsModifierItem() {
 
     override fun applyStatsModifier() {
