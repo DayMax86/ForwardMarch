@@ -44,6 +44,7 @@ open class PawnDefault(
         loop = true,
     ),
     override var visuallyStatic: Boolean = false,
+    override var shopPrice: Int = 2,
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

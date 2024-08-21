@@ -38,6 +38,7 @@ class Bomb(
     override var boundingBox: BoundingBox = BoundingBox(),
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
+    override var shopPrice: Int = 1,
 ) : Pickup(
     associatedBoard = associatedBoard,
     highlight = highlight,

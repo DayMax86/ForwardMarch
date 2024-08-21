@@ -22,6 +22,7 @@ class SpikeTrap(
     ),
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
+    override var shopPrice: Int = 1,
 ) : Trap() {
 
     override fun springTrap(sprungBy: BoardObject) {

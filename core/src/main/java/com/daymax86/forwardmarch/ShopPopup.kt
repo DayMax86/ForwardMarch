@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
+import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.utils.Disposable
@@ -18,7 +19,7 @@ class ShopPopup : Disposable {
     var xPos = (1080 * 1.1).toFloat()
     var yPos = ((1920 / 6) - 280).toFloat()
 
-    val font = BitmapFont()
+    val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"), Gdx.files.internal("fonts/default.png"), false)
     val batch = SpriteBatch()
     var cam =
         OrthographicCamera((viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat())
@@ -69,6 +70,22 @@ class ShopPopup : Disposable {
                     SQUARE_WIDTH,
                     SQUARE_HEIGHT
                 )
+
+                // Add a price next to each item
+                batch.draw(
+                    Texture(Gdx.files.internal("sprites/coin_front.png")),
+                    item.boundingBox.max.x - (item.boundingBox.width / 2),
+                    item.boundingBox.max.y,
+                    (item.image.width / 4).toFloat(),
+                    (item.image.height / 4).toFloat(),
+                )
+                font.draw(
+                    batch,
+                    "${item.shopPrice}",
+                    item.boundingBox.max.x - (item.boundingBox.width / 2) + (GlyphLayout(font, item.shopPrice.toString()).width),
+                    item.boundingBox.max.y + (GlyphLayout(font, item.shopPrice.toString()).height * 2),
+                )
+
             }
             checkPopupCollisions(items)
         }

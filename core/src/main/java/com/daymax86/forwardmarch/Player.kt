@@ -30,8 +30,8 @@ object Player {
         }
     }
 
-    fun canAfford(item: Item): Boolean { // This can be modified if an item reduces shop prices for example
-        return coinTotal >= item.shopPrice
+    fun canAfford(obj: GameObject): Boolean { // This can be modified if an item reduces shop prices for example
+        return coinTotal >= obj.shopPrice
     }
 
 }

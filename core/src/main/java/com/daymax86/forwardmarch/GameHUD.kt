@@ -16,7 +16,7 @@ class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
     // Draw everything square to have it display correctly
     val hudElements: MutableList<HUDElement> = mutableListOf()
-    val hudItemElements: MutableList<HUDElement> = mutableListOf()
+    private val hudItemElements: MutableList<HUDElement> = mutableListOf()
     private val hudCamera = OrthographicCamera(
         gameScreen.windowWidth.toFloat(),
         gameScreen.windowHeight.toFloat(),
@@ -60,8 +60,8 @@ class GameHUD(gameScreen: GameScreen) {
                         ElementTypes.TOAST,
                         image = toast.backgroundImage,
                         displayText = toast.text,
-                        x = (1080 / 16).toFloat(),
-                        y = 120f,
+                        x = -575f,
+                        y = -900f,
                         width = GlyphLayout(font, toast.text).width,
                         height = GlyphLayout(font, toast.text).height * 2,
                         visible = true,
@@ -138,7 +138,7 @@ class GameHUD(gameScreen: GameScreen) {
                                 batch,
                                 element.text,
                                 element.x,
-                                element.y + 2 *GlyphLayout(font, element.text).height,
+                                element.y + 2 * GlyphLayout(font, element.text).height,
                             )
                             font.setColor(0f, 0f, 0f, 1f)
                         }

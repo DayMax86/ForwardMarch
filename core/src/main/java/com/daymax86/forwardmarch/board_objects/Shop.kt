@@ -42,6 +42,7 @@ class Shop(
     override var movementTarget: Vector2 = Vector2(),
     override var visuallyStatic: Boolean = true,
     override var interpolationType: Interpolation = Interpolation.linear,
+    override var shopPrice: Int = 0,
 ) : BoardObject() {
 
     var displayShopWindow: Boolean = false

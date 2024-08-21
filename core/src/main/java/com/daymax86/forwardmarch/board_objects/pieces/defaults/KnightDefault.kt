@@ -41,6 +41,7 @@ open class KnightDefault(
         loop = true,
     ),
     override var visuallyStatic: Boolean = false,
+    override var shopPrice: Int = 5,
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

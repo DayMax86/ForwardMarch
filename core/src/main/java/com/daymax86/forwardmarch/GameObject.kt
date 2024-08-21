@@ -11,6 +11,7 @@ abstract class GameObject {
     abstract var clickable: Boolean
     abstract var boundingBox: BoundingBox
     abstract var highlight: Boolean
+    abstract var shopPrice: Int
 
     open fun onHover() {
         highlight = true

@@ -6,6 +6,8 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Player
+import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.squares.Square
 
 abstract class Pickup(
@@ -27,6 +29,23 @@ abstract class Pickup(
 
     override fun onExitHover() {
         super.onExitHover()
+    }
+
+    override fun onShopClick(button: Int) {
+        if (Player.canAfford(this)) {
+            when (this) {
+                is Coin -> {
+                    Player.changeCoinTotal(1)
+                }
+                is Bomb -> {
+                    Player.changeBombTotal(1)
+                }
+            }
+            GameManager.currentShop!!.exitShop()
+        } else {
+            // Feedback to the player that they don't have enough money
+            GameManager.toast = Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
+        }
     }
 
     open fun initialise() {

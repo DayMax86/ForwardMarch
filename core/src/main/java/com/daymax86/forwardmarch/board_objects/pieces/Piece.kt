@@ -14,6 +14,7 @@ import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.SoundSet
+import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
@@ -70,16 +71,15 @@ abstract class Piece(
     }
 
     override fun onShopClick(button: Int) {
-        GameManager.pieces.add(this)
-        GameManager.selectPiece(this, true)
-    }
-
-    override fun onHover() {
-        super.onHover()
-    }
-
-    override fun onExitHover() {
-        super.onExitHover()
+        if (Player.canAfford(this)) {
+            GameManager.pieces.add(this)
+            GameManager.selectPiece(this, true)
+            GameManager.currentShop!!.exitShop()
+        } else {
+            // Feedback to the player that they don't have enough money
+            GameManager.toast =
+                Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
+        }
     }
 
     override fun collide(other: BoardObject) {

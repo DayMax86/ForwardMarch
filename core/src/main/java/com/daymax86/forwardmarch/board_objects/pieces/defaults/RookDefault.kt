@@ -46,6 +46,7 @@ open class RookDefault(
         loop = true,
     ),
     override var visuallyStatic: Boolean = false,
+    override var shopPrice: Int = 4,
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

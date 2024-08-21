@@ -33,7 +33,8 @@ open class Trap(
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
     override var visuallyStatic: Boolean = true,
-    override var interpolationType: Interpolation = Interpolation.linear
+    override var interpolationType: Interpolation = Interpolation.linear,
+    override var shopPrice: Int = 1,
 ) : BoardObject() {
 
     open fun springTrap(sprungBy: BoardObject) {

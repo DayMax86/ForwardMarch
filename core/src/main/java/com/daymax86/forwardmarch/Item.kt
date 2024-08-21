@@ -15,7 +15,7 @@ enum class ItemPools {
     SHOP,
 }
 
-abstract class Item(): GameObject() {
+abstract class Item: GameObject() {
     abstract var deathAnimation: SpriteAnimation
     abstract var idleAnimation: SpriteAnimation?
     abstract var currentPosition: Vector2
@@ -23,15 +23,13 @@ abstract class Item(): GameObject() {
     abstract var interpolationType: Interpolation
     abstract var itemType: ItemTypes
     abstract var itemPools: MutableList<ItemPools>
-    abstract var shopPrice: Int
 
     override fun onShopClick(button: Int) {
         if (Player.canAfford(this)) {
             Player.playerItems.add(this)
             GameManager.currentShop!!.exitShop()
         } else {
-            // Feedback to the player that they don't have enough money!
-            Gdx.app.log("shop", "Player doesn't have enough money for this purchase")
+            // Feedback to the player that they don't have enough money
             GameManager.toast = Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
         }
     }
