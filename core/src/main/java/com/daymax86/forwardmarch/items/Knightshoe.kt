@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.ItemPools
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.items.base_classes.StatsModifierItem
@@ -32,7 +32,20 @@ class Knightshoe(
     ),
     override var itemPools: MutableList<ItemPools> = mutableListOf(ItemPools.SHOP),
     override var shopPrice: Int = 5,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Knightshoe",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/items/knightshoe.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "You feel luckier even since you found this" + "\n Chance for positive effects + 15%",
+    ),
 ) : StatsModifierItem() {
+
+    init {
+        applyStatsModifier()
+    }
 
     override fun applyStatsModifier() {
         Player.changeLuck(15)

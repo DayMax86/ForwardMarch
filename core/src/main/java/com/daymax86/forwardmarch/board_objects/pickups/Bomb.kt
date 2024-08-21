@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
@@ -39,6 +40,15 @@ class Bomb(
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
     override var shopPrice: Int = 1,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Bomb",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/bomb.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "A handy explosive. Right click on a square to bomb it, just make sure you don't fall through the hole it leaves behind!",
+    ),
 ) : Pickup(
     associatedBoard = associatedBoard,
     highlight = highlight,

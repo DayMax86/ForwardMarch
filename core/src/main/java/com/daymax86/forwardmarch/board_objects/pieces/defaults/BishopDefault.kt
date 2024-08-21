@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -47,6 +48,15 @@ open class BishopDefault(
     ),
     override var visuallyStatic: Boolean = false,
     override var shopPrice: Int = 4,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Bishop",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/black_bishop_256.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "Bishops can move diagonally along squares of the same colour, and will switch colour when marching forward",
+    ),
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

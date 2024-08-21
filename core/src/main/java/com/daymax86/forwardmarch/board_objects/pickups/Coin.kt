@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 class Coin(
@@ -33,6 +34,15 @@ class Coin(
     override var currentPosition: Vector2 = Vector2(),
     override var movementTarget: Vector2 = Vector2(),
     override var shopPrice: Int = 1,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Coin",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/coin_front.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "For spending in Grumpy Frog's shop",
+    ),
 ) : Pickup(
     associatedBoard = associatedBoard,
     highlight = highlight,

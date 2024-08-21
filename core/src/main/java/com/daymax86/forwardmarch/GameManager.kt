@@ -16,6 +16,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import com.daymax86.forwardmarch.items.Item
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
 import com.daymax86.forwardmarch.items.VoodooTotem
@@ -46,6 +47,7 @@ object GameManager {
     val allItems: MutableList<Item> = mutableListOf()
 
     var toast: Toast? = null
+    var currentInfoBox: InfoBox? = null
 
     var selectedPiece: Piece? = null
     var freezeHighlights: Boolean = false

@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 class SpikeTrap(
@@ -24,6 +25,12 @@ class SpikeTrap(
     override var movementTarget: Vector2 = Vector2(),
     override var shopPrice: Int = 1,
 ) : Trap() {
+
+    init {
+        this.infoBox.titleText = "Spike trap"
+        this.infoBox.description = "Spiky! Traps will destroy any piece - both allied and enemy - which move onto them."
+        this.infoBox.thumbnailImage = image
+    }
 
     override fun springTrap(sprungBy: BoardObject) {
         this.image = Texture(Gdx.files.internal("sprites/spike_trap_256_damage.png"))

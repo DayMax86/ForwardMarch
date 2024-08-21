@@ -1,5 +1,6 @@
 package com.daymax86.forwardmarch
 
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
@@ -12,6 +13,7 @@ abstract class GameObject {
     abstract var boundingBox: BoundingBox
     abstract var highlight: Boolean
     abstract var shopPrice: Int
+    abstract var infoBox: InfoBox
 
     open fun onHover() {
         highlight = true

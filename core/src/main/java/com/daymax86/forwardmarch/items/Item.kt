@@ -1,14 +1,18 @@
-package com.daymax86.forwardmarch
+package com.daymax86.forwardmarch.items
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
+import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.GameObject
+import com.daymax86.forwardmarch.Player
+import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 enum class ItemTypes {
     MOVEMENT_MODIFIER,
     STATS_MODIFIER,
     DEATH_MODIFIER,
+    SHOP_MODIFIER,
 }
 
 enum class ItemPools {
@@ -38,6 +42,16 @@ abstract class Item: GameObject() {
         return mutableListOf(
             deathAnimation, idleAnimation
         )
+    }
+
+    override fun onHover() {
+        super.onHover()
+        GameManager.currentInfoBox = this.infoBox
+    }
+
+    override fun onExitHover() {
+        super.onExitHover()
+        GameManager.currentInfoBox = null
     }
 
     open fun use() {

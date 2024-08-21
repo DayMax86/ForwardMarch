@@ -1,7 +1,7 @@
 package com.daymax86.forwardmarch.items.base_classes
 
-import com.daymax86.forwardmarch.Item
-import com.daymax86.forwardmarch.ItemTypes
+import com.daymax86.forwardmarch.items.Item
+import com.daymax86.forwardmarch.items.ItemTypes
 
 abstract class StatsModifierItem(
     override var itemType: ItemTypes = ItemTypes.STATS_MODIFIER

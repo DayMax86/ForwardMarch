@@ -6,12 +6,11 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.ItemPools
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 import com.daymax86.forwardmarch.squares.Square
 
@@ -36,6 +35,16 @@ class ReverseCard(
     ),
     override var itemPools: MutableList<ItemPools> = mutableListOf(ItemPools.SHOP),
     override var shopPrice: Int = 5,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Reverse card",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "From the popular card game 'Dos', this item changes the movement of certain pieces." +
+            "\n Pawns can now move one space backwards as well as forwards.",
+    ),
 ) : MovementModifierItem() {
 
     override fun applyMovementModifier(piece: Piece): MutableList<Square> {

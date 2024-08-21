@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -42,6 +43,15 @@ open class KnightDefault(
     ),
     override var visuallyStatic: Boolean = false,
     override var shopPrice: Int = 5,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Knight",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/black_knight_256.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "Knights have a unique movement pattern that follow an L shape. They can 'hop over' any pieces.",
+    ),
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

@@ -24,6 +24,7 @@ import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
+import com.daymax86.forwardmarch.items.base_classes.ShopModifierItem
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -157,10 +158,8 @@ abstract class Piece(
 
     override fun kill() {
 
-        Player.playerItems.forEach { item ->
-            if (item is DeathModifierItem) {
-                item.applyDeathModifier(this)
-            }
+        Player.playerItems.filterIsInstance<DeathModifierItem>().forEach { deathItem ->
+            deathItem.applyDeathModifier(this)
         }
 
         KtxAsync.launch {

@@ -16,10 +16,8 @@ class Toast(
 
     fun tick() {
         timeElapsed += 1f
-//        Gdx.app.log("toast", "timeElapsed for toast = $timeElapsed")
         if (isFinished()) {
             GameManager.toast = null
-            Gdx.app.log("toast", "toast finished!")
         }
     }
 

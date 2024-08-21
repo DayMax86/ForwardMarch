@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -14,6 +15,7 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
 import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 import kotlin.math.abs
 
@@ -45,6 +47,15 @@ open class PawnDefault(
     ),
     override var visuallyStatic: Boolean = false,
     override var shopPrice: Int = 2,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Pawn",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/black_pawn_256.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "A lowly pawn. By default it can move one space forward and attack one space on the diagonal.",
+    ),
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,
@@ -70,14 +81,22 @@ open class PawnDefault(
         this.movement.clear() // Reset movement array
 
         var movementModified: Boolean = false
-        Player.playerItems.forEach { item ->
-            if (item is MovementModifierItem) {
-                item.applyMovementModifier(this).forEach { square ->
-                    this.movement.add(square)
-                }
-                movementModified = true
+
+        Player.playerItems.filterIsInstance<MovementModifierItem>().forEach { movementItem ->
+            movementItem.applyMovementModifier(this).forEach { square ->
+                this.movement.add(square)
             }
+            movementModified = true
         }
+
+//        Player.playerItems.forEach { item ->
+//            if (item is MovementModifierItem) {
+//                item.applyMovementModifier(this).forEach { square ->
+//                    this.movement.add(square)
+//                }
+//                movementModified = true
+//            }
+//        }
 
         if (!movementModified) { // Default if no movement modifications on this piece
             Movement.getMovement(

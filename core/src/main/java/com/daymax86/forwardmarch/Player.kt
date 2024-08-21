@@ -1,5 +1,7 @@
 package com.daymax86.forwardmarch
 
+import com.daymax86.forwardmarch.items.Item
+
 object Player {
 
     val playerItems: MutableList<Item> = mutableListOf()

@@ -9,14 +9,15 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.GameObject
-import com.daymax86.forwardmarch.ItemPools
+import com.daymax86.forwardmarch.InfoBox
+import com.daymax86.forwardmarch.items.ItemPools
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.ShopPopup
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
-import com.daymax86.forwardmarch.items.Knightshoe
+import com.daymax86.forwardmarch.items.base_classes.ShopModifierItem
 
 class Shop(
     override var associatedBoard: Board?,
@@ -43,6 +44,15 @@ class Shop(
     override var visuallyStatic: Boolean = true,
     override var interpolationType: Interpolation = Interpolation.linear,
     override var shopPrice: Int = 0,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Shop",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/shop.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "Grumpy Frog's emporium. Make sure you bring some cash!",
+    ),
 ) : BoardObject() {
 
     var displayShopWindow: Boolean = false
@@ -72,6 +82,9 @@ class Shop(
     }
 
     private fun stockShop() {
+        Player.playerItems.filterIsInstance<ShopModifierItem>().forEach { shopItem ->
+            shopItem.applyShopModifier()
+        }
         shopItems.add(Bomb())
         shopItems.add(PawnDefault())
         shopItems.add(GameManager.allItems.filter { item ->

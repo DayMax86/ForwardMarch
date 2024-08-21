@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -47,6 +48,15 @@ open class RookDefault(
     ),
     override var visuallyStatic: Boolean = false,
     override var shopPrice: Int = 4,
+    override var infoBox: InfoBox = InfoBox(
+        titleText = "Rook",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/black_rook_256.png")),
+        x = boundingBox.min.x,
+        y = boundingBox.min.y,
+        width = boundingBox.width.toInt(),
+        height = boundingBox.height.toInt(),
+        description = "Rooks move in straight lines in any of the 4 directions.",
+    ),
 ) : Piece(
     image = image,
     highlightedImage = highlightedImage,

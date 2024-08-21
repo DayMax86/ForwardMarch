@@ -1,7 +1,6 @@
 package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.BitmapFont
@@ -9,8 +8,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.items.Item
 
-val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"), Gdx.files.internal("fonts/default.png"), false)
+val font = BitmapFont(
+    Gdx.files.internal("fonts/default.fnt"),
+    Gdx.files.internal("fonts/default.png"),
+    false
+)
 
 class GameHUD(gameScreen: GameScreen) {
     // HUD elements use the OpenGL coordinate system where the origin is in the centre of the screen
@@ -59,13 +63,13 @@ class GameHUD(gameScreen: GameScreen) {
                     HUDElement(
                         ElementTypes.TOAST,
                         image = toast.backgroundImage,
-                        displayText = toast.text,
+                        text = toast.text,
                         x = -575f,
                         y = -900f,
                         width = GlyphLayout(font, toast.text).width,
                         height = GlyphLayout(font, toast.text).height * 2,
                         visible = true,
-                        tag = "toast"
+                        tag = "toast",
                     ) {
                         // On click toast should do nothing
                     }
@@ -74,11 +78,36 @@ class GameHUD(gameScreen: GameScreen) {
         }
     }
 
+
+    private fun checkForInfoBox() {
+        val infoBox = GameManager.currentInfoBox
+        hudElements.removeAll { element ->
+            element.tag == "info"
+        }
+        if (infoBox != null) {
+            val hudElement = HUDElement(
+                ElementTypes.INFO,
+                image = GameManager.currentInfoBox!!.backgroundImage,
+                thumbnail = GameManager.currentInfoBox!!.thumbnailImage,
+                x = GameManager.currentInfoBox!!.x,
+                y = GameManager.currentInfoBox!!.y,
+                width = GameManager.currentInfoBox!!.width.toFloat(),
+                height = GameManager.currentInfoBox!!.height.toFloat(),
+                visible = true,
+                tag = "info",
+            ) {
+                // OnClick behaviour goes here.
+            }
+            hudElements.add(hudElement)
+        }
+    }
+
     // Must be called within a batch's begin and end methods!
     fun drawHUD(batch: SpriteBatch) {
 
         checkForItemChanges()
         checkForToast()
+        checkForInfoBox()
 
         hudElements.forEach { element ->
             if (element.visible) {
@@ -142,6 +171,42 @@ class GameHUD(gameScreen: GameScreen) {
                             )
                             font.setColor(0f, 0f, 0f, 1f)
                         }
+
+                        ElementTypes.INFO -> {
+
+                            var mouseX = getMouseEnvironmentPosition(hudCamera)?.x ?: 0f
+                            var mouseY = getMouseEnvironmentPosition(hudCamera)?.y ?: 0f
+                            // Draw background box
+                            batch.draw(
+                                element.image,
+                                mouseX,
+                                mouseY,
+                                200f,
+                                200f,
+                            )
+                            // Draw thumbnail image
+                            batch.draw(
+                                element.thumbnail,
+                                mouseX + 10f,
+                                mouseY + 10f,
+                                50f,
+                                50f,
+                            )
+                            // Write title text
+                            font.draw(
+                                batch,
+                                element.titleText,
+                                mouseX + 75f,
+                                mouseY,
+                            )
+                            // Write description
+                            font.draw(
+                                batch,
+                                element.description,
+                                mouseX,
+                                mouseY + (element.thumbnail?.height ?: 50),
+                            )
+                        }
                     }
                 } catch (e: Exception) {
                     Gdx.app.log(
@@ -153,6 +218,10 @@ class GameHUD(gameScreen: GameScreen) {
                 }
             }
         }
+    }
+
+    private fun getMouseEnvironmentPosition(cam: OrthographicCamera): Vector3? {
+        return cam.unproject(Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f))
     }
 
     private fun addItemElement(item: Item) {
@@ -175,7 +244,7 @@ class GameHUD(gameScreen: GameScreen) {
         val totalMarchesCounterHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = GameManager.forwardMarchCounter.toString(),
+                text = GameManager.forwardMarchCounter.toString(),
                 x = 1080 / 2f,
                 y = 1920 / 5f,
                 visible = true,
@@ -187,7 +256,7 @@ class GameHUD(gameScreen: GameScreen) {
         val marchCountdownHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}",
+                text = "Moves used: ${GameManager.moveCounter}/${GameManager.moveLimit}",
                 x = 1080 / 2f,
                 y = 1920 / 6f,
                 visible = true,
@@ -233,7 +302,7 @@ class GameHUD(gameScreen: GameScreen) {
         val coinTotalTextHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = "${Player.coinTotal}",
+                text = "${Player.coinTotal}",
                 x = (1080 / 2) + 100f,
                 y = (1920 / 6) - 150f,
                 visible = true,
@@ -257,7 +326,7 @@ class GameHUD(gameScreen: GameScreen) {
         val bombTotalTextHUDElement =
             HUDElement(
                 ElementTypes.TEXT,
-                displayText = "${Player.bombTotal}",
+                text = "${Player.bombTotal}",
                 x = (1080 / 2) + 100f,
                 y = (1920 / 6) - 250f,
                 visible = true,
@@ -276,13 +345,17 @@ class GameHUD(gameScreen: GameScreen) {
         IMAGE,
         TEXT,
         TOAST,
+        INFO,
     }
 
     class HUDElement(
         elementType: ElementTypes,
         var texturePath: String = "",
         var image: Texture = Texture(Gdx.files.internal("sprites/bomb.png")),
-        displayText: String = "",
+        var thumbnail: Texture? = null,
+        var titleText: String = "",
+        var description: String = "",
+        var text: String = "",
         var tag: String = "", // Used as an identifier for HUD updates
         var x: Float,
         var y: Float,
@@ -294,14 +367,13 @@ class GameHUD(gameScreen: GameScreen) {
         val type = elementType
         var highlightImage: Texture =
             if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
-        var text = displayText
         var boundingBox: BoundingBox = BoundingBox()
         var highlight: Boolean = false
 
         init {
             if (elementType == ElementTypes.TEXT) {
-                width = GlyphLayout(font, displayText).width
-                height = GlyphLayout(font, displayText).height
+                width = GlyphLayout(font, text).width
+                height = GlyphLayout(font, text).height
                 Gdx.app.log("HUD", "HUD example text width = $width, height = $height")
             } else {
                 image = if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
