@@ -3,6 +3,7 @@ package com.daymax86.forwardmarch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -87,6 +88,8 @@ class GameHUD(gameScreen: GameScreen) {
         if (infoBox != null) {
             val hudElement = HUDElement(
                 ElementTypes.INFO,
+                titleText = GameManager.currentInfoBox!!.titleText,
+                description = GameManager.currentInfoBox!!.description,
                 image = GameManager.currentInfoBox!!.backgroundImage,
                 thumbnail = GameManager.currentInfoBox!!.thumbnailImage,
                 x = GameManager.currentInfoBox!!.x,
@@ -174,38 +177,48 @@ class GameHUD(gameScreen: GameScreen) {
 
                         ElementTypes.INFO -> {
 
+                            var boxWidth = 400f
+                            var boxHeight = (GlyphLayout(font, element.description).width * 0.75).toFloat()
+                            //TODO Find some height value for the above which adjusts dynamically according to text content.
+
                             var mouseX = getMouseEnvironmentPosition(hudCamera)?.x ?: 0f
                             var mouseY = getMouseEnvironmentPosition(hudCamera)?.y ?: 0f
                             // Draw background box
                             batch.draw(
                                 element.image,
-                                mouseX,
+                                mouseX - 400f,
                                 mouseY,
-                                200f,
-                                200f,
+                                boxWidth,
+                                boxHeight,
                             )
                             // Draw thumbnail image
                             batch.draw(
                                 element.thumbnail,
-                                mouseX + 10f,
-                                mouseY + 10f,
-                                50f,
-                                50f,
+                                mouseX - (boxWidth * 0.9).toFloat(),
+                                (mouseY + (boxHeight * 0.9) - (element.thumbnail!!.height / 2)).toFloat(),
+                                (boxWidth * 0.1 * GameManager.aspectRatio).toFloat(),
+                                (boxHeight * 0.1 * GameManager.aspectRatio).toFloat(),
                             )
                             // Write title text
                             font.draw(
                                 batch,
                                 element.titleText,
-                                mouseX + 75f,
-                                mouseY,
+                                mouseX - (boxWidth * 0.66).toFloat(),
+                                (mouseY + (boxHeight * 0.9) - (element.thumbnail!!.height / 2)).toFloat(),
                             )
                             // Write description
                             font.draw(
                                 batch,
                                 element.description,
-                                mouseX,
-                                mouseY + (element.thumbnail?.height ?: 50),
+                                mouseX - (boxWidth * 0.9).toFloat(),
+                                (mouseY + (boxHeight * 0.66) - (element.thumbnail!!.height / 2)).toFloat(),
+                                0,
+                                element.description.length,
+                                (boxWidth * 0.9).toFloat(),
+                                -1,
+                                true,
                             )
+
                         }
                     }
                 } catch (e: Exception) {

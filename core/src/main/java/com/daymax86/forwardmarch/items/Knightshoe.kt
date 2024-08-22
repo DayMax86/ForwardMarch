@@ -39,7 +39,7 @@ class Knightshoe(
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
-        description = "You feel luckier even since you found this" + "\n Chance for positive effects + 15%",
+        description = "You feel luckier ever since you found this." + "\n\nChance for positive effects + 15%",
     ),
 ) : StatsModifierItem() {
 

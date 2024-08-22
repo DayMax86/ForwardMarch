@@ -43,7 +43,7 @@ class ReverseCard(
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
         description = "From the popular card game 'Dos', this item changes the movement of certain pieces." +
-            "\n Pawns can now move one space backwards as well as forwards.",
+            "\n\nPawns can now move one space backwards as well as forwards.",
     ),
 ) : MovementModifierItem() {
 

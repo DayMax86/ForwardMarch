@@ -43,7 +43,7 @@ class VoodooTotem(
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
         description = "A strange totem with a mysterious glow, filled with the souls of captured pawns." +
-            "\n Two pawns will spawn in the squares to the left and right of a knight when it is destroyed (only if there is space).",
+            "\n\nTwo pawns will spawn in the squares to the left and right of a knight when it is destroyed (only if there is space).",
     ),
 ) : DeathModifierItem() {
 
