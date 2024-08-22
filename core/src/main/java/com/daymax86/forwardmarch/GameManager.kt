@@ -134,7 +134,6 @@ object GameManager {
         }
         pickups.add(testCoin4)
 
-        Player.playerItems.add(VoodooTotem())
         // ------------------------------------------------------------------------------------------------
 
         loadAllItems()

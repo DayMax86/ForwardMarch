@@ -19,7 +19,7 @@ enum class ItemPools {
     SHOP,
 }
 
-abstract class Item: GameObject() {
+abstract class Item : GameObject() {
     abstract var deathAnimation: SpriteAnimation
     abstract var idleAnimation: SpriteAnimation?
     abstract var currentPosition: Vector2
@@ -34,7 +34,8 @@ abstract class Item: GameObject() {
             GameManager.currentShop!!.exitShop()
         } else {
             // Feedback to the player that they don't have enough money
-            GameManager.toast = Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
+            GameManager.toast =
+                Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
         }
     }
 
@@ -51,7 +52,9 @@ abstract class Item: GameObject() {
 
     override fun onExitHover() {
         highlight = false
-        GameManager.currentInfoBox = null
+        if (GameManager.currentInfoBox == this.infoBox) {
+            GameManager.currentInfoBox = null
+        }
     }
 
     open fun use() {

@@ -7,26 +7,33 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
+import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Disposable
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
+import com.daymax86.forwardmarch.GameManager.currentShop
+import com.daymax86.forwardmarch.GameManager.shops
 
 class ShopPopup : Disposable {
 
     // Hardcoded constants which affect visuals only // TODO Store these in one place - currently repeated across files!
     val viewWidth = 2000
     val viewHeight = 2000
-    var xPos = (1080 * 1.1).toFloat()
-    var yPos = ((1920 / 6) - 280).toFloat()
+    var xPos = -350f
+    var yPos = -450f
 
     val font = BitmapFont(Gdx.files.internal("fonts/default.fnt"), Gdx.files.internal("fonts/default.png"), false)
     val batch = SpriteBatch()
     var cam =
         OrthographicCamera((viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat())
     var backgroundImage: Texture = Texture(Gdx.files.internal("background_500x750.png"))
+    // Create button to exit shop
+    var exitButton = BoundingBox(
+        Vector3(xPos, yPos, 0f), Vector3(xPos + 20f, yPos + 20f, 0f)
+    )
 
     init {
-        resize(1920, 1080)
+        resize(GameManager.currentScreenWidth.toInt(), GameManager.currentScreenHeight.toInt())
     }
 
     fun render() {
@@ -48,11 +55,14 @@ class ShopPopup : Disposable {
             item.updateBoundingBox(
                 x = xPos + 75f + (i * SQUARE_WIDTH),
                 y = (yPos + 25f),
-                width = GameManager.SQUARE_WIDTH,
-                height = GameManager.SQUARE_HEIGHT,
+                width = SQUARE_WIDTH,
+                height = SQUARE_HEIGHT,
             )
             i++
         }.apply { i = 0 }
+
+
+
 
 
         GameManager.currentShop?.shopItems?.let { items ->
@@ -87,7 +97,17 @@ class ShopPopup : Disposable {
                 )
 
             }
-            checkPopupCollisions(items)
+            val exitImg = checkPopupCollisions(items)
+            exitButton = BoundingBox(
+                Vector3(xPos + 700f, yPos + 450f, 0f), Vector3(xPos + 700f + 50f, yPos + 450f + 50f, 0f)
+            )
+            batch.draw(
+                exitImg,
+                exitButton.min.x,
+                exitButton.min.y,
+                50f,
+                50f,
+            )
         }
 
 //        // TESTING ----------------------------------------------------
@@ -120,7 +140,7 @@ class ShopPopup : Disposable {
     fun checkPopupCollisions(
         collection: List<GameObject>,
         button: Int = -1
-    ) {
+    ): Texture {
         collection.forEach { obj ->
             if (obj.boundingBox.contains(getMouseEnvironmentPosition(cam))) {
                 obj.onHover()
@@ -131,6 +151,19 @@ class ShopPopup : Disposable {
                 obj.onExitHover()
             }
         }
+
+
+        var exitImg: Texture
+        if (exitButton.contains(getMouseEnvironmentPosition(cam))) {
+            exitImg = Texture(Gdx.files.internal("shop/exit_button_highlighted.png"))
+            if (button >= 0 && currentShop != null) {
+                currentShop!!.exitShop()
+            }
+        } else {
+            exitImg = Texture(Gdx.files.internal("shop/exit_button.png"))
+        }
+        return exitImg
+
     }
 
     fun resize(screenWidth: Int, screenHeight: Int) {

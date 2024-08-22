@@ -198,10 +198,10 @@ class GameHUD(gameScreen: GameScreen) {
                                     Gdx.app.log("HUD", "Off the right")
                                     boxX = GameManager.currentScreenWidth - boxWidth
                                 }
-                                if (Gdx.input.y - boxHeight < 0) {
+                                if (Gdx.input.y - boxHeight < 0 - boxHeight/2) {
                                     // Off the top edge
                                     Gdx.app.log("HUD", "Off the top")
-                                    boxY = GameManager.currentScreenHeight - boxHeight
+                                    boxY = GameManager.currentScreenHeight - boxHeight - 50f
                                 }
                             }
 
@@ -245,7 +245,6 @@ class GameHUD(gameScreen: GameScreen) {
                                 -1,
                                 true,
                             )
-
                         }
                     }
                 } catch (e: Exception) {
