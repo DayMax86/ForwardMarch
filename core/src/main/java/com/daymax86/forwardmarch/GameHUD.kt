@@ -3,7 +3,6 @@ package com.daymax86.forwardmarch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
-import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.BitmapFont
 import com.badlogic.gdx.graphics.g2d.GlyphLayout
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
@@ -11,7 +10,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.items.Item
 
-val font = BitmapFont(
+private val font = BitmapFont(
     Gdx.files.internal("fonts/default.fnt"),
     Gdx.files.internal("fonts/default.png"),
     false
@@ -177,25 +176,48 @@ class GameHUD(gameScreen: GameScreen) {
 
                         ElementTypes.INFO -> {
 
-                            var boxWidth = 400f
-                            var boxHeight = (GlyphLayout(font, element.description).width * 0.75).toFloat()
+                            val boxWidth = 400f
+                            val boxHeight = 800f
                             //TODO Find some height value for the above which adjusts dynamically according to text content.
 
                             var mouseX = getMouseEnvironmentPosition(hudCamera)?.x ?: 0f
                             var mouseY = getMouseEnvironmentPosition(hudCamera)?.y ?: 0f
+
+                            var boxX: Float = mouseX - boxWidth
+                            var boxY: Float = mouseY
+
+                            if (!element.isInBounds()) {
+                                // Is it off the edge of the screen?
+                                if (Gdx.input.x - boxWidth < 0) {
+                                    // Off the left-hand edge
+                                    Gdx.app.log("HUD", "Off the left")
+                                    boxX = 0f
+                                }
+                                if (Gdx.input.x > GameManager.currentScreenWidth) {
+                                    // Off the right-hand edge
+                                    Gdx.app.log("HUD", "Off the right")
+                                    boxX = GameManager.currentScreenWidth - boxWidth
+                                }
+                                if (Gdx.input.y - boxHeight < 0) {
+                                    // Off the top edge
+                                    Gdx.app.log("HUD", "Off the top")
+                                    boxY = GameManager.currentScreenHeight - boxHeight
+                                }
+                            }
+
                             // Draw background box
                             batch.draw(
                                 element.image,
-                                mouseX - 400f,
-                                mouseY,
+                                boxX,
+                                boxY,
                                 boxWidth,
                                 boxHeight,
                             )
                             // Draw thumbnail image
                             batch.draw(
                                 element.thumbnail,
-                                mouseX - (boxWidth * 0.9).toFloat(),
-                                (mouseY + (boxHeight * 0.9) - (element.thumbnail!!.height / 2)).toFloat(),
+                                boxX + (boxWidth * 0.1f),
+                                (boxY + (boxHeight * 0.9) - (element.thumbnail!!.height / 2)).toFloat(),
                                 (boxWidth * 0.1 * GameManager.aspectRatio).toFloat(),
                                 (boxHeight * 0.1 * GameManager.aspectRatio).toFloat(),
                             )
@@ -203,15 +225,20 @@ class GameHUD(gameScreen: GameScreen) {
                             font.draw(
                                 batch,
                                 element.titleText,
-                                mouseX - (boxWidth * 0.66).toFloat(),
-                                (mouseY + (boxHeight * 0.9) - (element.thumbnail!!.height / 2)).toFloat(),
+                                boxX + (boxWidth * 0.33f),
+                                (boxY + (boxHeight) - ((boxHeight * 0.1f * GameManager.aspectRatio) / 2)),
+                                0,
+                                element.titleText.length,
+                                (boxWidth * 0.9f),
+                                -1,
+                                true,
                             )
                             // Write description
                             font.draw(
                                 batch,
                                 element.description,
-                                mouseX - (boxWidth * 0.9).toFloat(),
-                                (mouseY + (boxHeight * 0.66) - (element.thumbnail!!.height / 2)).toFloat(),
+                                boxX + (boxWidth * 0.1f),
+                                (boxY + (boxHeight * 0.85f) - (element.thumbnail!!.height / 2)),
                                 0,
                                 element.description.length,
                                 (boxWidth * 0.9).toFloat(),
@@ -245,8 +272,10 @@ class GameHUD(gameScreen: GameScreen) {
                 x = 1080 - 180f,
                 y = 120f * Player.playerItems.indexOf(item),
                 width = 50f,
-                height = 50f,
+                height = 50 * GameManager.aspectRatio,
                 visible = true,
+                tag = "item",
+                associatedObject = item,
             ) {
                 Gdx.app.log("HUD", "HUD item ($item) clicked")
             }
@@ -375,6 +404,7 @@ class GameHUD(gameScreen: GameScreen) {
         var width: Float = 0f,
         var height: Float = 0f,
         var visible: Boolean = false,
+        var associatedObject: GameObject? = null,
         private var onClickBehaviour: () -> Unit,
     ) {
         val type = elementType
@@ -425,15 +455,27 @@ class GameHUD(gameScreen: GameScreen) {
 
         fun onHover() {
             highlight = true
+            if (associatedObject != null) {
+                associatedObject!!.onHover()
+            }
         }
 
         fun onExitHover() {
             highlight = false
+            if (associatedObject != null) {
+                associatedObject!!.onExitHover()
+            }
         }
 
         fun onClick() {
             onClickBehaviour.invoke()
         }
+
+        fun isInBounds(): Boolean {
+            val box = this.boundingBox
+            return !(box.max.x < 1 || box.max.y > GameManager.currentScreenHeight)
+        }
+
     }
 }
 

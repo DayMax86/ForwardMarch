@@ -45,12 +45,12 @@ abstract class Item: GameObject() {
     }
 
     override fun onHover() {
-        super.onHover()
+        highlight = true
         GameManager.currentInfoBox = this.infoBox
     }
 
     override fun onExitHover() {
-        super.onExitHover()
+        highlight = false
         GameManager.currentInfoBox = null
     }
 

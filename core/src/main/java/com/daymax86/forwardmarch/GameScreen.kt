@@ -4,18 +4,15 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input
 import com.badlogic.gdx.InputAdapter
 import com.badlogic.gdx.Screen
-import com.badlogic.gdx.graphics.Color
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.graphics.g2d.SpriteBatch
-import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
-import com.daymax86.forwardmarch.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_WIDTH
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
@@ -25,7 +22,6 @@ import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.GameManager.currentShop
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
@@ -34,7 +30,6 @@ class GameScreen(private val application: MainApplication) : Screen {
     // Hardcoded constants which affect visuals only
     val viewWidth = 2000
     val viewHeight = 2000
-
 
     private var environmentSprite = Sprite(Texture(Gdx.files.internal("background_500x750.png")))
     var windowWidth: Int = 0
@@ -401,8 +396,10 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameCamera.viewportHeight = (viewHeight * windowHeight / windowWidth).toFloat()
         gameCamera.update()
         gameHUD.resize(hudCamera.viewportWidth, hudCamera.viewportHeight)
-        if (GameManager.currentShop != null) {
-            GameManager.currentShop!!.shopWindow.resize(width, height)
+        GameManager.currentScreenWidth = Gdx.graphics.width.toFloat()
+        GameManager.currentScreenHeight = Gdx.graphics.height.toFloat()
+        if (currentShop != null) {
+            currentShop!!.shopWindow.resize(width, height)
         }
     }
 

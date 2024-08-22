@@ -35,6 +35,9 @@ object GameManager {
     const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
     var aspectRatio = 1920 / 1080f
 
+    var currentScreenWidth = 0f
+    var currentScreenHeight = 0f
+
     // Collections
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
@@ -131,6 +134,7 @@ object GameManager {
         }
         pickups.add(testCoin4)
 
+        Player.playerItems.add(VoodooTotem())
         // ------------------------------------------------------------------------------------------------
 
         loadAllItems()
