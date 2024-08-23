@@ -56,7 +56,7 @@ class ReverseCard(
 
         return Movement.getMovement(
             piece,
-            piece.movementType,
+            piece.movementTypes,
             piece.range,
             dirs,
         )

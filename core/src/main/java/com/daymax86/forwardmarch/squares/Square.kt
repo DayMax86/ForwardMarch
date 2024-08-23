@@ -6,11 +6,13 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.inputTypes
 
 enum class TileColours {
@@ -46,10 +48,9 @@ abstract class Square {
                                     this.boardYpos,
                                     this.associatedBoard,
                                 )
-                            } else {
-                                // TODO() Feedback to user that this is an invalid move
                             }
                         }
+                        // TODO() Feedback to user that this is an invalid move
                     }
                 }
 
@@ -78,13 +79,27 @@ abstract class Square {
         }
     }
 
-    fun canBeEntered() : Boolean {
+    fun canBeEntered(): Boolean {
         for (bo in this.contents) {
-            if (bo !is Pickup && bo !is Shop) {
-                return false
+            if (bo !is Pickup &&
+                bo !is Shop
+            ) {
+                return bo.hostile
             }
         }
         return true
+    }
+
+    fun containsEnemy(): Boolean {
+        for (bo in this.contents) {
+            if (this.contents.any { obj ->
+                    obj.hostile
+                }) {
+                // The square contains a hostile piece, so it can be entered to attack, but can't move through
+                return true
+            }
+        }
+        return false
     }
 
     fun onHover() {
@@ -112,6 +127,37 @@ abstract class Square {
         if (obj is Bomb && obj.active) {
             obj.explode(this)
         }
+
+//        if (obj is Piece) {
+//            if (obj.hostile && !GameManager.marchInProgress) {
+//                this.contents.forEach { content ->
+//                    if (GameManager.pieces.contains(content)) {
+//                        // A hostile piece has entered this square,
+//                        // and this square contains a friendly piece.
+//                        // Therefore the friendly piece should be destroyed.
+//                        content.kill()
+//                    }
+//                }
+//            } else if (!obj.hostile && !GameManager.marchInProgress){
+//                // The piece that entered is friendly
+//                this.contents.forEach { content ->
+//                    if (EnemyManager.enemyPieces.contains(content)) {
+//                        // A friendly piece has entered this square,
+//                        // and this square contains an enemy piece.
+//                        // Therefore the enemy piece should be destroyed.
+//                        content.kill()
+//                    }
+//                }
+//            } else if (obj.hostile && GameManager.marchInProgress) {
+//                // ForwardMarch in progress so enemy should come out on top of any collisions
+//                this.contents.forEach { content ->
+//                    if (GameManager.pieces.contains(content)) {
+//                        content.kill()
+//                    }
+//                }
+//            }
+//        }
+
     }
 
 

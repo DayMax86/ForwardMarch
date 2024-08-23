@@ -33,8 +33,10 @@ open class PawnDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override var movementType: MovementTypes = MovementTypes.ROOK,
-    override val movementDirections: MutableList<MovementDirections> = mutableListOf(MovementDirections.UP),
+    override val movementTypes: List<MovementTypes> = mutableListOf(MovementTypes.ROOK),
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(
+        MovementDirections.UP
+    ),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -89,21 +91,12 @@ open class PawnDefault(
             movementModified = true
         }
 
-//        Player.playerItems.forEach { item ->
-//            if (item is MovementModifierItem) {
-//                item.applyMovementModifier(this).forEach { square ->
-//                    this.movement.add(square)
-//                }
-//                movementModified = true
-//            }
-//        }
-
         if (!movementModified) { // Default if no movement modifications on this piece
             Movement.getMovement(
                 this,
-                MovementTypes.ROOK,
+                this.movementTypes,
                 range,
-                mutableListOf(MovementDirections.UP)
+                this.movementDirections
             ).forEach { square ->
                 this.movement.add(square)
             }

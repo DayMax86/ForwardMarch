@@ -29,7 +29,7 @@ open class KnightDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override var movementType: MovementTypes = MovementTypes.KNIGHT,
+    override val movementTypes: List<MovementTypes> = mutableListOf(MovementTypes.KNIGHT),
     override val movementDirections: MutableList<MovementDirections> = mutableListOf(),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
@@ -78,9 +78,9 @@ open class KnightDefault(
 
         Movement.getMovement(
             this,
-            MovementTypes.KNIGHT,
+            this.movementTypes,
             range,
-            mutableListOf()
+            this.movementDirections,
         ).forEach { square ->
             this.movement.add(square)
         }.apply {

@@ -11,7 +11,9 @@ import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
@@ -77,7 +79,9 @@ object GameManager {
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
 
         boards.add(testBoard)
-        EnemyManager.spawnEnemy(PieceTypes.PAWN, 5, 5, testBoard) // Testing
+//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 5, 5, testBoard) // Testing
+        EnemyManager.spawnEnemy(PieceTypes.PAWN, 6, 5, testBoard) // Testing
+//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 8, 4, testBoard) // Testing
         boards.add(testBoard2)
         boards.add(testBoard3)
 
@@ -133,6 +137,8 @@ object GameManager {
             coin.move(5, 7, boards[0])
         }
         pickups.add(testCoin4)
+
+        Player.playerItems.add(ReverseCard())
 
         // ------------------------------------------------------------------------------------------------
 
@@ -207,8 +213,13 @@ object GameManager {
 
         }.invokeOnCompletion {
 
+            val actionQueue: MutableList<() -> Unit> = mutableListOf()
             enemyPieces.forEach { enemy ->
-                enemy.getValidMoves { enemy.attack() }
+                enemy.getValidMoves { actionQueue.add { enemy.enemyAttack() } }
+            }.also { // Fulfil the attacks afterwards to avoid concurrent modification
+                actionQueue.forEach {
+                    it.invoke()
+                }
             }
 
             saveGameState()
@@ -430,6 +441,26 @@ object GameManager {
         placeStartingBishops()
         // KNIGHTS
         placeStartingKnights()
+        // KING
+        placeKing()
+        // QUEEN
+        placeQueen()
+    }
+
+    private fun placeQueen() {
+        QueenDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(4, 1, null)
+        }.apply { pieces.add(this) }
+    }
+
+    private fun placeKing() {
+        KingDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(5, 1, null)
+        }.apply { pieces.add(this) }
     }
 
     private fun placeStartingPawns() {

@@ -16,7 +16,7 @@ abstract class MovementModifierItem(
         // Items should override this and return the modified list as appropriate
         return Movement.getMovement(
             piece,
-            piece.movementType,
+            piece.movementTypes,
             piece.range,
             piece.movementDirections,
         )

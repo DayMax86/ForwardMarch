@@ -24,7 +24,6 @@ import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
-import com.daymax86.forwardmarch.items.base_classes.ShopModifierItem
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -40,7 +39,7 @@ abstract class Piece(
     override var boundingBox: BoundingBox,
     override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
-    open lateinit var movementType: MovementTypes
+    open val movementTypes: List<MovementTypes> = mutableListOf()
     open val movementDirections: MutableList<MovementDirections> = mutableListOf()
     open var range: Int = 0
     override var currentPosition: Vector2 = Vector2()
@@ -83,11 +82,8 @@ abstract class Piece(
         }
     }
 
-    override fun collide(other: BoardObject) {
-        super.collide(other)
-        if (other.hostile) {
-            this.kill()
-        }
+    override fun collide(other: BoardObject, playerAttack: Boolean) {
+        super.collide(other, playerAttack)
         Gdx.app.log("collision", "Other in collision is a $other")
         when (other) {
             is Pickup -> {
@@ -110,10 +106,23 @@ abstract class Piece(
                 GameManager.currentShop = other
                 GameManager.currentShop!!.enterShop()
             }
+
+            is Piece -> {
+                // When pieces collide, enemies always come out on top unless it's a player attacking on their turn
+                if (playerAttack) {
+                    friendlyAttack(other)
+                } else {
+                    this.kill()
+                }
+            }
         }
     }
 
-    open fun attack() {
+    open fun friendlyAttack(hostileObject: BoardObject) {
+        hostileObject.kill()
+    }
+
+    open fun enemyAttack() {
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var attacked = false
         this.movement.forEach { square ->

@@ -29,7 +29,7 @@ open class RookDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override var movementType: MovementTypes = MovementTypes.ROOK,
+    override val movementTypes: List<MovementTypes> = mutableListOf(MovementTypes.ROOK),
     override val movementDirections: MutableList<MovementDirections> = mutableListOf(
         MovementDirections.UP,
         MovementDirections.DOWN,
@@ -83,14 +83,9 @@ open class RookDefault(
 
         Movement.getMovement(
             this,
-            MovementTypes.ROOK,
+            this.movementTypes,
             range,
-            mutableListOf(
-                MovementDirections.UP,
-                MovementDirections.DOWN,
-                MovementDirections.LEFT,
-                MovementDirections.RIGHT,
-            )
+            this.movementDirections,
         ).forEach { square ->
             this.movement.add(square)
         }.apply {

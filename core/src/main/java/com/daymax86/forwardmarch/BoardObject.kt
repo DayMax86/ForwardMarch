@@ -71,7 +71,7 @@ abstract class BoardObject(): GameObject() {
                 sq.contents.forEach { other ->
                     if (other != this) {
                         collisionQueue.add {
-                            this.collide(other)
+                            this.collide(other, GameManager.selectedPiece!=null )
                         }
                     }
                 }
@@ -96,7 +96,7 @@ abstract class BoardObject(): GameObject() {
         )
     }
 
-    open fun collide(other: BoardObject) {
+    open fun collide(other: BoardObject, playerAttack: Boolean = false) {
 
     }
 

@@ -5,32 +5,37 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
-import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import kotlin.math.abs
+import com.daymax86.forwardmarch.squares.Square
 
-open class BishopDefault(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_bishop_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_bishop_256_highlighted.png")),
+class QueenDefault(
+    override var image: Texture = Texture(Gdx.files.internal("sprites/black_queen_256.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_queen_256_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
-    override var pieceType: PieceTypes = PieceTypes.ROOK,
+    override var pieceType: PieceTypes = PieceTypes.KING,
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override val movementTypes: List<MovementTypes> = mutableListOf(MovementTypes.BISHOP),
+    override val movementTypes: List<MovementTypes> = mutableListOf(
+        MovementTypes.ROOK,
+        MovementTypes.BISHOP
+    ),
     override val movementDirections: MutableList<MovementDirections> = mutableListOf(
+        MovementDirections.UP,
+        MovementDirections.DOWN,
+        MovementDirections.LEFT,
+        MovementDirections.RIGHT,
         MovementDirections.UL,
         MovementDirections.UR,
         MovementDirections.DL,
@@ -47,15 +52,16 @@ open class BishopDefault(
         loop = true,
     ),
     override var visuallyStatic: Boolean = false,
-    override var shopPrice: Int = 4,
+    override var shopPrice: Int = 6,
     override var infoBox: InfoBox = InfoBox(
-        titleText = "Bishop",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_bishop_256.png")),
+        titleText = "Queen",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/black_queen_256.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
-        description = "Bishops can move diagonally along squares of the same colour, and will switch colour when marching forward",
+        description = "Her majesty the queen.\n" +
+            "The queen can move as far as she likes in any direction (so she's better than the king, but don't tell him that).",
     ),
 ) : Piece(
     image = image,
@@ -74,10 +80,11 @@ open class BishopDefault(
         this.soundSet.death.add(Gdx.audio.newSound(Gdx.files.internal("sound/effects/death_default.ogg")))
     }
 
-    override var range: Int = 3 // Set a default value for friendly bishop's movement
+    override var range: Int = 8 // Set a default value for the queen's movement
+    // Can be overridden by individual pieces
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
-        // and this allows for safe !! usage
+
         this.movement.clear() // Reset movement array
 
         Movement.getMovement(
@@ -91,6 +98,7 @@ open class BishopDefault(
             onComplete.invoke()
         }
         return this.movement.isNotEmpty() // No valid moves if array is empty
-
     }
 }
+
+
