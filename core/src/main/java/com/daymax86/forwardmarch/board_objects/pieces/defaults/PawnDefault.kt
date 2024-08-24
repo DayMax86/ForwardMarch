@@ -33,9 +33,14 @@ open class PawnDefault(
     override val movement: MutableList<Square> = mutableListOf(),
     override var associatedBoard: Board? = null,
     override var nextBoard: Board? = null,
-    override val movementTypes: List<MovementTypes> = mutableListOf(MovementTypes.ROOK),
+    override val movementTypes: List<MovementTypes> = mutableListOf(
+        MovementTypes.ROOK,
+        MovementTypes.BISHOP
+    ),
     override val movementDirections: MutableList<MovementDirections> = mutableListOf(
-        MovementDirections.UP
+        MovementDirections.UP,
+        MovementDirections.UL,
+        MovementDirections.UR,
     ),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
@@ -100,6 +105,31 @@ open class PawnDefault(
             ).forEach { square ->
                 this.movement.add(square)
             }
+        }
+
+        val squaresToRemove: MutableList<Square> = mutableListOf()
+        // Filter out the diagonal squares without enemy pieces in them
+        this.movement.firstOrNull{ square ->
+            square.boardXpos == this.boardXpos - 1 && square.boardYpos == this.boardYpos + 1
+        }.let { sq ->
+            if (sq != null) {
+                if (!sq.containsEnemy()) {
+                    squaresToRemove.add(sq)
+                }
+            }
+        }
+        this.movement.firstOrNull{ square ->
+            square.boardXpos == this.boardXpos + 1 && square.boardYpos == this.boardYpos + 1
+        }.let { sq ->
+            if (sq != null) {
+                if (!sq.containsEnemy()) {
+                    squaresToRemove.add(sq)
+                }
+            }
+        }
+
+        squaresToRemove.forEach { square ->
+            this.movement.remove(square)
         }
 
         onComplete.invoke()

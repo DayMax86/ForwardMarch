@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.squares.Square
 
-abstract class BoardObject(): GameObject() {
+abstract class BoardObject() : GameObject() {
     // All items to appear on the board should be children of this class,
     // including pieces, traps, pickups, interactibles etc.
     abstract var associatedBoard: Board?
@@ -71,7 +71,7 @@ abstract class BoardObject(): GameObject() {
                 sq.contents.forEach { other ->
                     if (other != this) {
                         collisionQueue.add {
-                            this.collide(other, GameManager.selectedPiece!=null )
+                            this.collide(other, GameManager.selectedPiece == null)
                         }
                     }
                 }
@@ -82,7 +82,6 @@ abstract class BoardObject(): GameObject() {
 
         GameManager.deselectPiece()
     }
-
 
 
     open fun updateBoundingBox() {
@@ -96,7 +95,7 @@ abstract class BoardObject(): GameObject() {
         )
     }
 
-    open fun collide(other: BoardObject, playerAttack: Boolean = false) {
+    open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
 
     }
 

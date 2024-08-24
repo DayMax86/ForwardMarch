@@ -82,8 +82,8 @@ abstract class Piece(
         }
     }
 
-    override fun collide(other: BoardObject, playerAttack: Boolean) {
-        super.collide(other, playerAttack)
+    override fun collide(other: BoardObject, friendlyAttack: Boolean) {
+        super.collide(other, friendlyAttack)
         Gdx.app.log("collision", "Other in collision is a $other")
         when (other) {
             is Pickup -> {
@@ -109,10 +109,11 @@ abstract class Piece(
 
             is Piece -> {
                 // When pieces collide, enemies always come out on top unless it's a player attacking on their turn
-                if (playerAttack) {
-                    friendlyAttack(other)
-                } else {
+                // this and other must be of differing hostilities
+                if (other.hostile && GameManager.selectedPiece == null) {
                     this.kill()
+                } else if (other.hostile && GameManager.selectedPiece != null) {
+                    other.kill()
                 }
             }
         }

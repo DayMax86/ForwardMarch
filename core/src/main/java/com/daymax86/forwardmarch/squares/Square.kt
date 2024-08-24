@@ -128,36 +128,6 @@ abstract class Square {
             obj.explode(this)
         }
 
-//        if (obj is Piece) {
-//            if (obj.hostile && !GameManager.marchInProgress) {
-//                this.contents.forEach { content ->
-//                    if (GameManager.pieces.contains(content)) {
-//                        // A hostile piece has entered this square,
-//                        // and this square contains a friendly piece.
-//                        // Therefore the friendly piece should be destroyed.
-//                        content.kill()
-//                    }
-//                }
-//            } else if (!obj.hostile && !GameManager.marchInProgress){
-//                // The piece that entered is friendly
-//                this.contents.forEach { content ->
-//                    if (EnemyManager.enemyPieces.contains(content)) {
-//                        // A friendly piece has entered this square,
-//                        // and this square contains an enemy piece.
-//                        // Therefore the enemy piece should be destroyed.
-//                        content.kill()
-//                    }
-//                }
-//            } else if (obj.hostile && GameManager.marchInProgress) {
-//                // ForwardMarch in progress so enemy should come out on top of any collisions
-//                this.contents.forEach { content ->
-//                    if (GameManager.pieces.contains(content)) {
-//                        content.kill()
-//                    }
-//                }
-//            }
-//        }
-
     }
 
 
