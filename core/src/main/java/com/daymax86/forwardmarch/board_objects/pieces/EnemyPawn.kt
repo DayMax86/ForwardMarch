@@ -4,8 +4,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Movement
+import com.daymax86.forwardmarch.MovementDirections
+import com.daymax86.forwardmarch.MovementTypes
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
+import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 
 class EnemyPawn(
     override var image: Texture = Texture(Gdx.files.internal("sprites/enemy_pawn_256.png")),
@@ -19,6 +24,13 @@ class EnemyPawn(
         atlasFilepath = "atlases/coin_spin_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
         loop = true,
+    ),
+    override val movementTypes: List<MovementTypes> = mutableListOf(
+        MovementTypes.BISHOP
+    ),
+    override val movementDirections: MutableList<MovementDirections> = mutableListOf(
+        MovementDirections.DL,
+        MovementDirections.DR,
     ),
 ) : PawnDefault() {
     override var hostile: Boolean = true
@@ -50,63 +62,33 @@ class EnemyPawn(
         }
     }
 
+    override var range: Int = 1
+
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
         if (this.associatedBoard != null) { // No need to check if piece is not on a board
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
-            /* Use piece's XY positions on the board
 
-                    * ----- ENEMY PAWN --
-                    * ----X---X----------
-                    * ------0------------
-                    * -------------------
-                    */
+//            var movementModified: Boolean = false
 
-            // DIAGONALS
-            if (this.boardYpos == 1) {
-                // Pawn will have to move across boards
-                try {
-                    val previousBoard: Board =
-                        GameManager.boards[GameManager.boards.indexOf(this.associatedBoard) - 1]
+//            Player.playerItems.filterIsInstance<MovementModifierItem>().forEach { movementItem ->
+//                movementItem.applyMovementModifier(this).forEach { square ->
+//                    this.movement.add(square)
+//                }
+//                movementModified = true
+//            }
 
-                    previousBoard.squaresList.firstOrNull {
-                        it.boardXpos == this.boardXpos - 1 && it.boardYpos == 8
-                    }.let {
-                        if (it != null) {
-                            this.movement.add(it)
-                        }
-                    }
-                    previousBoard.squaresList.firstOrNull {
-                        it.boardXpos == this.boardXpos + 1 && it.boardYpos == 8
-                    }.let {
-                        if (it != null) {
-                            this.movement.add(it)
-                        }
-                    }
-
-                } catch (e: IndexOutOfBoundsException) {
-                    Gdx.app.log("enemies", "There is no previous board!")
-                    Gdx.app.log("enemies", "$e")
-                }
-
-            } else {
-                // Pawn movement contained within one board
-                this.associatedBoard!!.squaresList.firstOrNull {
-                    it.boardXpos == this.boardXpos - 1 && it.boardYpos == this.boardYpos - 1
-                }.let {
-                    if (it != null) {
-                        this.movement.add(it)
-                    }
-                }
-                this.associatedBoard!!.squaresList.firstOrNull {
-                    it.boardXpos == this.boardXpos + 1 && it.boardYpos == this.boardYpos - 1
-                }.let {
-                    if (it != null) {
-                        this.movement.add(it)
-                    }
+//            if (!movementModified) { // Default if no movement modifications on this piece
+                Movement.getEnemyMovement(
+                    this,
+                    this.movementTypes,
+                    range,
+                    this.movementDirections
+                ).forEach { square ->
+                    this.movement.add(square)
                 }
             }
-        }
+//        }
         onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }

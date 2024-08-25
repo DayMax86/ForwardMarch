@@ -5,7 +5,9 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Player
+import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -41,24 +43,25 @@ class MysterySquare(
         super.onEnter(obj)
         when (obj) {
             is Piece -> {
-                Gdx.app.log("square", "Trapdoor entered by instance of Piece")
                 val rnd = (1..100).random()
                 rnd.let { percent ->
                     if (percent in 1..Player.luckStat) { // Positive effects
-
                         val goodRnd = (1..100).random()
                         goodRnd.let {
                             when (it) {
                                 in 1..50 -> {
                                     Player.changeCoinTotal(1)
+                                    GameManager.toast = Toast("You gained a coin!")
                                 }
 
                                 in 51..75 -> {
                                     Player.changeBombTotal(1)
+                                    GameManager.toast = Toast("You gained a bomb!")
                                 }
 
                                 else -> {
                                     Player.changeLuck(1)
+                                    GameManager.toast = Toast("Luck stat increased!")
                                 }
 
                             }
@@ -69,16 +72,19 @@ class MysterySquare(
                             when (it) {
                                 in 1..50 -> {
                                     Player.changeCoinTotal(-1)
+                                    GameManager.toast = Toast("You lost a coin!")
                                 }
 
                                 in 51..75 -> {
                                     Player.changeBombTotal(-1)
+                                    GameManager.toast = Toast("You lost a coin!")
                                 }
 
                                 else -> {
                                     KtxAsync.launch {
                                         obj.kill()
                                     }
+                                    GameManager.toast = Toast("Your piece was destroyed!")
                                 }
                             }
                         }

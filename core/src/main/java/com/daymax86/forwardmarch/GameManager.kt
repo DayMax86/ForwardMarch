@@ -88,7 +88,7 @@ object GameManager {
         val testShop = Shop(
             associatedBoard = testBoard2,
             boardXpos = 1,
-            boardYpos = 4,
+            boardYpos = 6,
         )
         shops.add(testShop)
 

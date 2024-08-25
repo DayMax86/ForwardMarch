@@ -187,7 +187,16 @@ abstract class Piece(
             } else {
                 GameManager.pieces.remove(this)
             }
+            if (this.associatedBoard != null) {
+                this.associatedBoard!!.squaresList.firstOrNull { square ->
+                    square.contents.contains(this)
+                }.let { sq ->
+                    sq?.contents?.remove(this)
+                }
+            }
         }
     }
 
 }
+
+
