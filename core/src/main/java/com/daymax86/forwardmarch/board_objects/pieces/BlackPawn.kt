@@ -7,8 +7,8 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
 
 class BlackPawn(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn_highlighted.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,

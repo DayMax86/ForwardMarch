@@ -79,9 +79,9 @@ object GameManager {
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
 
         boards.add(testBoard)
-//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 5, 5, testBoard) // Testing
-        EnemyManager.spawnEnemy(PieceTypes.PAWN, 6, 5, testBoard) // Testing
-//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 8, 4, testBoard) // Testing
+//        EnemyManager.spawnEnemy(PieceTypes.KNIGHT, 5, 5, testBoard) // Testing
+//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 6, 5, testBoard) // Testing
+        EnemyManager.spawnEnemy(PieceTypes.ROOK, 4, 5, testBoard) // Testing
         boards.add(testBoard2)
         boards.add(testBoard3)
 

@@ -1,8 +1,10 @@
 package com.daymax86.forwardmarch
 
-import com.daymax86.forwardmarch.board_objects.pieces.EnemyPawn
+import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyKnight
+import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyRook
 import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 
@@ -24,8 +26,25 @@ object EnemyManager {
 
             PieceTypes.KING -> TODO()
             PieceTypes.QUEEN -> TODO()
-            PieceTypes.ROOK -> TODO()
-            PieceTypes.KNIGHT -> TODO()
+
+            PieceTypes.ROOK -> {
+                val rookToAdd = EnemyRook()
+                rookToAdd.associatedBoard = board
+                rookToAdd.boardXpos = x
+                rookToAdd.boardYpos = y
+                rookToAdd.move(x, y, board)
+                enemyPieces.add(rookToAdd)
+            }
+
+            PieceTypes.KNIGHT -> {
+                val knightToAdd = EnemyKnight()
+                knightToAdd.associatedBoard = board
+                knightToAdd.boardXpos = x
+                knightToAdd.boardYpos = y
+                knightToAdd.move(x, y, board)
+                enemyPieces.add(knightToAdd)
+            }
+
             PieceTypes.BISHOP -> TODO()
         }
     }

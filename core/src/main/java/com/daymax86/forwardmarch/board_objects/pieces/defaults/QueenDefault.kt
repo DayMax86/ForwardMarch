@@ -15,8 +15,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.squares.Square
 
 class QueenDefault(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_queen_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_queen_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_queen.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_queen_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -55,7 +55,7 @@ class QueenDefault(
     override var shopPrice: Int = 6,
     override var infoBox: InfoBox = InfoBox(
         titleText = "Queen",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_queen_256.png")),
+        thumbnailImage = Texture(Gdx.files.internal("sprites/pieces/black_queen.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),

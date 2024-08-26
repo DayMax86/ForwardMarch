@@ -125,26 +125,22 @@ abstract class Piece(
 
     open fun enemyAttack() {
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
-        var attacked = false
         this.movement.forEach { square ->
-            if (!attacked) {
-                square.contents.forEach { obj ->
-                    if (obj is Piece && obj.hostile != this.hostile) {
-                        actionQueue.add {
-                            this.move(
-                                square.boardXpos,
-                                square.boardYpos,
-                                null
-                            ) // What happens across boards?
-                            obj.kill()
-                        }
-                        attacked = true
+            square.contents.forEach { obj ->
+                if (obj is Piece && obj.hostile != this.hostile) {
+                    actionQueue.add {
+                        this.move(
+                            square.boardXpos,
+                            square.boardYpos,
+                            null
+                        ) // What happens across boards?
+                        obj.kill()
                     }
                 }
             }
         }
-        actionQueue.forEach {
-            it.invoke()
+        if (actionQueue.isNotEmpty()) {
+            actionQueue.random().invoke()
         }
     }
 

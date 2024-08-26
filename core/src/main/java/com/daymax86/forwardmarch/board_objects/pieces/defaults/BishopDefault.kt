@@ -17,8 +17,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import kotlin.math.abs
 
 open class BishopDefault(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_bishop_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_bishop_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_bishop.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_bishop_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -50,7 +50,7 @@ open class BishopDefault(
     override var shopPrice: Int = 4,
     override var infoBox: InfoBox = InfoBox(
         titleText = "Bishop",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_bishop_256.png")),
+        thumbnailImage = Texture(Gdx.files.internal("sprites/pieces/black_bishop.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),

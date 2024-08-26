@@ -17,8 +17,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import kotlin.math.abs
 
 open class RookDefault(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_rook_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_rook_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_rook.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_rook_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -50,7 +50,7 @@ open class RookDefault(
     override var shopPrice: Int = 4,
     override var infoBox: InfoBox = InfoBox(
         titleText = "Rook",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_rook_256.png")),
+        thumbnailImage = Texture(Gdx.files.internal("sprites/pieces/black_rook.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),

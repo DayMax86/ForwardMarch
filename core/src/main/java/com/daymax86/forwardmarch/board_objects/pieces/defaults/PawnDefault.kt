@@ -21,8 +21,8 @@ import kotlin.math.abs
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_pawn_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -56,7 +56,7 @@ open class PawnDefault(
     override var shopPrice: Int = 2,
     override var infoBox: InfoBox = InfoBox(
         titleText = "Pawn",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_pawn_256.png")),
+        thumbnailImage = Texture(Gdx.files.internal("sprites/pieces/black_pawn.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),

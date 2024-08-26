@@ -584,14 +584,15 @@ object Movement {
                                             square.boardXpos == piece.boardXpos
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                upIndex = range + 1 // Stop checking this direction
+                                            } else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                upIndex = range + 1 // Stop checking this direction
                                             }
                                         }
                                         upIndex++
@@ -621,15 +622,16 @@ object Movement {
                                             square.boardXpos == piece.boardXpos
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                downIndex =
+                                                    range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                downIndex =
-                                                    range + 1 // Stop checking this direction
                                             }
                                         }
                                         downIndex++
@@ -654,15 +656,16 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == piece.boardYpos
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                leftIndex =
+                                                    range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                leftIndex =
-                                                    range + 1 // Stop checking this direction
                                             }
                                         }
                                         leftIndex++
@@ -687,15 +690,16 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == piece.boardYpos
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                rightIndex =
+                                                    range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                rightIndex =
-                                                    range + 1 // Stop checking this direction
                                             }
                                         }
                                         rightIndex++
@@ -737,14 +741,15 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                ulIndex = range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                ulIndex = range + 1 // Stop checking this direction
                                             }
                                         }
                                         ulIndex++
@@ -775,14 +780,15 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                urIndex = range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                urIndex = range + 1 // Stop checking this direction
                                             }
                                         }
                                         urIndex++
@@ -818,14 +824,15 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                dlIndex = range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                dlIndex = range + 1 // Stop checking this direction
                                             }
                                         }
                                         dlIndex++
@@ -861,14 +868,15 @@ object Movement {
                                             square.boardXpos == x
                                                 && square.boardYpos == y
                                         }.let { sq ->
-                                            sq?.contents?.any { content ->
-                                                content is Piece && !content.hostile
-                                            }.apply {
+                                            if (sq?.contents?.any { content ->
+                                                    content is Piece && !content.hostile} == true) {
                                                 // Piece found in this square is friendly, so can be attacked
+                                                movementList.add(sq)
+                                                drIndex = range + 1 // Stop checking this direction
+                                            }else {
                                                 if (sq != null) {
                                                     movementList.add(sq)
                                                 }
-                                                drIndex = range + 1 // Stop checking this direction
                                             }
                                         }
                                         drIndex++
@@ -899,13 +907,11 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile
+                                } == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -924,13 +930,11 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile
+                                } == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -949,13 +953,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -978,13 +979,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -1007,13 +1005,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -1036,13 +1031,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -1065,13 +1057,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }
@@ -1090,13 +1079,10 @@ object Movement {
                             square.boardXpos == x
                                 && square.boardYpos == y
                         }.let { sq ->
-                            sq?.contents?.any { content ->
-                                content is Piece && !content.hostile
-                            }.apply {
+                            if (sq?.contents?.any { content ->
+                                    content is Piece && !content.hostile} == true) {
                                 // Piece found in this square is friendly, so can be attacked
-                                if (sq != null) {
-                                    movementList.add(sq)
-                                }
+                                movementList.add(sq)
                             }
                         }
                     }

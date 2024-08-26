@@ -1,20 +1,17 @@
-package com.daymax86.forwardmarch.board_objects.pieces
+package com.daymax86.forwardmarch.board_objects.pieces.enemies
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
-import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
-import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 
 class EnemyPawn(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/enemy_pawn_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/enemy_pawn_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/enemies/enemy_pawn.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/enemies/enemy_pawn_highlighted.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -69,16 +66,6 @@ class EnemyPawn(
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
 
-//            var movementModified: Boolean = false
-
-//            Player.playerItems.filterIsInstance<MovementModifierItem>().forEach { movementItem ->
-//                movementItem.applyMovementModifier(this).forEach { square ->
-//                    this.movement.add(square)
-//                }
-//                movementModified = true
-//            }
-
-//            if (!movementModified) { // Default if no movement modifications on this piece
                 Movement.getEnemyMovement(
                     this,
                     this.movementTypes,
@@ -88,7 +75,7 @@ class EnemyPawn(
                     this.movement.add(square)
                 }
             }
-//        }
+
         onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }

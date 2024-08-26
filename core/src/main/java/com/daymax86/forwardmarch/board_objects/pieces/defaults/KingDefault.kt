@@ -15,8 +15,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.squares.Square
 
 class KingDefault(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/black_king_256.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/black_king_256_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_king.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_king_highlighted.png")),
     override var highlight: Boolean = false,
     override var boardXpos: Int = -1,
     override var boardYpos: Int = -1,
@@ -55,7 +55,7 @@ class KingDefault(
     override var shopPrice: Int = 999,
     override var infoBox: InfoBox = InfoBox(
         titleText = "King",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/black_king_256.png")),
+        thumbnailImage = Texture(Gdx.files.internal("sprites/pieces/black_king.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),
