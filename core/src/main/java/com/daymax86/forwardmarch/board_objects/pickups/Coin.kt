@@ -55,8 +55,5 @@ class Coin(
     movementTarget = movementTarget,
 ) {
 
-    init {
-        initialise()
-    }
 
 }

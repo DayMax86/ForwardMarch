@@ -18,6 +18,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
+import com.daymax86.forwardmarch.files.FileManager
 import com.daymax86.forwardmarch.items.Item
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
@@ -72,25 +73,29 @@ object GameManager {
 
     init {
         // TESTING ----------------------------------------------------------------------------------------
-        val testBoard = StandardBoard(environmentYPos = BOARD_STARTING_Y)
+
+        val testBoard = FileManager.makeBoardFromFile(Gdx.files.internal("boards/standard_board.csv").file())
         val testBoard2 =
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * SQUARE_HEIGHT).toInt())
         val testBoard3 =
             VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
 
-        boards.add(testBoard)
-//        EnemyManager.spawnEnemy(PieceTypes.KNIGHT, 5, 5, testBoard) // Testing
-//        EnemyManager.spawnEnemy(PieceTypes.PAWN, 6, 5, testBoard) // Testing
-        EnemyManager.spawnEnemy(PieceTypes.ROOK, 4, 5, testBoard) // Testing
+        if (testBoard != null) {
+            testBoard.environmentYPos = BOARD_STARTING_Y
+            boards.add(testBoard)
+            EnemyManager.spawnEnemy(PieceTypes.ROOK, 4, 5, testBoard)
+        }
+
+//        boards.add(testBoard)
         boards.add(testBoard2)
         boards.add(testBoard3)
 
-        val testShop = Shop(
-            associatedBoard = testBoard2,
-            boardXpos = 1,
-            boardYpos = 6,
-        )
-        shops.add(testShop)
+//        val testShop = Shop(
+//            associatedBoard = testBoard2,
+//            boardXpos = 1,
+//            boardYpos = 6,
+//        )
+//        shops.add(testShop)
 
         val testCoin = Coin(
             associatedBoard = boards[0],
@@ -146,6 +151,7 @@ object GameManager {
 
         setStartingLayout()
         setEnemyPieces()
+        boards.forEach { board -> board.initialiseBoardObjects() }
         saveGameState()
     }
 

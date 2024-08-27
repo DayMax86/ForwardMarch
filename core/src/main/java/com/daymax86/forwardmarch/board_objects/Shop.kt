@@ -65,7 +65,7 @@ class Shop(
 
     init {
         shopWindow.backgroundImage = Texture(Gdx.files.internal("shop/shop_background.png"))
-        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0)) // For TESTING ------
+//        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0)) // For TESTING ------
     }
 
     fun enterShop() {

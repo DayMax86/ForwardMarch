@@ -87,6 +87,7 @@ class Bomb(
     }
 
     fun explode(targetSquare: Square) {
+        val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var img = targetSquare.tileImage
         when (targetSquare.colour) {
             TileColours.BLACK -> {
@@ -109,7 +110,9 @@ class Bomb(
 
                 board.squaresList[oldIndex].contents.forEach { bo ->
                     if (bo is Piece) {
-                        bo.kill()
+                        actionQueue.add {
+                            bo.kill()
+                        }
                     }
                 }.also {
                     board.squaresList[oldIndex].contents.clear()
@@ -125,6 +128,7 @@ class Bomb(
             }
         }
         Player.changeBombTotal(-1)
+        actionQueue.forEach { it.invoke() }
     }
 
     override fun kill() {

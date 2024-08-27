@@ -39,7 +39,7 @@ abstract class Square {
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    Gdx.app.log("square", "$boardXpos, $boardYpos")
+                    Gdx.app.log("square", "$boardXpos, $boardYpos, contents = $contents")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
                         if (this.canBeEntered()) {
                             if (GameManager.selectedPiece!!.movement.contains(this)) {
