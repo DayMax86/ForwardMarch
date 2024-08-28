@@ -64,26 +64,30 @@ class VoodooTotem(
                 }.also {
                     squareLeft.let { sqL ->
                         if (sqL != null) {
-                            val pawnLeft = BlackPawn()
-                            pawnLeft.move(
-                                sqL.boardXpos,
-                                sqL.boardYpos,
-                                sqL.associatedBoard
-                            )
-                            sqL.contents.add(pawnLeft)
-                            GameManager.pieces.add(pawnLeft)
+                            if (sqL.contents.isEmpty()) {
+                                val pawnLeft = BlackPawn()
+                                pawnLeft.move(
+                                    sqL.boardXpos,
+                                    sqL.boardYpos,
+                                    sqL.associatedBoard
+                                )
+                                sqL.contents.add(pawnLeft)
+                                GameManager.pieces.add(pawnLeft)
+                            }
                         }
                     }
                     squareRight.let { sqR ->
                         if (sqR != null) {
-                            val pawnRight = BlackPawn()
-                            pawnRight.move(
-                                sqR.boardXpos,
-                                sqR.boardYpos,
-                                sqR.associatedBoard
-                            )
-                            sqR.contents.add(pawnRight)
-                            GameManager.pieces.add(pawnRight)
+                            if (sqR.contents.isEmpty()) {
+                                val pawnRight = BlackPawn()
+                                pawnRight.move(
+                                    sqR.boardXpos,
+                                    sqR.boardYpos,
+                                    sqR.associatedBoard
+                                )
+                                sqR.contents.add(pawnRight)
+                                GameManager.pieces.add(pawnRight)
+                            }
                         }
                     }
                 }

@@ -13,6 +13,7 @@ enum class ItemTypes {
     STATS_MODIFIER,
     DEATH_MODIFIER,
     SHOP_MODIFIER,
+    ENEMY_ATTACK_MODIFIER,
 }
 
 enum class ItemPools {

@@ -34,9 +34,9 @@
 2,5,white,null
 3,5,black,null
 4,5,white,null
-5,5,black,enemy_rook
+5,5,black,enemy_pawn
 6,5,white,null
-7,5,black,enemy_knight
+7,5,black,enemy_pawn
 8,5,white,null
 1,6,white,null
 2,6,black,null

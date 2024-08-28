@@ -25,6 +25,7 @@ import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
+import com.daymax86.forwardmarch.items.base_classes.EnemyAttackModifierItem
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -131,20 +132,33 @@ abstract class Piece(
 
     open fun enemyAttack() {
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
-        this.movement.forEach { square ->
-            square.contents.forEach { obj ->
-                if (obj is Piece && obj.hostile != this.hostile) {
-                    actionQueue.add {
-                        this.move(
-                            square.boardXpos,
-                            square.boardYpos,
-                            null
-                        ) // What happens across boards?
-                        obj.kill()
+        var modifiedAttack = false
+        Player.playerItems.forEach { item ->
+            if (item is EnemyAttackModifierItem) {
+                item.applyAttackModifier(this).forEach {
+                    actionQueue.add(it)
+                }
+                modifiedAttack = true
+            }
+        }
+
+        if (!modifiedAttack) {
+            this.movement.forEach { square ->
+                square.contents.forEach { obj ->
+                    if (obj is Piece && obj.hostile != this.hostile) {
+                        actionQueue.add {
+                            this.move(
+                                square.boardXpos,
+                                square.boardYpos,
+                                null
+                            ) // What happens across boards?
+                            obj.kill()
+                        }
                     }
                 }
             }
         }
+
         if (actionQueue.isNotEmpty()) {
             actionQueue.random().invoke()
         }

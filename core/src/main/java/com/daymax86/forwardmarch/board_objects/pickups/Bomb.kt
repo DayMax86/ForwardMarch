@@ -47,7 +47,7 @@ class Bomb(
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
-        description = "A handy explosive. Right click on a square to bomb it, just make sure you don't fall through the hole it leaves behind!",
+        description = "A handy explosive. Middle-mouse click on a square to bomb it, just make sure you don't fall through the hole it leaves behind!",
     ),
 ) : Pickup(
     associatedBoard = associatedBoard,

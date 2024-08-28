@@ -13,12 +13,15 @@ import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.MonkDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.PrinceDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
 import com.daymax86.forwardmarch.files.FileManager
+import com.daymax86.forwardmarch.items.FakeMoustache
 import com.daymax86.forwardmarch.items.Item
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
@@ -90,6 +93,12 @@ object GameManager {
         boards.add(testBoard2)
         boards.add(testBoard3)
 
+        MonkDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(4, 4, null)
+        }.apply { pieces.add(this) }
+
         // ------------------------------------------------------------------------------------------------
 
         setStartingLayout()
@@ -102,6 +111,7 @@ object GameManager {
         allItems.add(Knightshoe())
         allItems.add(ReverseCard())
         allItems.add(VoodooTotem())
+        allItems.add(FakeMoustache())
     }
 
     private fun saveGameState() {

@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -41,8 +42,14 @@ class TrapdoorSquare(
         super.onEnter(obj)
         when (obj) {
             is Piece -> {
-                KtxAsync.launch {
-                    obj.kill()
+                val rnd = (1..80).random()
+                rnd.let { num ->
+                    if (num > Player.luckStat) {
+                        // Unlucky!
+                        KtxAsync.launch {
+                            obj.kill()
+                        }
+                    }
                 }
             }
         }

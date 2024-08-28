@@ -191,7 +191,7 @@ class GameHUD(gameScreen: GameScreen) {
                                 if (Gdx.input.x - boxWidth < 0) {
                                     // Off the left-hand edge
                                     Gdx.app.log("HUD", "Off the left")
-                                    boxX = 0f
+                                    boxX = 0f - GameManager.currentScreenWidth / 2
                                 }
                                 if (Gdx.input.x > GameManager.currentScreenWidth) {
                                     // Off the right-hand edge

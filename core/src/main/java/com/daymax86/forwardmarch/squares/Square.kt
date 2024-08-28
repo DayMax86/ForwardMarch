@@ -52,7 +52,7 @@ abstract class Square {
                             )
                         } else {
                             if (GameManager.selectedPiece != null) {
-                                if (!this.contents.contains(GameManager.selectedPiece!!)){
+                                if (!this.contents.contains(GameManager.selectedPiece!!)) {
                                     GameManager.toast = Toast("Invalid move!")
                                 }
                             }
@@ -62,16 +62,19 @@ abstract class Square {
 
                 inputTypes["RMB"] -> {
                     Gdx.app.log("square", "OnClick event for square and RMB")
+                    if (this.contents.isNotEmpty()) {
+                        GameManager.currentInfoBox = this.contents[0].infoBox
+                    }
+                }
+
+                inputTypes["SCROLL_WHEEL_CLICK"] -> {
+                    Gdx.app.log("square", "OnClick event for square and SCROLL_WHEEL_CLICK")
                     //------------------------FOR TESTING--------------------//
                     if (Player.bombTotal > 0) {
                         val bomb = Bomb()
                         bomb.move(this.boardXpos, this.boardYpos, this.associatedBoard)
                         bomb.use()
                     }
-                }
-
-                inputTypes["SCROLL_WHEEL_CLICK"] -> {
-                    Gdx.app.log("square", "OnClick event for square and SCROLL_WHEEL_CLICK")
                 }
 
                 inputTypes["MOUSE3"] -> {
@@ -102,6 +105,15 @@ abstract class Square {
                     obj.hostile
                 }) {
                 // The square contains a hostile piece, so it can be entered to attack, but can't move through
+                return true
+            }
+        }
+        return false
+    }
+
+    fun containsPiece(): Boolean {
+        for (bo in this.contents) {
+            if (bo is Piece) {
                 return true
             }
         }

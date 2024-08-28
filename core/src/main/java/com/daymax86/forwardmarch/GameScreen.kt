@@ -59,6 +59,11 @@ class GameScreen(private val application: MainApplication) : Screen {
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
                 if (xPos != null && yPos != null) {
 
+                    if (GameManager.currentInfoBox != null) {
+                        // Showing an info box so disable it when any mouse button pressed
+                        GameManager.currentInfoBox = null
+                    }
+
                     GameManager.boards.forEach { board ->
                         checkSquareCollisions(
                             board.squaresList,
@@ -381,7 +386,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         collection.forEach { element ->
             if (element.boundingBox.contains(getMouseBox(mouseX, mouseY))) {
                 element.onHover()
-                if (button >= 0) {
+                if (button == 0) {
                     element.onClick()
                 }
             } else {

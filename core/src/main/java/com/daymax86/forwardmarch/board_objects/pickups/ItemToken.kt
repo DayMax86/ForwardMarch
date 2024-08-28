@@ -13,8 +13,8 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.items.Item
 
 class ItemToken(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/items/reverse_card_highlighted.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/item_token.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/item_token.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -37,13 +37,13 @@ class ItemToken(
     override var movementTarget: Vector2 = Vector2(),
     override var shopPrice: Int = 1,
     override var infoBox: InfoBox = InfoBox(
-        titleText = "Bomb",
-        thumbnailImage = Texture(Gdx.files.internal("sprites/bomb.png")),
+        titleText = "Item token",
+        thumbnailImage = Texture(Gdx.files.internal("sprites/item_token.png")),
         x = boundingBox.min.x,
         y = boundingBox.min.y,
         width = boundingBox.width.toInt(),
         height = boundingBox.height.toInt(),
-        description = "A handy explosive. Right click on a square to bomb it, just make sure you don't fall through the hole it leaves behind!",
+        description = "Collect this ticket to claim a prize!",
     ),
     var associatedItem: Item,
 ) : Pickup(
@@ -60,7 +60,7 @@ class ItemToken(
 
     fun giveItemToPlayer() {
         Player.playerItems.add(associatedItem)
-        Gdx.app.log("item_token", "Player has been given ${this.associatedItem}. # of items player has = ${Player.playerItems.size}")
+        Gdx.app.log("item_token", "Player has been given ${this.associatedItem}")
         this.kill()
     }
 

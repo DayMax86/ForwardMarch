@@ -1,8 +1,6 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
 import com.daymax86.forwardmarch.squares.Square
 import kotlin.math.abs
 
