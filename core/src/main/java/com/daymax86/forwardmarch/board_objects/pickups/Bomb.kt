@@ -78,8 +78,8 @@ class Bomb(
         // It should collide with something and trigger the collision handler
     }
 
-    override fun collide(other: BoardObject, playerAttack: Boolean) {
-        super.collide(other, playerAttack)
+    override fun collide(other: BoardObject, friendlyAttack: Boolean) {
+        super.collide(other, friendlyAttack)
         if (active) {
             other.kill()
             this.kill()

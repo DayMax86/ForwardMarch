@@ -20,6 +20,7 @@ import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
+import com.daymax86.forwardmarch.board_objects.pickups.ItemToken
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
@@ -95,6 +96,9 @@ abstract class Piece(
                         Player.changeBombTotal(1)
                     }
                 }
+                if (other is ItemToken) {
+                    other.giveItemToPlayer()
+                }
                 other.kill()
             }
 
@@ -103,8 +107,10 @@ abstract class Piece(
             }
 
             is Shop -> {
-                GameManager.currentShop = other
-                GameManager.currentShop!!.enterShop()
+                if (!this.hostile) {
+                    GameManager.currentShop = other
+                    GameManager.currentShop!!.enterShop()
+                }
             }
 
             is Piece -> {

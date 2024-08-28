@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -17,7 +18,7 @@ class TrapdoorSquare(
     override val contents: MutableList<BoardObject> = mutableListOf(),
     override var boardXpos: Int,
     override var boardYpos: Int,
-    override var squareWidth: Int,
+    override var squareWidth: Int = GameManager.SQUARE_WIDTH.toInt(),
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var associatedBoard: Board,

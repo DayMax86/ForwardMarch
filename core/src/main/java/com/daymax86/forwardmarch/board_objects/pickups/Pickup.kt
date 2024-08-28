@@ -23,13 +23,6 @@ abstract class Pickup(
     override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
 
-    override fun onHover() {
-        super.onHover()
-    }
-
-    override fun onExitHover() {
-        super.onExitHover()
-    }
 
     override fun onShopClick(button: Int) {
         if (Player.canAfford(this)) {

@@ -9,6 +9,7 @@ import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Player
+import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
@@ -41,16 +42,21 @@ abstract class Square {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos, contents = $contents")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
-                        if (this.canBeEntered()) {
-                            if (GameManager.selectedPiece!!.movement.contains(this)) {
-                                GameManager.selectedPiece!!.move(
-                                    this.boardXpos,
-                                    this.boardYpos,
-                                    this.associatedBoard,
-                                )
+                        if (this.canBeEntered() &&
+                            GameManager.selectedPiece!!.movement.contains(this)
+                        ) {
+                            GameManager.selectedPiece!!.move(
+                                this.boardXpos,
+                                this.boardYpos,
+                                this.associatedBoard,
+                            )
+                        } else {
+                            if (GameManager.selectedPiece != null) {
+                                if (!this.contents.contains(GameManager.selectedPiece!!)){
+                                    GameManager.toast = Toast("Invalid move!")
+                                }
                             }
                         }
-                        // TODO() Feedback to user that this is an invalid move
                     }
                 }
 

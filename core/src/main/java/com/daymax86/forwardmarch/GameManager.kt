@@ -23,6 +23,7 @@ import com.daymax86.forwardmarch.items.Item
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
 import com.daymax86.forwardmarch.items.VoodooTotem
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -72,6 +73,7 @@ object GameManager {
     var cameraTargetInY: Float = 0f
 
     init {
+        loadAllItems()
         // TESTING ----------------------------------------------------------------------------------------
 
         val testBoard = FileManager.makeBoardFromFile(Gdx.files.internal("boards/standard_board.csv").file())
@@ -83,71 +85,12 @@ object GameManager {
         if (testBoard != null) {
             testBoard.environmentYPos = BOARD_STARTING_Y
             boards.add(testBoard)
-            EnemyManager.spawnEnemy(PieceTypes.ROOK, 4, 5, testBoard)
         }
 
-//        boards.add(testBoard)
         boards.add(testBoard2)
         boards.add(testBoard3)
 
-//        val testShop = Shop(
-//            associatedBoard = testBoard2,
-//            boardXpos = 1,
-//            boardYpos = 6,
-//        )
-//        shops.add(testShop)
-
-        val testCoin = Coin(
-            associatedBoard = boards[0],
-            boardXpos = 1,
-            boardYpos = 7,
-            clickable = false,
-        ).also { coin ->
-            coin.move(1, 7, boards[0])
-        }
-        pickups.add(testCoin)
-        val testCoin1 = Coin(
-            associatedBoard = boards[0],
-            boardXpos = 2,
-            boardYpos = 7,
-            clickable = false,
-        ).also { coin ->
-            coin.move(2, 7, boards[0])
-        }
-        pickups.add(testCoin1)
-        val testCoin2 = Coin(
-            associatedBoard = boards[0],
-            boardXpos = 3,
-            boardYpos = 7,
-            clickable = false,
-        ).also { coin ->
-            coin.move(3, 7, boards[0])
-        }
-        pickups.add(testCoin2)
-        val testCoin3 = Coin(
-            associatedBoard = boards[0],
-            boardXpos = 4,
-            boardYpos = 7,
-            clickable = false,
-        ).also { coin ->
-            coin.move(4, 7, boards[0])
-        }
-        pickups.add(testCoin3)
-        val testCoin4 = Coin(
-            associatedBoard = boards[0],
-            boardXpos = 5,
-            boardYpos = 7,
-            clickable = false,
-        ).also { coin ->
-            coin.move(5, 7, boards[0])
-        }
-        pickups.add(testCoin4)
-
-        Player.playerItems.add(ReverseCard())
-
         // ------------------------------------------------------------------------------------------------
-
-        loadAllItems()
 
         setStartingLayout()
         setEnemyPieces()
@@ -217,8 +160,9 @@ object GameManager {
             moveCounter = 0
             marchInProgress = false
 
-        }.invokeOnCompletion {
+            delay(500) // Delaying stops pieces like rooks appearing to move diagonally
 
+        }.invokeOnCompletion {
             val actionQueue: MutableList<() -> Unit> = mutableListOf()
             enemyPieces.forEach { enemy ->
                 enemy.getValidMoves { actionQueue.add { enemy.enemyAttack() } }

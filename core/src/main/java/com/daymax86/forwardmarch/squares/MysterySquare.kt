@@ -20,7 +20,7 @@ class MysterySquare(
     override val contents: MutableList<BoardObject> = mutableListOf(),
     override var boardXpos: Int,
     override var boardYpos: Int,
-    override var squareWidth: Int,
+    override var squareWidth: Int = GameManager.SQUARE_WIDTH.toInt(),
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var associatedBoard: Board,
