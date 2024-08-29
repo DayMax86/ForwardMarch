@@ -6,5 +6,10 @@ enum class PieceTypes {
     ROOK,
     KNIGHT,
     BISHOP,
-    PAWN
+    PAWN,
+    PRINCE,
+    MONK,
+    VILLEIN,
+    BARON,
+    BARONESS,
 }

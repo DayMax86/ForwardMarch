@@ -46,6 +46,11 @@ object EnemyManager {
             }
 
             PieceTypes.BISHOP -> TODO()
+            PieceTypes.PRINCE -> TODO()
+            PieceTypes.MONK -> TODO()
+            PieceTypes.VILLEIN -> TODO()
+            PieceTypes.BARON -> TODO()
+            PieceTypes.BARONESS -> TODO()
         }
     }
 

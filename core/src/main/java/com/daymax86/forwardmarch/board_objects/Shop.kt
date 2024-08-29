@@ -16,7 +16,8 @@ import com.daymax86.forwardmarch.ShopPopup
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
+import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.*
 import com.daymax86.forwardmarch.items.base_classes.ShopModifierItem
 
 class Shop(
@@ -90,6 +91,21 @@ class Shop(
         shopItems.add(GameManager.allItems.filter { item ->
             item.itemPools.contains(ItemPools.SHOP)
         }.random())
+
+        when (PieceTypes.entries.random()) {
+            PieceTypes.KING -> { /* Can only have one king in a game so do nothing */ }
+            PieceTypes.QUEEN -> { shopItems.add(QueenDefault()) }
+            PieceTypes.ROOK -> { shopItems.add(RookDefault()) }
+            PieceTypes.KNIGHT -> { shopItems.add(KnightDefault()) }
+            PieceTypes.BISHOP -> { shopItems.add(BishopDefault()) }
+            PieceTypes.PAWN -> { shopItems.add(VilleinDefault()) /* Can always buy pawn so swapped to next-weakest piece */ }
+            PieceTypes.PRINCE -> { shopItems.add(PrinceDefault()) }
+            PieceTypes.MONK -> { shopItems.add(MonkDefault()) }
+            PieceTypes.VILLEIN -> { shopItems.add(VilleinDefault()) }
+            PieceTypes.BARON -> { shopItems.add(BaronDefault()) }
+            PieceTypes.BARONESS -> { shopItems.add(BaronessDefault()) }
+        }
+
         shopItems.forEach { item ->
             item.clickable = true
         }

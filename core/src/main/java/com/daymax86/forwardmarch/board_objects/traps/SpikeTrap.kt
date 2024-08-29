@@ -27,7 +27,7 @@ class SpikeTrap(
 ) : Trap() {
 
     init {
-        this.infoBox.titleText = "Spike trap"
+        this.infoBox.titleText = "Spike trap - armed = ${this.armed}!"
         this.infoBox.description = "Spiky! Traps will destroy any piece - both allied and enemy - which move onto them."
         this.infoBox.thumbnailImage = image
     }
@@ -35,6 +35,7 @@ class SpikeTrap(
     override fun springTrap(sprungBy: BoardObject) {
         this.image = Texture(Gdx.files.internal("sprites/spike_trap_256_damage.png"))
         this.highlightedImage = Texture(Gdx.files.internal("sprites/spike_trap_256_damage.png"))
+        sprungBy.kill()
     }
 
 }

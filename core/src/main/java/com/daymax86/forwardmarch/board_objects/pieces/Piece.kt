@@ -104,7 +104,9 @@ abstract class Piece(
             }
 
             is Trap -> {
-                other.springTrap(this)
+                if (other.armed) {
+                    other.springTrap(this)
+                }
             }
 
             is Shop -> {

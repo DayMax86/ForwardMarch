@@ -9,7 +9,10 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.InfoBox
+import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 
 open class Trap(
     override var associatedBoard: Board? = null,
@@ -45,10 +48,40 @@ open class Trap(
         height = boundingBox.height.toInt(),
         description = "Traps will destroy any piece - both allied and enemy - which move onto them.",
     ),
+    var armed: Boolean = true
 ) : BoardObject() {
 
     open fun springTrap(sprungBy: BoardObject) {
         // Individual behaviour of traps goes here
+    }
+
+    open fun arm() {
+        armed = true
+    }
+
+    open fun disarm() {
+        armed = false
+    }
+
+    fun checkNearbyBaroness() {
+        val dummyKing = KingDefault(boardXpos = this.boardXpos, boardYpos = this.boardYpos)
+        dummyKing.associatedBoard = this.associatedBoard
+        dummyKing.nextBoard =
+            GameManager.boards[GameManager.boards.indexOf(this.associatedBoard) + 1]
+        val surroundingSquares = Movement.getSurroundingSquares(
+            dummyKing,
+            dummyKing.movementTypes,
+            1,
+            dummyKing.movementDirections
+        )
+        if (surroundingSquares.any {
+                it.contents.filterIsInstance<BaronessDefault>().isNotEmpty()
+            }) {
+            this.disarm()
+        } else {
+            this.arm()
+        }
+
     }
 
 }

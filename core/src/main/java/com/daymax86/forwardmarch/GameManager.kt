@@ -10,6 +10,8 @@ import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
@@ -17,6 +19,8 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.MonkDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PrinceDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
+import com.daymax86.forwardmarch.board_objects.pieces.defaults.VilleinDefault
+import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
@@ -53,8 +57,8 @@ object GameManager {
     val shops: MutableList<Shop> = mutableListOf()
     var currentShop: Shop? = null
 
-    // Item-based collections
     val allItems: MutableList<Item> = mutableListOf()
+    val allPieces: MutableList<Piece> = mutableListOf()
 
     var toast: Toast? = null
     var currentInfoBox: InfoBox? = null
@@ -92,12 +96,6 @@ object GameManager {
 
         boards.add(testBoard2)
         boards.add(testBoard3)
-
-        MonkDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(4, 4, null)
-        }.apply { pieces.add(this) }
 
         // ------------------------------------------------------------------------------------------------
 
@@ -405,6 +403,32 @@ object GameManager {
         placeKing()
         // QUEEN
         placeQueen()
+
+        // ---------- TESTING ----------- //
+
+        VilleinDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(4, 4, null)
+        }.apply { pieces.add(this) }
+
+        BaronDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(4, 5, null)
+        }.apply { pieces.add(this) }
+
+        BaronessDefault().also {
+            it.associatedBoard = boards[0]
+            it.nextBoard = boards[1]
+            it.move(3, 6, null)
+        }.apply { pieces.add(this) }
+
+        EnemyManager.spawnTrap(TrapTypes.SPIKE,3,4,boards[0])
+
+        // ------------------------------ //
+
+
     }
 
     private fun placeQueen() {
@@ -431,14 +455,6 @@ object GameManager {
                 it.move(x, 2, null)
             }.apply { pieces.add(this) }
         }
-        // TESTING ---------------------
-        BlackPawn().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(7, 8, null)
-        }.apply { pieces.add(this) }
-        // -----------------------------
-
     }
 
     private fun placeStartingRooks() {
@@ -453,14 +469,6 @@ object GameManager {
             it.nextBoard = boards[1]
             it.move(8, 1, null)
         }.apply { pieces.add(this) }
-
-        // TESTING ---------------------
-        RookDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(6, 8, null)
-        }.apply { pieces.add(this) }
-        // -----------------------------
     }
 
     private fun placeStartingBishops() {
@@ -475,14 +483,6 @@ object GameManager {
             it.nextBoard = boards[1]
             it.move(6, 1, null)
         }.apply { pieces.add(this) }
-
-        // TESTING ---------------------
-        BishopDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(4, 6, null)
-        }.apply { pieces.add(this) }
-        // -----------------------------
     }
 
     private fun placeStartingKnights() {
@@ -497,14 +497,6 @@ object GameManager {
             it.nextBoard = boards[1]
             it.move(7, 1, null)
         }.apply { pieces.add(this) }
-
-        // TESTING ---------------------
-        KnightDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(6, 6, null)
-        }.apply { pieces.add(this) }
-        // -----------------------------
     }
 
     private fun setEnemyPieces() {

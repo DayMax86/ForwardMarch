@@ -14,6 +14,7 @@ import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 
 enum class TileColours {
@@ -111,9 +112,12 @@ abstract class Square {
         return false
     }
 
-    fun containsPiece(): Boolean {
+    fun containsTrap(): Boolean {
         for (bo in this.contents) {
-            if (bo is Piece) {
+            if (this.contents.any { obj ->
+                    obj is Trap
+                }) {
+                // The square contains a trap
                 return true
             }
         }
