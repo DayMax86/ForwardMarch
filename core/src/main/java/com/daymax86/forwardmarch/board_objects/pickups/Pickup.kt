@@ -25,6 +25,7 @@ abstract class Pickup(
 
 
     override fun onShopClick(button: Int) {
+        super.onShopClick(button)
         if (Player.canAfford(this)) {
             when (this) {
                 is Coin -> {

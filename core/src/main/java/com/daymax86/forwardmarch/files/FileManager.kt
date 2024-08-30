@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
@@ -138,6 +139,21 @@ object FileManager {
                                 ).also { shop ->
                                     shop.move(square.boardXpos, square.boardYpos, board)
                                     GameManager.shops.add(shop)
+                                }
+                            )
+                        }
+                    }
+
+                    "sacrifice_station" -> {
+                        actionQueue.add {
+                            square.contents.add(
+                                SacrificeStation(
+                                    associatedBoard = board,
+                                    boardXpos = square.boardXpos,
+                                    boardYpos = square.boardYpos,
+                                ).also { station ->
+                                    station.move(square.boardXpos, square.boardYpos, board)
+                                    GameManager.stations.add(station)
                                 }
                             )
                         }

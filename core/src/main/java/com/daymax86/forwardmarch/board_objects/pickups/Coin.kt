@@ -8,11 +8,12 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.InfoBox
+import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 
 class Coin(
-    override var image: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
-    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/alpha.png")),
+    override var image: Texture = Texture(Gdx.files.internal("sprites/coin_front.png")),
+    override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/coin_front.png")),
     override var deathAnimation: SpriteAnimation = SpriteAnimation(
         atlasFilepath = "atlases/black_pawn_death_animation.atlas",
         frameDuration = GameManager.DEFAULT_ANIMATION_DURATION,
@@ -55,5 +56,12 @@ class Coin(
     movementTarget = movementTarget,
 ) {
 
+    override fun onSacrificeClick(button: Int) {
+        super.onSacrificeClick(button)
+        Player.changeCoinTotal(
+            GameManager.currentStation?.enteredPiece?.shopPrice?: 0
+        )
+        GameManager.currentStation!!.exitStation()
+    }
 
 }

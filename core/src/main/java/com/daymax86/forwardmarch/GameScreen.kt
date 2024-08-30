@@ -21,6 +21,7 @@ import com.daymax86.forwardmarch.GameManager.boards
 import com.daymax86.forwardmarch.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.GameManager.currentShop
+import com.daymax86.forwardmarch.GameManager.currentStation
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
@@ -94,6 +95,12 @@ class GameScreen(private val application: MainApplication) : Screen {
                 if (GameManager.currentShop != null) {
                     currentShop!!.shopItems.let { items ->
                         currentShop!!.shopWindow.checkPopupCollisions(items, button)
+                    }
+                }
+
+                if (GameManager.currentStation != null) {
+                    currentStation!!.choices.let { choices ->
+                        currentStation!!.choiceWindow.checkPopupCollisions(choices, button)
                     }
                 }
 
@@ -190,24 +197,6 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawBoardObjects(GameManager.getAllObjects())
         drawAnimations(GameManager.activeAnimations)
 
-//        // TESTING --------------------------
-//        val shapeRenderer = ShapeRenderer()
-//        shapeRenderer.projectionMatrix = gameCamera.combined
-//        GameManager.pieces.forEach { piece ->
-//                shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-//                shapeRenderer.color = Color.RED
-//                shapeRenderer.rect(
-//                    piece.boundingBox.min.x,
-//                    piece.boundingBox.min.y,
-//                    SQUARE_WIDTH,
-//                    SQUARE_HEIGHT,
-//                )
-//                shapeRenderer.end()
-//            }
-//
-//        //----------------------------------
-
-
         application.batch.end()
 
         if (GameManager.currentShop != null) {
@@ -216,6 +205,16 @@ class GameScreen(private val application: MainApplication) : Screen {
                     GameManager.currentShop!!.shopWindow.render()
                 } catch (e: Exception) {
                     Gdx.app.log("shop", "Problem calling render on shop (is currentShop set to null properly?)")
+                }
+            }
+        }
+
+        if (GameManager.currentStation != null) {
+            if (GameManager.currentStation!!.displayChoiceWindow) {
+                try {
+                    GameManager.currentStation!!.choiceWindow.render()
+                } catch (e: Exception) {
+                    Gdx.app.log("station", "Problem calling render on station (is currentStation set to null properly?)")
                 }
             }
         }
@@ -405,6 +404,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         GameManager.currentScreenHeight = Gdx.graphics.height.toFloat()
         if (currentShop != null) {
             currentShop!!.shopWindow.resize(width, height)
+        }
+        if (currentStation != null) {
+            currentStation!!.choiceWindow.resize(width, height)
         }
     }
 

@@ -99,5 +99,11 @@ class KingDefault(
         }
         return this.movement.isNotEmpty() // No valid moves if array is empty
     }
+
+    override fun kill() {
+        super.kill()
+        GameManager.triggerGameOver()
+    }
+
 }
 

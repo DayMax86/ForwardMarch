@@ -15,6 +15,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.TileColours
+import java.lang.Math.round
 
 class Bomb(
     override var image: Texture = Texture(Gdx.files.internal("sprites/bomb.png")),
@@ -67,15 +68,22 @@ class Bomb(
     }
 
     override fun onShopClick(button: Int) {
+        super.onShopClick(button)
         Player.changeBombTotal(1)
-        GameManager.currentShop!!.exitShop()
+    }
+
+    override fun onSacrificeClick(button: Int) {
+        super.onSacrificeClick(button)
+        Player.changeBombTotal(
+            (round(GameManager.currentStation?.enteredPiece?.shopPrice?.div(3f) ?: 1f)
+                )
+        )
+        GameManager.currentStation!!.exitStation()
     }
 
     override fun use(xPos: Int, yPos: Int, square: Square?) {
         active = true
         this.move(xPos, yPos, square?.associatedBoard)
-        //square?.onEnter(this)
-        // It should collide with something and trigger the collision handler
     }
 
     override fun collide(other: BoardObject, friendlyAttack: Boolean) {

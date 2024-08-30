@@ -12,9 +12,10 @@ import com.badlogic.gdx.utils.Disposable
 import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
 import com.daymax86.forwardmarch.GameManager.currentShop
-import com.daymax86.forwardmarch.GameManager.shops
+import com.daymax86.forwardmarch.GameManager.currentStation
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 
-class ShopPopup : Disposable {
+class ChoicePopup: Disposable {
 
     // Hardcoded constants which affect visuals only // TODO Store these in one place - currently repeated across files!
     val viewWidth = 2000
@@ -27,7 +28,7 @@ class ShopPopup : Disposable {
     var cam =
         OrthographicCamera((viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat())
     var backgroundImage: Texture = Texture(Gdx.files.internal("background_500x750.png"))
-    // Create button to exit shop
+    // Create button to exit window
     var exitButton = BoundingBox(
         Vector3(xPos, yPos, 0f), Vector3(xPos + 20f, yPos + 20f, 0f)
     )
@@ -49,9 +50,21 @@ class ShopPopup : Disposable {
             700f,
             450f
         )
+
+        val enteredPiece = GameManager.currentStation?.enteredPiece
+        if (enteredPiece != null) {
+            batch.draw(
+                enteredPiece.image,
+                xPos + 300f,
+                yPos + 200f,
+                SQUARE_WIDTH * 1.25f,
+                SQUARE_HEIGHT * 1.25f
+            )
+        }
+
         var i = 0
-        GameManager.currentShop?.shopItems?.forEach { item ->
-            item.updateBoundingBox(
+        GameManager.currentStation?.choices?.forEach { obj ->
+            obj.updateBoundingBox(
                 x = xPos + 75f + (i * SQUARE_WIDTH),
                 y = (yPos + 25f),
                 width = SQUARE_WIDTH,
@@ -60,39 +73,34 @@ class ShopPopup : Disposable {
             i++
         }.apply { i = 0 }
 
-        GameManager.currentShop?.shopItems?.let { items ->
-            GameManager.currentShop?.shopItems?.forEach { item ->
-                val img = if (item.highlight) {
-                    item.highlightedImage
+        GameManager.currentStation?.choices?.let { choices ->
+            GameManager.currentStation?.choices?.forEach { obj ->
+                val img = if (obj.highlight) {
+                    obj.highlightedImage
                 } else {
-                    item.image
+                    obj.image
                 }
 
                 batch.draw(
                     img,
-                    item.boundingBox.min.x,
-                    item.boundingBox.min.y,
+                    obj.boundingBox.min.x,
+                    obj.boundingBox.min.y,
                     SQUARE_WIDTH,
                     SQUARE_HEIGHT
                 )
 
-                // Add a price next to each item
-                batch.draw(
-                    Texture(Gdx.files.internal("sprites/coin_front.png")),
-                    item.boundingBox.max.x - (item.boundingBox.width / 2),
-                    item.boundingBox.max.y,
-                    (item.image.width / 4).toFloat(),
-                    (item.image.height / 4).toFloat(),
-                )
-                font.draw(
-                    batch,
-                    "${item.shopPrice}",
-                    item.boundingBox.max.x - (item.boundingBox.width / 2) + (GlyphLayout(font, item.shopPrice.toString()).width),
-                    item.boundingBox.max.y + (GlyphLayout(font, item.shopPrice.toString()).height * 2),
-                )
+                if (obj is Coin) {
+                    font.draw(
+                        batch,
+                        "${enteredPiece?.shopPrice?: "Error!"}",
+                        obj.boundingBox.max.x - (obj.boundingBox.width / 2) + (GlyphLayout(font, obj.shopPrice.toString()).width),
+                        obj.boundingBox.min.y + (obj.boundingBox.height / 2),
+                    )
+                }
+
 
             }
-            val exitImg = checkPopupCollisions(items)
+            val exitImg = checkPopupCollisions(choices)
             exitButton = BoundingBox(
                 Vector3(xPos + 700f, yPos + 450f, 0f), Vector3(xPos + 700f + 50f, yPos + 450f + 50f, 0f)
             )
@@ -104,27 +112,6 @@ class ShopPopup : Disposable {
                 50f,
             )
         }
-
-//        // TESTING ----------------------------------------------------
-//        val shapeRenderer = ShapeRenderer()
-//        shapeRenderer.projectionMatrix = cam.combined
-//
-//
-//        GameManager.currentShop?.shopItems?.let { items ->
-//            items.forEach { item ->
-//                shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-//                shapeRenderer.color = Color.RED
-//                shapeRenderer.rect(
-//                    item.boundingBox.min.x,
-//                    item.boundingBox.min.y,
-//                    SQUARE_WIDTH,
-//                    SQUARE_HEIGHT,
-//                )
-//                shapeRenderer.end()
-//            }
-//        }
-//        // -----------------------------------------------------------
-
         batch.end()
     }
 
@@ -136,23 +123,27 @@ class ShopPopup : Disposable {
         collection: List<GameObject>,
         button: Int = -1
     ): Texture {
+        val actionQueue: MutableList<() -> Unit> = mutableListOf()
         collection.forEach { obj ->
             if (obj.boundingBox.contains(getMouseEnvironmentPosition(cam))) {
-                obj.onShopHover()
+                obj.onSacrificeHover()
                 if (button == 0) {
-                    obj.onShopClick(button)
+                    actionQueue.add {
+                        obj.onSacrificeClick(button)
+                    }
                 }
             } else {
-                obj.onExitShopHover()
+                obj.onExitSacrificeHover()
             }
         }
+        actionQueue.forEach { it.invoke() }
 
 
         var exitImg: Texture
         if (exitButton.contains(getMouseEnvironmentPosition(cam))) {
             exitImg = Texture(Gdx.files.internal("shop/exit_button_highlighted.png"))
-            if (button == 0 && currentShop != null) {
-                currentShop!!.exitShop()
+            if (button == 0 && currentStation != null) {
+                currentStation!!.exitStation()
             }
         } else {
             exitImg = Texture(Gdx.files.internal("shop/exit_button.png"))
@@ -173,3 +164,4 @@ class ShopPopup : Disposable {
         batch.dispose()
     }
 }
+

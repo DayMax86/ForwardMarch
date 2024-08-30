@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
+import com.daymax86.forwardmarch.GameManager.currentShop
 
 abstract class GameObject {
     // Anything common to BoardObjects and Items should be in here (e.g. image)
@@ -27,8 +28,36 @@ abstract class GameObject {
         highlight = !highlight
     }
 
-    open fun onShopClick(button: Int) {
+    open fun onShopHover() {
+        highlight = true
+        GameManager.currentInfoBox = this.infoBox
+    }
 
+    open fun onExitShopHover() {
+        highlight = false
+        if (GameManager.currentInfoBox == this.infoBox) {
+            GameManager.currentInfoBox = null
+        }
+    }
+
+    open fun onShopClick(button: Int) {
+        this.onExitShopHover()
+    }
+
+    open fun onSacrificeHover() {
+        highlight = true
+        GameManager.currentInfoBox = this.infoBox
+    }
+
+    open fun onExitSacrificeHover() {
+        highlight = false
+        if (GameManager.currentInfoBox == this.infoBox) {
+            GameManager.currentInfoBox = null
+        }
+    }
+
+    open fun onSacrificeClick(button: Int) {
+        this.onExitSacrificeHover()
     }
 
     open fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {

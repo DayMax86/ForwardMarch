@@ -5,8 +5,8 @@ import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.EnemyManager.traps
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
@@ -15,12 +15,9 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.MonkDefault
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.PrinceDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.VilleinDefault
-import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
@@ -55,10 +52,11 @@ object GameManager {
     val pickups: MutableList<BoardObject> = mutableListOf()
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
     val shops: MutableList<Shop> = mutableListOf()
+    val stations: MutableList<SacrificeStation> = mutableListOf()
     var currentShop: Shop? = null
+    var currentStation: SacrificeStation? = null
 
     val allItems: MutableList<Item> = mutableListOf()
-    val allPieces: MutableList<Piece> = mutableListOf()
 
     var toast: Toast? = null
     var currentInfoBox: InfoBox? = null
@@ -103,6 +101,10 @@ object GameManager {
         setEnemyPieces()
         boards.forEach { board -> board.initialiseBoardObjects() }
         saveGameState()
+    }
+
+    fun triggerGameOver() {
+
     }
 
     private fun loadAllItems() { // TODO This should be read from a file instead of manually listed here
@@ -337,7 +339,7 @@ object GameManager {
             // Must've been bought in the shop
             selectedPiece = piece
             piece.highlight = true
-            // Player must place their new piece behind or in line with the king
+            // TODO() Player must place their new piece behind or in line with the king
             for (board in boards) {
                 for (square in board.squaresList) {
                     square.swapToAltHighlight(true)
@@ -385,6 +387,7 @@ object GameManager {
         enemyPieces.forEach { allObjects.add(it) }
         pickups.forEach { allObjects.add(it) }
         shops.forEach { allObjects.add(it) }
+        stations.forEach { allObjects.add(it) }
         return allObjects
     }
 

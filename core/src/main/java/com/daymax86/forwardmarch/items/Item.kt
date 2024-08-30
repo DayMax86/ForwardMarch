@@ -30,6 +30,7 @@ abstract class Item : GameObject() {
     abstract var itemPools: MutableList<ItemPools>
 
     override fun onShopClick(button: Int) {
+        super.onShopClick(button)
         if (Player.canAfford(this)) {
             Player.playerItems.add(this)
             GameManager.currentShop!!.exitShop()
@@ -47,12 +48,12 @@ abstract class Item : GameObject() {
     }
 
     override fun onHover() {
-        highlight = true
+        super.onHover()
         GameManager.currentInfoBox = this.infoBox
     }
 
     override fun onExitHover() {
-        highlight = false
+        super.onExitHover()
         if (GameManager.currentInfoBox == this.infoBox) {
             GameManager.currentInfoBox = null
         }

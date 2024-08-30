@@ -16,6 +16,7 @@ import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.SoundSet
 import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
+import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.squares.Square
@@ -73,6 +74,7 @@ abstract class Piece(
     }
 
     override fun onShopClick(button: Int) {
+        super.onShopClick(button)
         if (Player.canAfford(this)) {
             GameManager.pieces.add(this)
             GameManager.selectPiece(this, true)
@@ -81,6 +83,20 @@ abstract class Piece(
             // Feedback to the player that they don't have enough money
             GameManager.toast =
                 Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
+        }
+    }
+
+    override fun onSacrificeClick(button: Int) {
+        super.onSacrificeClick(button)
+        if (GameManager.currentStation != null && GameManager.currentStation?.enteredPiece != null) {
+            this.move(
+                GameManager.currentStation!!.boardXpos,
+                GameManager.currentStation!!.boardYpos,
+                GameManager.currentStation!!.associatedBoard,
+            ).also {
+                GameManager.currentStation!!.exitStation()
+                GameManager.pieces.add(this)
+            }
         }
     }
 
@@ -113,6 +129,13 @@ abstract class Piece(
                 if (!this.hostile) {
                     GameManager.currentShop = other
                     GameManager.currentShop!!.enterShop()
+                }
+            }
+
+            is SacrificeStation -> {
+                if (!this.hostile && GameManager.currentStation == null) {
+                    GameManager.currentStation = other
+                    GameManager.currentStation!!.enterStation(this)
                 }
             }
 
