@@ -51,6 +51,24 @@ class GameHUD(gameScreen: GameScreen) {
         }
     }
 
+    private fun checkForGameOver() {
+        if (GameManager.gameOver) {
+            val gameOverHUDElement =
+                HUDElement(
+                    ElementTypes.IMAGE,
+                    image = Texture(Gdx.files.internal("hud_elements/game_over.png")),
+                    x = -500f,
+                    y = -250f,
+                    width = 500f,
+                    height = 500f,
+                    visible = true,
+                ) {
+                    // Could have a restart game button here perhaps.
+                }
+            hudElements.add(gameOverHUDElement)
+        }
+    }
+
     private fun checkForToast() {
         val toast = GameManager.toast
         if (toast != null) {
@@ -107,6 +125,7 @@ class GameHUD(gameScreen: GameScreen) {
     // Must be called within a batch's begin and end methods!
     fun drawHUD(batch: SpriteBatch) {
 
+        checkForGameOver()
         checkForItemChanges()
         checkForToast()
         checkForInfoBox()
@@ -198,7 +217,7 @@ class GameHUD(gameScreen: GameScreen) {
                                     Gdx.app.log("HUD", "Off the right")
                                     boxX = GameManager.currentScreenWidth - boxWidth
                                 }
-                                if (Gdx.input.y - boxHeight < 0 - boxHeight/2) {
+                                if (Gdx.input.y - boxHeight < 0 - boxHeight / 2) {
                                     // Off the top edge
                                     Gdx.app.log("HUD", "Off the top")
                                     boxY = GameManager.currentScreenHeight - boxHeight - 50f

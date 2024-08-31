@@ -15,7 +15,7 @@ import ktx.async.KtxAsync
 class MysterySquare(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/mystery_square_256.png")),
     override var highlightedTileImage: Texture = Texture(Gdx.files.internal("sprites/mystery_square_256_highlighted.png")),
-    override var colour: TileColours = TileColours.OTHER,
+    override var colour: SquareTypes = SquareTypes.MYSTERY,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
     override var boardXpos: Int,

@@ -6,27 +6,27 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.EnemyManager
 import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 
-enum class TileColours {
+enum class SquareTypes {
     BLACK,
     WHITE,
-    OTHER,
+    MYSTERY,
+    TRAPDOOR,
+    BROKEN,
 }
 
 abstract class Square {
     abstract var tileImage: Texture
     abstract var highlightedTileImage: Texture
-    abstract var colour: TileColours
+    abstract var colour: SquareTypes
     abstract var clickable: Boolean
     abstract val contents: MutableList<BoardObject>
     abstract var boardXpos: Int

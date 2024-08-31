@@ -14,7 +14,7 @@ import ktx.async.KtxAsync
 class TrapdoorSquare(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/trapdoor_square_256.png")),
     override var highlightedTileImage: Texture = Texture(Gdx.files.internal("sprites/trapdoor_square_256_highlighted.png")),
-    override var colour: TileColours = TileColours.OTHER,
+    override var colour: SquareTypes = SquareTypes.TRAPDOOR,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
     override var boardXpos: Int,

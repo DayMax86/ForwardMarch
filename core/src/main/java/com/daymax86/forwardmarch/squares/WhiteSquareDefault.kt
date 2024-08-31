@@ -10,7 +10,7 @@ import com.daymax86.forwardmarch.GameManager
 class WhiteSquareDefault(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/white_square_256.png")),
     override var highlightedTileImage: Texture = Texture(Gdx.files.internal("sprites/white_square_256_highlighted.png")),
-    override var colour: TileColours = TileColours.WHITE,
+    override var colour: SquareTypes = SquareTypes.WHITE,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
     override var boardXpos: Int,

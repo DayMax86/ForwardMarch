@@ -14,7 +14,7 @@ import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.Square
-import com.daymax86.forwardmarch.squares.TileColours
+import com.daymax86.forwardmarch.squares.SquareTypes
 import java.lang.Math.round
 
 class Bomb(
@@ -98,16 +98,18 @@ class Bomb(
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var img = targetSquare.tileImage
         when (targetSquare.colour) {
-            TileColours.BLACK -> {
+            SquareTypes.BLACK -> {
                 img = Texture(Gdx.files.internal("sprites/black_square_hole_256.png"))
                 // Replace the square with a 'hole' square
             }
 
-            TileColours.WHITE -> {
+            SquareTypes.WHITE -> {
                 img = Texture(Gdx.files.internal("sprites/white_square_hole_256.png"))
             }
 
-            TileColours.OTHER -> {}
+            SquareTypes.MYSTERY -> {}
+            SquareTypes.TRAPDOOR -> {}
+            SquareTypes.BROKEN -> {}
         }
 
         GameManager.boards.forEach { board ->

@@ -17,8 +17,8 @@
 1,3,black,null
 2,3,white,null
 3,3,black,null
-4,3,white,coin
-5,3,black,coin
+4,3,white,null
+5,3,black,null
 6,3,white,null
 7,3,black,null
 8,3,white,null
@@ -35,7 +35,7 @@
 3,5,black,null
 4,5,white,null
 5,5,black,null
-6,5,white,sacrifice_station
+6,5,white,null
 7,5,black,null
 8,5,white,null
 1,6,white,null

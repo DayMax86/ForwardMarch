@@ -14,11 +14,13 @@ import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.MysterySquare
 import com.daymax86.forwardmarch.squares.Square
-import com.daymax86.forwardmarch.squares.TileColours
+import com.daymax86.forwardmarch.squares.SquareTypes
 import com.daymax86.forwardmarch.squares.TrapdoorSquare
 import com.daymax86.forwardmarch.squares.WhiteSquareDefault
 import java.io.File
+import java.io.FileOutputStream
 import java.io.InputStream
+import java.io.OutputStream
 
 object FileManager {
 
@@ -49,6 +51,45 @@ object FileManager {
         }
     }
 
+    fun generateBoardFile(difficultyModifier: Int) {
+        val newFile = File("boards/test.csv")
+        newFile.getParentFile().mkdirs()
+        newFile.createNewFile()
+        FileOutputStream(newFile).apply { writeToCSV(difficultyModifier) }
+    }
+
+    private fun OutputStream.writeToCSV(difficultyModifier: Int) {
+//        Create a board file that is randomly generated
+//        according to the difficulty modifier.
+        val writer = bufferedWriter()
+
+        var lastWasBlack = false
+        for (y: Int in 1..GameManager.DIMENSIONS) {
+            for (x: Int in 1..GameManager.DIMENSIONS) {
+                writer.write("$x,$y,")
+                if (lastWasBlack) {
+                    // White
+                } else {
+                    // Black
+                }
+                if (x.mod(GameManager.DIMENSIONS) != 0) {
+                    lastWasBlack = !lastWasBlack
+                }
+                //writer.write(squareType.toString().lowercase() + ",")
+                writer.write("null" + ",")
+                writer.newLine()
+            }
+        }
+
+
+            // intensity of obstacles depends on difficulty modifier.
+
+                val squareType = SquareTypes.entries.random()
+
+
+        writer.flush()
+    }
+
     fun makeBoardFromFile(file: File): Board? {
         val inputStream = file.inputStream()
         val dataSquares = readBoardFile(inputStream)
@@ -63,7 +104,7 @@ object FileManager {
             when (dataSquare.type) {
                 "black" -> {
                     square = BlackSquareDefault(
-                        colour = TileColours.BLACK,
+                        colour = SquareTypes.BLACK,
                         associatedBoard = board,
                         boardXpos = dataSquare.xPos,
                         boardYpos = dataSquare.yPos,
@@ -73,7 +114,7 @@ object FileManager {
 
                 "white" -> {
                     square = WhiteSquareDefault(
-                        colour = TileColours.WHITE,
+                        colour = SquareTypes.WHITE,
                         associatedBoard = board,
                         boardXpos = dataSquare.xPos,
                         boardYpos = dataSquare.yPos,
@@ -83,7 +124,7 @@ object FileManager {
 
                 "mystery" -> {
                     square = MysterySquare(
-                        colour = TileColours.OTHER,
+                        colour = SquareTypes.MYSTERY,
                         associatedBoard = board,
                         boardXpos = dataSquare.xPos,
                         boardYpos = dataSquare.yPos,
@@ -93,7 +134,7 @@ object FileManager {
 
                 "trapdoor" -> {
                     square = TrapdoorSquare(
-                        colour = TileColours.OTHER,
+                        colour = SquareTypes.TRAPDOOR,
                         associatedBoard = board,
                         boardXpos = dataSquare.xPos,
                         boardYpos = dataSquare.yPos,
@@ -174,19 +215,34 @@ object FileManager {
 
                     "enemy_pawn" -> {
                         actionQueue.add {
-                            EnemyManager.spawnEnemy(PieceTypes.PAWN, square.boardXpos, square.boardYpos, board)
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.PAWN,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
+                            )
                         }
                     }
 
                     "enemy_knight" -> {
                         actionQueue.add {
-                            EnemyManager.spawnEnemy(PieceTypes.KNIGHT, square.boardXpos, square.boardYpos, board)
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.KNIGHT,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
+                            )
                         }
                     }
 
                     "enemy_rook" -> {
                         actionQueue.add {
-                            EnemyManager.spawnEnemy(PieceTypes.ROOK, square.boardXpos, square.boardYpos, board)
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.ROOK,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
+                            )
                         }
                     }
                 }

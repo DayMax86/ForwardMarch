@@ -23,6 +23,7 @@ import com.daymax86.forwardmarch.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.GameManager.currentShop
 import com.daymax86.forwardmarch.GameManager.currentStation
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.files.FileManager
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
@@ -157,6 +158,12 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
 
+                    (Input.Keys.T) -> {
+                        // TESTING ----------------
+                        FileManager.generateBoardFile(1)
+                        // ------------------------
+                    }
+
 //                    (Input.Keys.S) -> {
 //                        //Show the shop
 //                        GameManager.currentShop!!.displayShopWindow =
@@ -289,9 +296,8 @@ class GameScreen(private val application: MainApplication) : Screen {
                 obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x, 0.25f)
             obj.currentPosition.y =
                 obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y, 0.25f)
-            //obj.currentPosition.lerp(obj.movementTarget,0.25f)
             obj.updateBoundingBox()
-            // Really the above code shouldn't be under the 'drawObjects' title since this isn't drawing!
+
             application.batch.draw(
                 img,
                 obj.boundingBox.min.x,

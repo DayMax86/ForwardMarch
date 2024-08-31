@@ -40,13 +40,14 @@ object GameManager {
     const val EDGE_BUFFER: Float = (ENVIRONMENT_WIDTH / 20)
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
-    const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
+    private const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
     var aspectRatio = 1920 / 1080f
 
     var currentScreenWidth = 0f
     var currentScreenHeight = 0f
 
-    // Collections
+    var gameOver: Boolean = false
+
     val pieces: MutableList<Piece> = mutableListOf()
     val boards: MutableList<Board> = mutableListOf()
     val pickups: MutableList<BoardObject> = mutableListOf()
@@ -104,7 +105,10 @@ object GameManager {
     }
 
     fun triggerGameOver() {
-
+        gameOver = true
+        getAllObjects().forEach { obj ->
+            obj.clickable = false
+        }
     }
 
     private fun loadAllItems() { // TODO This should be read from a file instead of manually listed here
@@ -375,7 +379,7 @@ object GameManager {
         for (piece in this.pieces) {
             piece.getValidMoves()
         }
-        for (enemy in EnemyManager.enemyPieces) {
+        for (enemy in enemyPieces) {
             enemy.getValidMoves()
         }
     }
@@ -406,32 +410,6 @@ object GameManager {
         placeKing()
         // QUEEN
         placeQueen()
-
-        // ---------- TESTING ----------- //
-
-        VilleinDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(4, 4, null)
-        }.apply { pieces.add(this) }
-
-        BaronDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(4, 5, null)
-        }.apply { pieces.add(this) }
-
-        BaronessDefault().also {
-            it.associatedBoard = boards[0]
-            it.nextBoard = boards[1]
-            it.move(3, 6, null)
-        }.apply { pieces.add(this) }
-
-        EnemyManager.spawnTrap(TrapTypes.SPIKE,3,4,boards[0])
-
-        // ------------------------------ //
-
-
     }
 
     private fun placeQueen() {
