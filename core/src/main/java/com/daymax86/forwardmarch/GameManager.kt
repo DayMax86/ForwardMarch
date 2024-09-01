@@ -10,14 +10,11 @@ import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronDefault
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BishopDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
-import com.daymax86.forwardmarch.board_objects.pieces.defaults.VilleinDefault
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.boards.VeryEasyBoard1
@@ -30,6 +27,10 @@ import com.daymax86.forwardmarch.items.VoodooTotem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
+import java.nio.file.DirectoryStream
+import java.nio.file.FileSystems
+import java.nio.file.Path
+
 
 object GameManager {
 
@@ -80,28 +81,91 @@ object GameManager {
 
     init {
         loadAllItems()
+
         // TESTING ----------------------------------------------------------------------------------------
-
-        val testBoard = FileManager.makeBoardFromFile(Gdx.files.internal("boards/standard_board.csv").file())
-        val testBoard2 =
-            VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * SQUARE_HEIGHT).toInt())
-        val testBoard3 =
-            VeryEasyBoard1(environmentYPos = BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * 2).toInt())
-
-        if (testBoard != null) {
-            testBoard.environmentYPos = BOARD_STARTING_Y
-            boards.add(testBoard)
-        }
-
-        boards.add(testBoard2)
-        boards.add(testBoard3)
-
         // ------------------------------------------------------------------------------------------------
 
-        setStartingLayout()
-        setEnemyPieces()
+        addStartingBoard { addBoard(difficultyModifier) { addBoard(difficultyModifier) {} } }.apply {
+            setStartingLayout()
+        }
+
+
         boards.forEach { board -> board.initialiseBoardObjects() }
         saveGameState()
+    }
+
+    @Suppress("NewApi")
+    private fun addBoard(difficultyModifier: Int, onComplete: () -> Unit) {
+        var dir: String = ""
+        when (difficultyModifier.floorDiv(1)) {
+            1 -> {
+                // Add a very easy board
+                dir = "boards/very_easy_boards"
+            }
+
+            2 -> {
+                // Add an easy board
+                dir = "boards/easy_boards"
+            }
+
+            3 -> {
+                // Add a medium board
+                dir = "boards/medium_boards"
+            }
+
+            4 -> {
+                // Add a hard board
+                dir = "boards/hard_boards"
+            }
+
+            5 -> {
+                // Add a very hard board
+                dir = "boards/very_hard_boards"
+            }
+
+            else -> {
+                // Add the hardest boards possible
+                dir = "boards/impossible_boards"
+            }
+        }.also {
+            val path: Path = FileSystems.getDefault().getPath(dir)
+            val stream: DirectoryStream<Path> = java.nio.file.Files.newDirectoryStream(path)
+            val files: MutableList<Path> = mutableListOf()
+            stream.forEach { p ->
+                files.add(p)
+            }
+            val board = FileManager.makeBoardFromFile(
+                Gdx.files.internal(
+                    files.random().toString()
+                ).file()
+            )
+            if (board != null) {
+                board.environmentYPos =
+                    BOARD_STARTING_Y + ((DIMENSIONS * SQUARE_HEIGHT) * boards.size).toInt()
+                boards.add(board)
+            }
+        }
+        onComplete.invoke()
+    }
+
+    @Suppress("NewApi")
+    private fun addStartingBoard(onComplete: () -> Unit) {
+        val path: Path = FileSystems.getDefault().getPath("boards/starting_boards")
+        val stream: DirectoryStream<Path> = java.nio.file.Files.newDirectoryStream(path)
+        val files: MutableList<Path> = mutableListOf()
+        stream.forEach { p ->
+            files.add(p)
+        }
+        val startingBoard = FileManager.makeBoardFromFile(
+            Gdx.files.internal(
+                files.random().toString()
+            ).file()
+        )
+        if (startingBoard != null) {
+            startingBoard.environmentYPos = BOARD_STARTING_Y
+            boards.add(startingBoard)
+        }
+        onComplete.invoke()
     }
 
     fun triggerGameOver() {
@@ -480,12 +544,12 @@ object GameManager {
         }.apply { pieces.add(this) }
     }
 
-    private fun setEnemyPieces() {
-        enemyPieces.forEach {
-            it.move(it.boardXpos, it.boardYpos, null)
-            it.getValidMoves()
-        }
-    }
+//    private fun setEnemyPieces() {
+//        enemyPieces.forEach {
+//            it.move(it.boardXpos, it.boardYpos, null)
+//            it.getValidMoves()
+//        }
+//    }
 
 }
 

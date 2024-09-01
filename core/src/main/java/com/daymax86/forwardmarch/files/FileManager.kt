@@ -10,8 +10,11 @@ import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pickups.ItemToken
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
+import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
+import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
+import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.MysterySquare
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.SquareTypes
@@ -141,6 +144,15 @@ object FileManager {
                         clickable = true,
                     )
                 }
+                else -> {
+                    square = BrokenSquare(
+                        colour = SquareTypes.BROKEN,
+                        associatedBoard = board,
+                        boardXpos = dataSquare.xPos,
+                        boardYpos = dataSquare.yPos,
+                        clickable = true,
+                    )
+                }
 
             }
 
@@ -166,6 +178,17 @@ object FileManager {
                                     boardXpos = square.boardXpos,
                                     boardYpos = square.boardYpos,
                                 )
+                            )
+                        }
+                    }
+
+                    "trap" -> {
+                        actionQueue.add {
+                            EnemyManager.spawnTrap(
+                                type = TrapTypes.SPIKE,
+                                x = square.boardXpos,
+                                y = square.boardYpos,
+                                board = board,
                             )
                         }
                     }
@@ -245,6 +268,11 @@ object FileManager {
                             )
                         }
                     }
+
+                    else -> {
+                        // add nothing.
+                    }
+
                 }
             }
             squaresList.add(square)
@@ -259,6 +287,8 @@ object FileManager {
                     board
                 } else {
                     null
+                }.also {
+                    Gdx.app.log("files", "Error creating board file!")
                 }
             }
         }

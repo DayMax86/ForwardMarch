@@ -42,6 +42,7 @@ abstract class Square {
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos, contents = $contents")
+                    Gdx.app.log("square", "board index = ${GameManager.boards.indexOf(this.associatedBoard)}")
                     if (GameManager.selectedPiece != null) { // Null safety check for !! use
                         if (this.canBeEntered() &&
                             GameManager.selectedPiece!!.movement.contains(this)
