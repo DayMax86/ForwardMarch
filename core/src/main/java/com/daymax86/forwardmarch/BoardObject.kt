@@ -1,12 +1,14 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.graphics.Texture
+import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.squares.Square
+import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.PieceManager.deselectPiece
+import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
 
 abstract class BoardObject() : GameObject() {
     // All items to appear on the board should be children of this class,
@@ -21,6 +23,7 @@ abstract class BoardObject() : GameObject() {
     abstract var movementTarget: Vector2
     abstract var visuallyStatic: Boolean
     abstract var interpolationType: Interpolation
+    override var hideImage: Boolean = false
 
     fun getAllAnimations(): MutableList<SpriteAnimation?> {
         return mutableListOf(
@@ -71,16 +74,19 @@ abstract class BoardObject() : GameObject() {
                 sq.contents.forEach { other ->
                     if (other != this) {
                         collisionQueue.add {
-                            this.collide(other, GameManager.selectedPiece == null)
+                            this.collide(other, selectedPiece == null)
                         }
                     }
                 }
                 sq.contents.add(this)
             }
         }
-        collisionQueue.forEach { it.invoke() }
+        collisionQueue.forEach {
+            it.invoke()
+            Gdx.app.log("collision", "collision queue length = ${collisionQueue.size}")
+        }
 
-        GameManager.deselectPiece()
+        deselectPiece()
     }
 
 
@@ -96,7 +102,8 @@ abstract class BoardObject() : GameObject() {
     }
 
     open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
-
+        Gdx.app.log("collisions", "A collision has happened! (between $this and $other)." +
+            "Board position = ${this.boardXpos}, ${this.boardYpos}")
     }
 
     open fun kill() {

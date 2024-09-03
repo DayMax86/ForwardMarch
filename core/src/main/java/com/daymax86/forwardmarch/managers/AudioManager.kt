@@ -1,4 +1,4 @@
-package com.daymax86.forwardmarch
+package com.daymax86.forwardmarch.managers
 
 import com.badlogic.gdx.audio.Sound
 

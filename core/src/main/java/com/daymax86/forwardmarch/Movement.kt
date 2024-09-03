@@ -1,6 +1,9 @@
 package com.daymax86.forwardmarch
 
+import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.managers.BoardManager.boards
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.squares.Square
 import kotlin.math.abs
 
@@ -30,6 +33,7 @@ object Movement {
         directions: List<MovementDirections>
     ): MutableList<Square> {
         val movementList: MutableList<Square> = mutableListOf()
+        Gdx.app.log("movement", "getting friendly movement")
 
         movementTypes.forEach { movementType ->
             when (movementType) {
@@ -83,8 +87,10 @@ object Movement {
                                         var y = piece.boardYpos - downIndex
                                         if (piece.boardYpos - downIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                                            } catch (e: IndexOutOfBoundsException) {
+                                                boards.firstOrNull { b ->
+                                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                                } // Board below
+                                            } catch (e: NullPointerException) {
                                                 null
                                             }
                                             y =
@@ -281,8 +287,10 @@ object Movement {
                                         var y = piece.boardYpos - dlIndex
                                         if (piece.boardYpos - dlIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                                            } catch (e: IndexOutOfBoundsException) {
+                                                boards.firstOrNull { b ->
+                                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                                } // Board below
+                                            } catch (e: NullPointerException) {
                                                 null
                                             }
                                             y =
@@ -324,8 +332,10 @@ object Movement {
                                         var y = piece.boardYpos - drIndex
                                         if (piece.boardYpos - drIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                                            } catch (e: IndexOutOfBoundsException) {
+                                                boards.firstOrNull { b ->
+                                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                                } // Board below
+                                            } catch (e: NullPointerException) {
                                                 null
                                             }
                                             y =
@@ -433,8 +443,10 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                            } catch (e: IndexOutOfBoundsException) {
+                                boards.firstOrNull { b ->
+                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                } // Board below
+                            } catch (e: NullPointerException) {
                                 null
                             }
                             y = GameManager.DIMENSIONS - abs(y)
@@ -457,8 +469,10 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                            } catch (e: IndexOutOfBoundsException) {
+                                boards.firstOrNull { b ->
+                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                } // Board below
+                            } catch (e: NullPointerException) {
                                 null
                             }
                             y = GameManager.DIMENSIONS - abs(y)
@@ -481,8 +495,10 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                            } catch (e: IndexOutOfBoundsException) {
+                                boards.firstOrNull { b ->
+                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                } // Board below
+                            } catch (e: NullPointerException) {
                                 null
                             }
                             y = GameManager.DIMENSIONS - abs(y)
@@ -505,8 +521,10 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
-                            } catch (e: IndexOutOfBoundsException) {
+                                boards.firstOrNull { b ->
+                                    b.boardIndex == piece.associatedBoard!!.boardIndex - 1
+                                } // Board below
+                            } catch (e: NullPointerException) {
                                 null
                             }
                             y = GameManager.DIMENSIONS - abs(y)
@@ -554,7 +572,7 @@ object Movement {
         directions: List<MovementDirections>
     ): MutableList<Square> {
         val movementList: MutableList<Square> = mutableListOf()
-
+        Gdx.app.log("movement", "getting enemy movement")
         movementTypes.forEach { movementType ->
             when (movementType) {
 
@@ -609,7 +627,7 @@ object Movement {
                                         var y = piece.boardYpos - downIndex
                                         if (piece.boardYpos - downIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -811,7 +829,7 @@ object Movement {
                                         var y = piece.boardYpos - dlIndex
                                         if (piece.boardYpos - dlIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -856,7 +874,7 @@ object Movement {
                                         var y = piece.boardYpos - drIndex
                                         if (piece.boardYpos - drIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -976,7 +994,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1003,7 +1021,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1030,7 +1048,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1057,7 +1075,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1160,7 +1178,7 @@ object Movement {
                                         var y = piece.boardYpos - downIndex
                                         if (piece.boardYpos - downIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -1319,7 +1337,7 @@ object Movement {
                                         var y = piece.boardYpos - dlIndex
                                         if (piece.boardYpos - dlIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -1356,7 +1374,7 @@ object Movement {
                                         var y = piece.boardYpos - drIndex
                                         if (piece.boardYpos - drIndex < 1) {
                                             board = try {
-                                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                                             } catch (e: IndexOutOfBoundsException) {
                                                 null
                                             }
@@ -1459,7 +1477,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1483,7 +1501,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1507,7 +1525,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }
@@ -1531,7 +1549,7 @@ object Movement {
                         if (y < 1) {
                             // Must be onto the previous board
                             board = try {
-                                GameManager.boards[GameManager.boards.indexOf(piece.associatedBoard) - 1] // Board below
+                                boards[boards.indexOf(piece.associatedBoard) - 1] // Board below
                             } catch (e: IndexOutOfBoundsException) {
                                 null
                             }

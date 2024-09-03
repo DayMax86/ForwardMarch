@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.pieces.Piece

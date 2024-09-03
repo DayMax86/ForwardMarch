@@ -5,13 +5,14 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.BlackPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
+import com.daymax86.forwardmarch.managers.PieceManager.pieces
 import com.daymax86.forwardmarch.squares.Square
 
 class VoodooTotem(
@@ -72,7 +73,7 @@ class VoodooTotem(
                                     sqL.associatedBoard
                                 )
                                 sqL.contents.add(pawnLeft)
-                                GameManager.pieces.add(pawnLeft)
+                                pieces.add(pawnLeft)
                             }
                         }
                     }
@@ -86,7 +87,7 @@ class VoodooTotem(
                                     sqR.associatedBoard
                                 )
                                 sqR.contents.add(pawnRight)
-                                GameManager.pieces.add(pawnRight)
+                                pieces.add(pawnRight)
                             }
                         }
                     }

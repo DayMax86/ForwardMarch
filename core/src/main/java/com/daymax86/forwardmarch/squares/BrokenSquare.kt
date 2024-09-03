@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 
 class BrokenSquare(
     override var tileImage: Texture = Texture(Gdx.files.internal("sprites/black_square_hole_256.png")),

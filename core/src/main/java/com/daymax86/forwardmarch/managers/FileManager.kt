@@ -1,18 +1,11 @@
-package com.daymax86.forwardmarch.files
+package com.daymax86.forwardmarch.managers
 
 import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.EnemyManager
-import com.daymax86.forwardmarch.GameManager
 import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
-import com.daymax86.forwardmarch.board_objects.pickups.Bomb
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
-import com.daymax86.forwardmarch.board_objects.pickups.ItemToken
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
-import com.daymax86.forwardmarch.boards.StandardBoard
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
 import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.MysterySquare
@@ -48,6 +41,9 @@ object FileManager {
                         contents.trim().split("/")
                     )
                 }.toList()
+                .also {
+                    reader.close()
+                }
         } catch (e: Exception) {
             Gdx.app.log("files", "Error reading file - $e")
             return emptyList()
@@ -85,22 +81,22 @@ object FileManager {
         }
 
 
-            // intensity of obstacles depends on difficulty modifier.
+        // intensity of obstacles depends on difficulty modifier.
 
-                val squareType = SquareTypes.entries.random()
+        val squareType = SquareTypes.entries.random()
 
 
         writer.flush()
     }
 
-    fun makeBoardFromFile(file: File): Board? {
+    fun makeBoardFromFile(file: File): Pair<Board?, MutableList<() -> Unit>> {
         val inputStream = file.inputStream()
         val dataSquares = readBoardFile(inputStream)
-        val squaresList: MutableList<Square> = mutableListOf()
-        val board: Board = StandardBoard()
+        val tempSquaresList: MutableList<Square> = mutableListOf()
+        val board = Board()
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         if (dataSquares.isEmpty()) {
-            return null
+            return Pair(null, mutableListOf())
         }
         dataSquares.forEach { dataSquare ->
             lateinit var square: Square
@@ -144,6 +140,7 @@ object FileManager {
                         clickable = true,
                     )
                 }
+
                 else -> {
                     square = BrokenSquare(
                         colour = SquareTypes.BROKEN,
@@ -160,24 +157,22 @@ object FileManager {
                 when (content) {
                     "coin" -> {
                         actionQueue.add {
-                            square.contents.add(
-                                Coin(
-                                    associatedBoard = board,
-                                    boardXpos = square.boardXpos,
-                                    boardYpos = square.boardYpos,
-                                )
+                            PickupManager.spawnPickup(
+                                PickupTypes.COIN,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
                             )
                         }
                     }
 
                     "bomb" -> {
                         actionQueue.add {
-                            square.contents.add(
-                                Bomb(
-                                    associatedBoard = board,
-                                    boardXpos = square.boardXpos,
-                                    boardYpos = square.boardYpos,
-                                )
+                            PickupManager.spawnPickup(
+                                PickupTypes.BOMB,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
                             )
                         }
                     }
@@ -225,13 +220,11 @@ object FileManager {
 
                     "item_token" -> {
                         actionQueue.add {
-                            square.contents.add(
-                                ItemToken(
-                                    associatedBoard = board,
-                                    boardXpos = square.boardXpos,
-                                    boardYpos = square.boardYpos,
-                                    associatedItem = GameManager.allItems.random()
-                                )
+                            PickupManager.spawnPickup(
+                                PickupTypes.ITEM_TOKEN,
+                                square.boardXpos,
+                                square.boardYpos,
+                                board
                             )
                         }
                     }
@@ -275,23 +268,22 @@ object FileManager {
 
                 }
             }
-            squaresList.add(square)
-        }
-
-        actionQueue.forEach { it.invoke() }.also {
+            tempSquaresList.add(square)
+        }.apply {
+            inputStream.close()
             board.squaresList.clear()
-            squaresList.forEach { sq ->
-                board.squaresList.add(sq)
-            }.apply {
-                return if (squaresList.size == 64) {// Was the operation successful?
-                    board
-                } else {
-                    null
-                }.also {
-                    Gdx.app.log("files", "Error creating board file!")
-                }
+            tempSquaresList.forEach { tempSq ->
+                board.squaresList.add(tempSq)
+            }
+        }.apply {
+            tempSquaresList.clear()
+            if (board.squaresList.size == 64) {// Was the operation successful?
+                board.boardIndex = BoardManager.totalBoardIndex
+                BoardManager.totalBoardIndex++
+                return Pair(board, actionQueue)
+            } else {
+                return Pair(null, mutableListOf())
             }
         }
     }
-
 }

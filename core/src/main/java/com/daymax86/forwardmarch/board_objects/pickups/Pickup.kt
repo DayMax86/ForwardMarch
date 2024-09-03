@@ -5,9 +5,10 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
+import com.daymax86.forwardmarch.managers.PickupManager.pickups
 import com.daymax86.forwardmarch.squares.Square
 
 abstract class Pickup(
@@ -22,7 +23,6 @@ abstract class Pickup(
     override var movementTarget: Vector2,
     override var interpolationType: Interpolation = Interpolation.linear
 ) : BoardObject() {
-
 
     override fun onShopClick(button: Int) {
         super.onShopClick(button)
@@ -51,7 +51,9 @@ abstract class Pickup(
                 GameManager.SQUARE_HEIGHT,
             )
         }
+        pickups.add(this)
 
+        hideImage = true
         idleAnimation?.source = this
         deathAnimation.source = this
         idleAnimation?.activate()
@@ -63,7 +65,7 @@ abstract class Pickup(
 
     override fun kill() {
 
-        GameManager.pickups.remove(this)
+        pickups.remove(this)
 
         val toRemove: MutableList<() -> Unit> = mutableListOf()
         GameManager.activeAnimations.forEach {

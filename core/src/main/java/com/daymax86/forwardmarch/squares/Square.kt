@@ -6,7 +6,7 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.Shop
@@ -14,6 +14,7 @@ import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
+import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
 
 enum class SquareTypes {
     BLACK,
@@ -42,19 +43,18 @@ abstract class Square {
             when (button) {
                 inputTypes["LMB"] -> {
                     Gdx.app.log("square", "$boardXpos, $boardYpos, contents = $contents")
-                    Gdx.app.log("square", "board index = ${GameManager.boards.indexOf(this.associatedBoard)}")
-                    if (GameManager.selectedPiece != null) { // Null safety check for !! use
+                    if (selectedPiece != null) { // Null safety check for !! use
                         if (this.canBeEntered() &&
-                            GameManager.selectedPiece!!.movement.contains(this)
+                            selectedPiece!!.movement.contains(this)
                         ) {
-                            GameManager.selectedPiece!!.move(
+                            selectedPiece!!.move(
                                 this.boardXpos,
                                 this.boardYpos,
                                 this.associatedBoard,
                             )
                         } else {
-                            if (GameManager.selectedPiece != null) {
-                                if (!this.contents.contains(GameManager.selectedPiece!!)) {
+                            if (selectedPiece != null) {
+                                if (!this.contents.contains(selectedPiece!!)) {
                                     GameManager.toast = Toast("Invalid move!")
                                 }
                             }

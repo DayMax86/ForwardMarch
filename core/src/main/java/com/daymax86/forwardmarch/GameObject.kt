@@ -1,10 +1,10 @@
 package com.daymax86.forwardmarch
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.GameManager.currentShop
+import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.GameManager.freezeHighlights
 
 abstract class GameObject {
     // Anything common to BoardObjects and Items should be in here (e.g. image)
@@ -15,13 +15,22 @@ abstract class GameObject {
     abstract var highlight: Boolean
     abstract var shopPrice: Int
     abstract var infoBox: InfoBox
+    abstract var hideImage: Boolean
+
+    var hovered = false
 
     open fun onHover() {
-        highlight = true
+        hovered = true
+        if (!freezeHighlights) {
+            highlight = true
+        }
     }
 
     open fun onExitHover() {
-        highlight = false
+        hovered = false
+        if (!freezeHighlights) {
+            highlight = false
+        }
     }
 
     open fun onClick(button: Int) {

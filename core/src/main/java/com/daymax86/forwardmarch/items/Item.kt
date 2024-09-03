@@ -2,7 +2,7 @@ package com.daymax86.forwardmarch.items
 
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.GameObject
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
@@ -28,6 +28,7 @@ abstract class Item : GameObject() {
     abstract var interpolationType: Interpolation
     abstract var itemType: ItemTypes
     abstract var itemPools: MutableList<ItemPools>
+    override var hideImage: Boolean = false
 
     override fun onShopClick(button: Int) {
         super.onShopClick(button)

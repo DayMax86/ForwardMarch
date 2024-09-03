@@ -2,7 +2,7 @@ package com.daymax86.forwardmarch.board_objects.pieces.enemies
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -33,32 +33,6 @@ class EnemyPawn(
     override var hostile: Boolean = true
     override var visuallyStatic: Boolean = true
 
-    override fun onHover() {
-        super.onHover()
-        this.highlight = true
-        this.getValidMoves().also { exists ->
-            if (exists) {
-                movement.forEach {
-                    it.swapToAltHighlight(true)
-                    it.highlight = true
-                }
-            }
-        }
-    }
-
-    override fun onExitHover() {
-        super.onExitHover()
-        this.highlight = false
-        this.getValidMoves().also { exists ->
-            if (exists) {
-                movement.forEach {
-                    it.swapToAltHighlight(false)
-                    it.highlight = false
-                }
-            }
-        }
-    }
-
     override var range: Int = 1
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
@@ -66,15 +40,15 @@ class EnemyPawn(
             // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
 
-                Movement.getEnemyMovement(
-                    this,
-                    this.movementTypes,
-                    range,
-                    this.movementDirections
-                ).forEach { square ->
-                    this.movement.add(square)
-                }
+            Movement.getEnemyMovement(
+                this,
+                this.movementTypes,
+                range,
+                this.movementDirections
+            ).forEach { square ->
+                this.movement.add(square)
             }
+        }
 
         onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty

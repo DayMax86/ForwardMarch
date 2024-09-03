@@ -6,12 +6,13 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.managers.BoardManager.boards
 import com.daymax86.forwardmarch.squares.BrokenSquare
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.SquareTypes
@@ -112,7 +113,7 @@ class Bomb(
             SquareTypes.BROKEN -> {}
         }
 
-        GameManager.boards.forEach { board ->
+        boards.forEach { board ->
             board.squaresList.firstOrNull { square ->
                 square == targetSquare
             }?.let { oldSquare ->

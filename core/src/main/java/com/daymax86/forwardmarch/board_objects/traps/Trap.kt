@@ -7,12 +7,13 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
+import com.daymax86.forwardmarch.managers.BoardManager.boards
 
 open class Trap(
     override var associatedBoard: Board? = null,
@@ -67,7 +68,7 @@ open class Trap(
         val dummyKing = KingDefault(boardXpos = this.boardXpos, boardYpos = this.boardYpos)
         dummyKing.associatedBoard = this.associatedBoard
         dummyKing.nextBoard =
-            GameManager.boards[GameManager.boards.indexOf(this.associatedBoard) + 1]
+            boards[boards.indexOf(this.associatedBoard) + 1]
         val surroundingSquares = Movement.getSurroundingSquares(
             dummyKing,
             dummyKing.movementTypes,

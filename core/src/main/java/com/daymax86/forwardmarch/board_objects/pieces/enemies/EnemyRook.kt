@@ -2,7 +2,7 @@ package com.daymax86.forwardmarch.board_objects.pieces.enemies
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
@@ -34,32 +34,6 @@ class EnemyRook(
 ) : RookDefault() {
     override var hostile: Boolean = true
     override var visuallyStatic: Boolean = true
-
-    override fun onHover() {
-        super.onHover()
-        this.highlight = true
-        this.getValidMoves().also { exists ->
-            if (exists) {
-                movement.forEach {
-                    it.swapToAltHighlight(true)
-                    it.highlight = true
-                }
-            }
-        }
-    }
-
-    override fun onExitHover() {
-        super.onExitHover()
-        this.highlight = false
-        this.getValidMoves().also { exists ->
-            if (exists) {
-                movement.forEach {
-                    it.swapToAltHighlight(false)
-                    it.highlight = false
-                }
-            }
-        }
-    }
 
     override var range: Int = 3
 

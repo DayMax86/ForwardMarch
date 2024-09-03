@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.items.Item
+import com.daymax86.forwardmarch.managers.GameManager
 
 private val font = BitmapFont(
     Gdx.files.internal("fonts/default.fnt"),

@@ -13,17 +13,20 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
-import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_HEIGHT
-import com.daymax86.forwardmarch.GameManager.ENVIRONMENT_WIDTH
-import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
-import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
-import com.daymax86.forwardmarch.GameManager.boards
-import com.daymax86.forwardmarch.GameManager.cameraTargetInX
-import com.daymax86.forwardmarch.GameManager.cameraTargetInY
-import com.daymax86.forwardmarch.GameManager.currentShop
-import com.daymax86.forwardmarch.GameManager.currentStation
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.files.FileManager
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
+import com.daymax86.forwardmarch.managers.BoardManager
+import com.daymax86.forwardmarch.managers.FileManager
+import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_HEIGHT
+import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_WIDTH
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
+import com.daymax86.forwardmarch.managers.BoardManager.boards
+import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInX
+import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInY
+import com.daymax86.forwardmarch.managers.GameManager.currentShop
+import com.daymax86.forwardmarch.managers.GameManager.currentStation
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
@@ -66,7 +69,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                         GameManager.currentInfoBox = null
                     }
 
-                    GameManager.boards.forEach { board ->
+                    boards.forEach { board ->
                         checkSquareCollisions(
                             board.squaresList,
                             xPos,
@@ -80,7 +83,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                         xPos,
                         yPos,
                         button
-                    ).apply { GameManager.updateValidMoves() } // Call method only once moves have been made
+                    )
 
                     val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
                     val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
@@ -112,7 +115,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
-                GameManager.boards.forEach { board ->
+                boards.forEach { board ->
                     getMouseEnvironmentPosition(gameCamera)?.let {
                         checkSquareCollisions(
                             board.squaresList,
@@ -151,12 +154,12 @@ class GameScreen(private val application: MainApplication) : Screen {
                         }
                     }
 
-                    (Input.Keys.Z) -> {
-                        if (!GameManager.marchInProgress) {
-                            // Undo moves since last forwardMarch
-                            GameManager.revertToLastSavedState()
-                        }
-                    }
+//                    (Input.Keys.Z) -> {
+//                        if (!GameManager.marchInProgress) {
+//                            // Undo moves since last forwardMarch
+//                            GameManager.revertToLastSavedState()
+//                        }
+//                    }
 
                     (Input.Keys.T) -> {
                         // TESTING ----------------
@@ -211,7 +214,10 @@ class GameScreen(private val application: MainApplication) : Screen {
                 try {
                     GameManager.currentShop!!.shopWindow.render()
                 } catch (e: Exception) {
-                    Gdx.app.log("shop", "Problem calling render on shop (is currentShop set to null properly?)")
+                    Gdx.app.log(
+                        "shop",
+                        "Problem calling render on shop (is currentShop set to null properly?)"
+                    )
                 }
             }
         }
@@ -221,7 +227,10 @@ class GameScreen(private val application: MainApplication) : Screen {
                 try {
                     GameManager.currentStation!!.choiceWindow.render()
                 } catch (e: Exception) {
-                    Gdx.app.log("station", "Problem calling render on station (is currentStation set to null properly?)")
+                    Gdx.app.log(
+                        "station",
+                        "Problem calling render on station (is currentStation set to null properly?)"
+                    )
                 }
             }
         }
@@ -286,18 +295,43 @@ class GameScreen(private val application: MainApplication) : Screen {
 
     private fun drawBoardObjects(objects: List<BoardObject>) {
         objects.forEach { obj ->
-            val img = if (obj.highlight) {
+            var img = if (obj.highlight) {
                 obj.highlightedImage
             } else {
                 obj.image
             }
             // If it's not yet in position, keep lerping
             obj.currentPosition.x =
-                obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x, 0.25f)
+                if (obj.movementTarget.x - obj.currentPosition.x < 1) {
+                    obj.movementTarget.x
+                } else {
+                    obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x, 0.25f)
+                }
             obj.currentPosition.y =
-                obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y, 0.25f)
+                if (obj.movementTarget.y - obj.currentPosition.y < 1) {
+                    obj.movementTarget.y
+                } else {
+                    obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y, 0.25f)
+                }
             obj.updateBoundingBox()
 
+//            // TESTING ----------------------------------------------------
+//            val shapeRenderer = ShapeRenderer()
+//            shapeRenderer.projectionMatrix = gameCamera.combined
+//            shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+//            shapeRenderer.color = Color.RED
+//            shapeRenderer.rect(
+//                obj.boundingBox.min.x,
+//                obj.boundingBox.min.y,
+//                SQUARE_WIDTH,
+//                SQUARE_HEIGHT,
+//            )
+//            shapeRenderer.end()
+//            // -----------------------------------------------------------
+
+            if (obj.hideImage) {
+                img = Texture(Gdx.files.internal("sprites/alpha.png"))
+            }
             application.batch.draw(
                 img,
                 obj.boundingBox.min.x,
@@ -377,7 +411,9 @@ class GameScreen(private val application: MainApplication) : Screen {
                     obj.onClick(button)
                 }
             } else {
-                obj.onExitHover()
+                if (obj.hovered) {
+                    obj.onExitHover()
+                }
             }
         }
     }

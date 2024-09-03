@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
@@ -12,12 +12,9 @@ import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
 import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
-import kotlin.math.abs
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces

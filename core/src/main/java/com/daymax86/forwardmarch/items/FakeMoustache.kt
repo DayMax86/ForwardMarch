@@ -5,15 +5,13 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
-import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.PawnDefault
 import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyPawn
 import com.daymax86.forwardmarch.items.base_classes.EnemyAttackModifierItem
-import com.daymax86.forwardmarch.items.base_classes.StatsModifierItem
 
 class FakeMoustache(
     override var image: Texture = Texture(Gdx.files.internal("sprites/items/fake_moustache.png")),

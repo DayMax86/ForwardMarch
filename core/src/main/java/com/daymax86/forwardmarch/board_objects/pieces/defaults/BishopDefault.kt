@@ -4,8 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.GameManager
-import com.daymax86.forwardmarch.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
@@ -14,7 +13,6 @@ import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
-import kotlin.math.abs
 
 open class BishopDefault(
     override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_bishop.png")),

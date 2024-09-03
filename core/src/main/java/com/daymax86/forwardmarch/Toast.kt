@@ -2,6 +2,7 @@ package com.daymax86.forwardmarch
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
+import com.daymax86.forwardmarch.managers.GameManager
 
 class Toast(
     var text: String = "",

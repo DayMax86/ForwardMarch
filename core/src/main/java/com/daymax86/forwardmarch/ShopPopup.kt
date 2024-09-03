@@ -9,10 +9,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.Disposable
-import com.daymax86.forwardmarch.GameManager.SQUARE_HEIGHT
-import com.daymax86.forwardmarch.GameManager.SQUARE_WIDTH
-import com.daymax86.forwardmarch.GameManager.currentShop
-import com.daymax86.forwardmarch.GameManager.shops
+import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
+import com.daymax86.forwardmarch.managers.GameManager.currentShop
 
 class ShopPopup : Disposable {
 

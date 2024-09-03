@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.ChoicePopup
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.GameObject
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation

@@ -4,7 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.Board
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.MovementDirections
@@ -13,6 +13,7 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.traps.Trap
+import com.daymax86.forwardmarch.managers.BoardManager.boards
 import com.daymax86.forwardmarch.squares.Square
 
 class BaronessDefault(
@@ -100,7 +101,7 @@ class BaronessDefault(
 
     private fun checkTraps() {
 
-        GameManager.boards.forEach { board ->
+        boards.forEach { board ->
             board.squaresList.filter {
                 it.contents.filterIsInstance<Trap>().isNotEmpty()
             } // Left with a list of squares containing traps

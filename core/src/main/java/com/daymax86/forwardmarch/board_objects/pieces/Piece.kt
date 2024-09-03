@@ -5,11 +5,11 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.AudioManager
+import com.daymax86.forwardmarch.managers.AudioManager
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.EnemyManager
-import com.daymax86.forwardmarch.GameManager
+import com.daymax86.forwardmarch.managers.EnemyManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.Player
@@ -27,6 +27,11 @@ import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
 import com.daymax86.forwardmarch.items.base_classes.EnemyAttackModifierItem
+import com.daymax86.forwardmarch.managers.BoardManager.boards
+import com.daymax86.forwardmarch.managers.PieceManager.deselectPiece
+import com.daymax86.forwardmarch.managers.PieceManager.pieces
+import com.daymax86.forwardmarch.managers.PieceManager.selectPiece
+import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
@@ -52,7 +57,7 @@ abstract class Piece(
     open var nextBoard: Board? = null
     var soundSet: SoundSet = SoundSet()
 
-    open fun getValidMoves(onComplete: () -> Unit = {}): Boolean {
+    open fun getValidMoves(onComplete: () -> Unit = { }): Boolean {
         // Return an array of squares into which the piece can move
         // Individual pieces should override this method
         // Update movement variable
@@ -63,10 +68,10 @@ abstract class Piece(
         if (this.clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    if (GameManager.selectedPiece == null) {
-                        GameManager.selectPiece(this, false)
+                    if (selectedPiece == null) {
+                        selectPiece(this, false)
                     } else {
-                        GameManager.deselectPiece()
+                        deselectPiece()
                     }
                 }
             }
@@ -76,8 +81,8 @@ abstract class Piece(
     override fun onShopClick(button: Int) {
         super.onShopClick(button)
         if (Player.canAfford(this)) {
-            GameManager.pieces.add(this)
-            GameManager.selectPiece(this, true)
+            pieces.add(this)
+            selectPiece(this, true)
             GameManager.currentShop!!.exitShop()
         } else {
             // Feedback to the player that they don't have enough money
@@ -95,14 +100,14 @@ abstract class Piece(
                 GameManager.currentStation!!.associatedBoard,
             ).also {
                 GameManager.currentStation!!.exitStation()
-                GameManager.pieces.add(this)
+                pieces.add(this)
             }
         }
     }
 
     override fun collide(other: BoardObject, friendlyAttack: Boolean) {
         super.collide(other, friendlyAttack)
-        Gdx.app.log("collision", "Other in collision is a $other")
+
         when (other) {
             is Pickup -> {
                 if (other is Coin) {
@@ -142,9 +147,9 @@ abstract class Piece(
             is Piece -> {
                 // When pieces collide, enemies always come out on top unless it's a player attacking on their turn
                 // this and other must be of differing hostilities
-                if (other.hostile && GameManager.selectedPiece == null) {
+                if (other.hostile && selectedPiece == null) {
                     this.kill()
-                } else if (other.hostile && GameManager.selectedPiece != null) {
+                } else if (other.hostile && selectedPiece != null) {
                     other.kill()
                 }
             }
@@ -191,7 +196,7 @@ abstract class Piece(
 
     override fun move(x: Int, y: Int, newBoard: Board?) {
         this.nextBoard = try {
-            GameManager.boards[GameManager.boards.indexOf(this.associatedBoard) + 1]
+            boards[boards.indexOf(this.associatedBoard) + 1]
         } catch (e: Exception) {
             null
         }
@@ -226,7 +231,7 @@ abstract class Piece(
             if (this.hostile) {
                 EnemyManager.enemyPieces.remove(this)
             } else {
-                GameManager.pieces.remove(this)
+                pieces.remove(this)
             }
             if (this.associatedBoard != null) {
                 this.associatedBoard!!.squaresList.firstOrNull { square ->

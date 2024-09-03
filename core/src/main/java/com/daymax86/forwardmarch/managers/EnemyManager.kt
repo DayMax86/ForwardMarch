@@ -1,5 +1,7 @@
-package com.daymax86.forwardmarch
+package com.daymax86.forwardmarch.managers
 
+import com.daymax86.forwardmarch.Board
+import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
@@ -21,6 +23,7 @@ object EnemyManager {
                 pawnToAdd.boardXpos = x
                 pawnToAdd.boardYpos = y
                 pawnToAdd.move(x, y, board)
+                pawnToAdd.getValidMoves()
                 enemyPieces.add(pawnToAdd)
             }
 
