@@ -111,7 +111,6 @@ class GameScreen(private val application: MainApplication) : Screen {
                 return true
             }
 
-
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
@@ -184,7 +183,6 @@ class GameScreen(private val application: MainApplication) : Screen {
                 return true
             }
         }
-
     }
 
     private fun updateCamera() {
@@ -201,18 +199,26 @@ class GameScreen(private val application: MainApplication) : Screen {
         drawBackground()
 
         boards.forEach { board ->
-            drawBoard(board, board.environmentXPos, board.environmentYPos)
+            drawBoardAndContents(board)
         }
 
-        drawBoardObjects(GameManager.getAllObjects())
         drawAnimations(GameManager.activeAnimations)
-
         application.batch.end()
 
-        if (GameManager.currentShop != null) {
-            if (GameManager.currentShop!!.displayShopWindow) {
+        checkShopRender()
+        checkStationRender()
+
+        hudBatch.projectionMatrix = hudCamera.combined
+        hudBatch.begin()
+        drawHUD()
+        hudBatch.end()
+    }
+
+    private fun checkShopRender() {
+        if (currentShop != null) {
+            if (currentShop!!.displayShopWindow) {
                 try {
-                    GameManager.currentShop!!.shopWindow.render()
+                    currentShop!!.shopWindow.render()
                 } catch (e: Exception) {
                     Gdx.app.log(
                         "shop",
@@ -221,11 +227,13 @@ class GameScreen(private val application: MainApplication) : Screen {
                 }
             }
         }
+    }
 
-        if (GameManager.currentStation != null) {
-            if (GameManager.currentStation!!.displayChoiceWindow) {
+    private fun checkStationRender() {
+        if (currentStation != null) {
+            if (currentStation!!.displayChoiceWindow) {
                 try {
-                    GameManager.currentStation!!.choiceWindow.render()
+                    currentStation!!.choiceWindow.render()
                 } catch (e: Exception) {
                     Gdx.app.log(
                         "station",
@@ -234,11 +242,6 @@ class GameScreen(private val application: MainApplication) : Screen {
                 }
             }
         }
-
-        hudBatch.projectionMatrix = hudCamera.combined
-        hudBatch.begin()
-        drawHUD()
-        hudBatch.end()
     }
 
     private fun drawHUD() {
@@ -293,63 +296,15 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
     }
 
-    private fun drawBoardObjects(objects: List<BoardObject>) {
-        objects.forEach { obj ->
-            var img = if (obj.highlight) {
-                obj.highlightedImage
-            } else {
-                obj.image
-            }
-            // If it's not yet in position, keep lerping
-            obj.currentPosition.x =
-                if (obj.movementTarget.x - obj.currentPosition.x < 1) {
-                    obj.movementTarget.x
-                } else {
-                    obj.interpolationType.apply(obj.currentPosition.x, obj.movementTarget.x, 0.25f)
-                }
-            obj.currentPosition.y =
-                if (obj.movementTarget.y - obj.currentPosition.y < 1) {
-                    obj.movementTarget.y
-                } else {
-                    obj.interpolationType.apply(obj.currentPosition.y, obj.movementTarget.y, 0.25f)
-                }
-            obj.updateBoundingBox()
-
-//            // TESTING ----------------------------------------------------
-//            val shapeRenderer = ShapeRenderer()
-//            shapeRenderer.projectionMatrix = gameCamera.combined
-//            shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-//            shapeRenderer.color = Color.RED
-//            shapeRenderer.rect(
-//                obj.boundingBox.min.x,
-//                obj.boundingBox.min.y,
-//                SQUARE_WIDTH,
-//                SQUARE_HEIGHT,
-//            )
-//            shapeRenderer.end()
-//            // -----------------------------------------------------------
-
-            if (obj.hideImage) {
-                img = Texture(Gdx.files.internal("sprites/alpha.png"))
-            }
-            application.batch.draw(
-                img,
-                obj.boundingBox.min.x,
-                obj.boundingBox.min.y,
-                SQUARE_WIDTH,
-                SQUARE_HEIGHT
-            )
-        }
-    }
-
-    private fun drawBoard(board: Board, startingX: Int, startingY: Int) {
+    private fun drawBoardAndContents(board: Board) {
         val rect = Rectangle()
         board.squaresList.forEach { square ->
+            val (x, y) = square.getEnvironmentPosition()
             rect.set(
-                startingX + square.boardXpos * GameManager.SQUARE_WIDTH,
-                startingY + square.boardYpos * GameManager.SQUARE_HEIGHT,
-                square.squareWidth.toFloat(),
-                square.squareWidth.toFloat(),
+                x,
+                y,
+                SQUARE_WIDTH,
+                SQUARE_HEIGHT,
             ).apply {
                 square.updateBoundingBox(x, y, width, height)
             }
@@ -360,9 +315,34 @@ class GameScreen(private val application: MainApplication) : Screen {
             } else {
                 square.tileImage
             }
+
             application.batch.draw(
                 img, rect.x, rect.y, rect.width, rect.height
             )
+
+            // Draw the square's contents too
+            drawSquareContents(square)
+        }
+    }
+
+    private fun drawSquareContents(square: Square) {
+        square.contents.forEach { content ->
+            var contentImg = content.image
+            if (content.hideImage) {
+                contentImg = Texture(Gdx.files.internal("sprites/alpha.png"))
+            } else if (content.highlight) {
+                contentImg = content.highlightedImage
+            }
+            val currentX = content.interpolationType.apply(content.currentPosition.x, content.movementTarget.x, 0.25f)
+            val currentY = content.interpolationType.apply(content.currentPosition.y, content.movementTarget.y, 0.25f)
+            application.batch.draw(
+                contentImg,
+                currentX,
+                currentY,
+                SQUARE_WIDTH,
+                SQUARE_HEIGHT,
+            )
+            content.currentPosition.set(currentX, currentY)
         }
     }
 
@@ -465,6 +445,8 @@ class GameScreen(private val application: MainApplication) : Screen {
     }
 
     override fun dispose() {
+        application.batch.dispose()
+        hudBatch.dispose()
     }
 
 

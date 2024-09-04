@@ -42,17 +42,8 @@ abstract class Pickup(
         }
     }
 
-    open fun initialise() {
-        associatedBoard?.let {
-            this.updateBoundingBox(
-                it.environmentXPos + (boardXpos * GameManager.SQUARE_WIDTH),
-                it.environmentYPos + (boardYpos * GameManager.SQUARE_HEIGHT),
-                GameManager.SQUARE_WIDTH,
-                GameManager.SQUARE_HEIGHT,
-            )
-        }
+    fun initialise() {
         pickups.add(this)
-
         hideImage = true
         idleAnimation?.source = this
         deathAnimation.source = this

@@ -33,7 +33,6 @@ object Movement {
         directions: List<MovementDirections>
     ): MutableList<Square> {
         val movementList: MutableList<Square> = mutableListOf()
-        Gdx.app.log("movement", "getting friendly movement")
 
         movementTypes.forEach { movementType ->
             when (movementType) {
@@ -572,7 +571,7 @@ object Movement {
         directions: List<MovementDirections>
     ): MutableList<Square> {
         val movementList: MutableList<Square> = mutableListOf()
-        Gdx.app.log("movement", "getting enemy movement")
+
         movementTypes.forEach { movementType ->
             when (movementType) {
 

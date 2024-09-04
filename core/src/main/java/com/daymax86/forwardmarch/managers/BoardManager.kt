@@ -3,13 +3,11 @@ package com.daymax86.forwardmarch.managers
 import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_Y
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.difficultyModifier
-import com.daymax86.forwardmarch.managers.GameManager.getAllObjects
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 import java.nio.file.DirectoryStream
@@ -108,22 +106,31 @@ object BoardManager {
         // See if any boards need to be removed, or any new boards appended
         if (boards.first().environmentYPos <= ENVIRONMENT_HEIGHT / 6) {
             appendBoard(difficultyModifier)
-            removeBoard()
+            var lowestIndex: Int =
+                totalBoardIndex // Set placeholder value that is larger than possible smallest
+            boards.forEach { board ->
+                if (board.boardIndex < lowestIndex) {
+                    lowestIndex = board.boardIndex
+                }
+            }.apply {
+                removeBoard(lowestIndex)
+            }
+
         }
     }
 
     private fun appendBoard(difficultyModifier: Int) {
-        KtxAsync.launch {
-            addBoard(difficultyModifier) {
-                boards.last().initialiseBoardObjects()
-            }
-        }.invokeOnCompletion {
+        addBoard(difficultyModifier) {
             Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
         }
     }
 
-    private fun removeBoard() {
-        boards.removeFirst()
+    private fun removeBoard(index: Int) {
+        val boardToRemove = boards.first { board ->
+            board.boardIndex == index
+        }
+        boards.remove(boardToRemove)
+        boardToRemove.destroy()
         Gdx.app.log("manager", "a board has been dropped. (boards.size = ${boards.size})")
     }
 

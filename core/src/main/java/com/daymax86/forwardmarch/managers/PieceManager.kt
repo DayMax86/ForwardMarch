@@ -74,8 +74,8 @@ object PieceManager {
                     }
                 }
             }
+            selectedPiece = null
         }
-        selectedPiece = null
     }
 
 

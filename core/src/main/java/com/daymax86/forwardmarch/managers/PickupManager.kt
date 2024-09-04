@@ -16,6 +16,7 @@ object PickupManager {
                 coinToAdd.boardXpos = x
                 coinToAdd.boardYpos = y
                 coinToAdd.move(x, y, board)
+                coinToAdd.initialise()
                 pickups.add(coinToAdd)
             }
 

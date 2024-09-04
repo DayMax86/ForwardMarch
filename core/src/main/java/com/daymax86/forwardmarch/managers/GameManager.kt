@@ -83,8 +83,6 @@ object GameManager {
                     getAllObjects()
                 }
             }
-        }.apply {
-            boards.forEach { board -> board.initialiseBoardObjects() }
         }
 
 //        saveGameState()
@@ -232,7 +230,6 @@ object GameManager {
                     obj.currentPosition.y
                 }
             )
-            obj.updateBoundingBox()
         }
     }
 

@@ -49,61 +49,40 @@ abstract class BoardObject() : GameObject() {
             this.associatedBoard = newBoard
         }
 
-        // Update the bounding box
-        this.associatedBoard.let {
-            if (it != null) {
-                movementTarget = Vector2(
-                    it.environmentXPos + (this.boardXpos * GameManager.SQUARE_WIDTH),
-                    it.environmentYPos + (this.boardYpos * GameManager.SQUARE_HEIGHT)
-                )
-                this.updateBoundingBox(
-                    currentPosition.x,
-                    currentPosition.y,
-                    GameManager.SQUARE_WIDTH,
-                    GameManager.SQUARE_HEIGHT,
-                )
-            }
-        }
-
-        val collisionQueue: MutableList<() -> Unit> = mutableListOf()
-        // Update the 'contents' property of the appropriate square
-        if (this.associatedBoard != null) {
-            this.associatedBoard!!.getSquare(x, y)?.let { sq ->
-                sq.onEnter(this)
-                // Before adding to new square's contents, resolve collisions
-                sq.contents.forEach { other ->
-                    if (other != this) {
-                        collisionQueue.add {
-                            this.collide(other, selectedPiece == null)
-                        }
-                    }
+        this.associatedBoard.let { board ->
+            if (board != null) {
+                val square = board.getSquare(x, y)
+                if (square != null) {
+                    // Set environment coordinates to aim for (so it can be seen to move)
+                    val (squareX, squareY) = square.getEnvironmentPosition()
+                    movementTarget = Vector2(squareX, squareY)
+                    // Trigger onEnter effects
+                    square.onEnter(this)
+                    // Add to the square's content
+                    square.addToContents(this)
                 }
-                sq.contents.add(this)
             }
         }
-        collisionQueue.forEach {
-            it.invoke()
-            Gdx.app.log("collision", "collision queue length = ${collisionQueue.size}")
-        }
-
         deselectPiece()
     }
 
 
-    open fun updateBoundingBox() {
-        boundingBox = BoundingBox(
-            Vector3(currentPosition.x, currentPosition.y, 0f),
-            Vector3(
-                currentPosition.x + GameManager.SQUARE_WIDTH,
-                currentPosition.y + GameManager.SQUARE_HEIGHT,
-                0f
-            )
-        )
-    }
+//    open fun updateBoundingBox() {
+//        boundingBox = BoundingBox(
+//            Vector3(currentPosition.x, currentPosition.y, 0f),
+//            Vector3(
+//                currentPosition.x + GameManager.SQUARE_WIDTH,
+//                currentPosition.y + GameManager.SQUARE_HEIGHT,
+//                0f
+//            )
+//        )
+//    }
 
     open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
-        Gdx.app.log("collisions", "A collision has happened! (between $this and $other)." +
-            "Board position = ${this.boardXpos}, ${this.boardYpos}")
+        Gdx.app.log(
+            "collisions", "A collision has happened! (between $this and $other)." +
+                "Board position = ${this.boardXpos}, ${this.boardYpos}"
+        )
     }
 
     open fun kill() {

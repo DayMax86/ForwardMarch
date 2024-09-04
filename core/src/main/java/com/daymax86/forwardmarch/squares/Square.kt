@@ -12,6 +12,7 @@ import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
@@ -37,6 +38,12 @@ abstract class Square {
     abstract var altHighlight: Boolean
     abstract var boundingBox: BoundingBox
     abstract var associatedBoard: Board
+
+    fun getEnvironmentPosition(): Pair<Float, Float> {
+        val envX = associatedBoard.environmentXPos + (GameManager.SQUARE_WIDTH * this.boardXpos)
+        val envY = associatedBoard.environmentYPos + (GameManager.SQUARE_HEIGHT * this.boardYpos)
+        return Pair(envX, envY)
+    }
 
     open fun onClick(button: Int) {
         if (clickable) {
@@ -90,6 +97,29 @@ abstract class Square {
         }
     }
 
+    fun addToContents(objToAdd: BoardObject) {
+        // Set the new object's bounding box to match that of the square it's in
+        objToAdd.boundingBox = this.boundingBox
+        val collisionQueue: MutableList<() -> Unit> = mutableListOf()
+        // Resolve collisions between existing contents and new object
+        contents.add(objToAdd)
+        this.contents.forEach { content ->
+            collisionQueue.add {
+                if (content != objToAdd) {
+                    // If a piece is selected it's a friendly attack, otherwise friendly comes off worse
+                    if (objToAdd is Piece) {
+                        objToAdd.collide(content, selectedPiece == null)
+                    }
+                    else {
+                        // Generic collision handling for non-piece-based interactions
+                        objToAdd.collide(content)
+                    }
+                }
+            }
+        }
+        collisionQueue.forEach { it.invoke() }
+    }
+
     fun canBeEntered(): Boolean {
         for (bo in this.contents) {
             if (bo !is Pickup &&
@@ -139,7 +169,10 @@ abstract class Square {
     }
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
-        boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
+        this.boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
+        this.contents.forEach { content ->
+            content.boundingBox = this.boundingBox
+        }
     }
 
     open fun swapToAltHighlight(swap: Boolean) {
