@@ -18,15 +18,13 @@ class PrinceDefault(
     override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_prince.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_prince_highlighted.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.ROOK,
     override val movement: MutableList<Square> = mutableListOf(),
-    override var associatedBoard: Board? = null,
-    override var nextBoard: Board? = null,
     override val movementTypes: List<MovementTypes> = mutableListOf(
         MovementTypes.BISHOP,
         MovementTypes.ROOK
@@ -66,12 +64,11 @@ class PrinceDefault(
     image = image,
     highlightedImage = highlightedImage,
     highlight = highlight,
-    boardXpos = boardXpos,
-    boardYpos = boardYpos,
+    stageXpos = stageXpos,
+    stageYpos = stageYpos,
     clickable = clickable,
     hostile = hostile,
     boundingBox = boundingBox,
-    associatedBoard = associatedBoard,
 ) {
 
     init {
@@ -96,26 +93,26 @@ class PrinceDefault(
             val squaresToRemove: MutableList<Square> = mutableListOf()
             this@PrinceDefault.movement.forEach { square ->
                 // Check up, down, left, and right, removing squares more than 1 away.
-                if (square.boardXpos == this@PrinceDefault.boardXpos &&
-                    square.boardYpos == this@PrinceDefault.boardYpos + 2
+                if (square.stageXpos == this@PrinceDefault.stageXpos &&
+                    square.stageYpos == this@PrinceDefault.stageYpos + 2
                 ) {
                     // UP
                     squaresToRemove.add(square)
                 }
-                if (square.boardXpos == this@PrinceDefault.boardXpos &&
-                    square.boardYpos == this@PrinceDefault.boardYpos - 2
+                if (square.stageXpos == this@PrinceDefault.stageXpos &&
+                    square.stageYpos == this@PrinceDefault.stageYpos - 2
                 ) {
                     // DOWN
                     squaresToRemove.add(square)
                 }
-                if (square.boardXpos - 2 == this@PrinceDefault.boardXpos &&
-                    square.boardYpos == this@PrinceDefault.boardYpos
+                if (square.stageXpos - 2 == this@PrinceDefault.stageXpos &&
+                    square.stageYpos == this@PrinceDefault.stageYpos
                 ) {
                     // LEFT
                     squaresToRemove.add(square)
                 }
-                if (square.boardXpos + 2 == this@PrinceDefault.boardXpos &&
-                    square.boardYpos == this@PrinceDefault.boardYpos
+                if (square.stageXpos + 2 == this@PrinceDefault.stageXpos &&
+                    square.stageYpos == this@PrinceDefault.stageYpos
                 ) {
                     // RIGHT
                     squaresToRemove.add(square)

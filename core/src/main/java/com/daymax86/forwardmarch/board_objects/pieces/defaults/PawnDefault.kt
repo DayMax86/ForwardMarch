@@ -15,21 +15,20 @@ import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.items.base_classes.MovementModifierItem
+import com.daymax86.forwardmarch.managers.StageManager
 
 open class PawnDefault(
     // TODO() Provide placeholder image for default pieces
     override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_pawn_highlighted.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.PAWN,
     override val movement: MutableList<Square> = mutableListOf(),
-    override var associatedBoard: Board? = null,
-    override var nextBoard: Board? = null,
     override val movementTypes: List<MovementTypes> = mutableListOf(
         MovementTypes.ROOK,
         MovementTypes.BISHOP
@@ -64,12 +63,11 @@ open class PawnDefault(
     image = image,
     highlightedImage = highlightedImage,
     highlight = highlight,
-    boardXpos = boardXpos,
-    boardYpos = boardYpos,
+    stageXpos = stageXpos,
+    stageYpos = stageYpos,
     clickable = clickable,
     hostile = hostile,
     boundingBox = boundingBox,
-    associatedBoard = associatedBoard,
 ) {
 
     init {
@@ -107,7 +105,7 @@ open class PawnDefault(
         val squaresToRemove: MutableList<Square> = mutableListOf()
         // Filter out the diagonal squares without enemy pieces in them
         this.movement.firstOrNull { square ->
-            square.boardXpos == this.boardXpos - 1 && square.boardYpos == this.boardYpos + 1
+            square.stageXpos == this.stageXpos - 1 && square.stageYpos == this.stageYpos + 1
         }.let { sq ->
             if (sq != null) {
                 if (!sq.containsEnemy()) {
@@ -116,7 +114,7 @@ open class PawnDefault(
             }
         }
         this.movement.firstOrNull { square ->
-            square.boardXpos == this.boardXpos + 1 && square.boardYpos == this.boardYpos + 1
+            square.stageXpos == this.stageXpos + 1 && square.stageYpos == this.stageYpos + 1
         }.let { sq ->
             if (sq != null) {
                 if (!sq.containsEnemy()) {
@@ -131,8 +129,8 @@ open class PawnDefault(
 
         // Check for baron in this row
         var baronInRow = false
-        this.associatedBoard?.squaresList?.forEach { square ->
-            if (square.boardYpos == this.boardYpos) {
+        StageManager.stage.squaresList.forEach { square ->
+            if (square.stageYpos == this.stageYpos) {
                 // In the same row - is there a baron?
                 if (square.contents.filterIsInstance<BaronDefault>().isNotEmpty()) {
                     baronInRow = true

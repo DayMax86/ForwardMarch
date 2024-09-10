@@ -3,19 +3,18 @@ package com.daymax86.forwardmarch
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.math.collision.BoundingBox
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.PieceManager.deselectPiece
-import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
+import com.daymax86.forwardmarch.managers.StageManager
+import com.daymax86.forwardmarch.squares.Square
 
 abstract class BoardObject() : GameObject() {
     // All items to appear on the board should be children of this class,
     // including pieces, traps, pickups, interactibles etc.
-    abstract var associatedBoard: Board?
-    abstract var boardXpos: Int
-    abstract var boardYpos: Int
+    abstract var stageXpos: Int
+    abstract var stageYpos: Int
     abstract var hostile: Boolean
     abstract var deathAnimation: SpriteAnimation
     abstract var idleAnimation: SpriteAnimation?
@@ -31,38 +30,37 @@ abstract class BoardObject() : GameObject() {
         )
     }
 
-    open fun move(x: Int, y: Int, newBoard: Board?) {
+    fun setCurrentPosition(x: Float, y: Float) {
+        currentPosition.set(x, y)
+        updateBoundingBox(x, y, GameManager.SQUARE_WIDTH, GameManager.SQUARE_HEIGHT)
+    }
+
+    open fun move(x: Int, y: Int) {
         // Remove the object from the old square's 'contents' list
-        if (this.associatedBoard != null) {
-            this.associatedBoard!!.squaresList.firstOrNull {
-                it.boardXpos == this.boardXpos && it.boardYpos == this.boardYpos
-            }.let { sq ->
-                sq?.contents?.remove(this)
-            }
-        }
+        val oldSquare: Square? =
+            StageManager.stage.getSquare(this.stageXpos, this.stageYpos)
+        oldSquare?.contents?.remove(this)
 
         // New coordinates
-        this.boardXpos = x
-        this.boardYpos = y
+        this.stageXpos = x
+        this.stageYpos = y
 
-        if (newBoard != null) {
-            this.associatedBoard = newBoard
-        }
+        val destinationSquare = StageManager.stage.getSquare(x, y)
 
-        this.associatedBoard.let { board ->
-            if (board != null) {
-                val square = board.getSquare(x, y)
-                if (square != null) {
-                    // Set environment coordinates to aim for (so it can be seen to move)
-                    val (squareX, squareY) = square.getEnvironmentPosition()
-                    movementTarget = Vector2(squareX, squareY)
-                    // Trigger onEnter effects
-                    square.onEnter(this)
-                    // Add to the square's content
-                    square.addToContents(this)
-                }
+        // Set environment coordinates to aim for (so it can be seen to move)
+        if (destinationSquare != null) {
+            val (squareX, squareY) = destinationSquare.getEnvironmentPosition()
+
+            movementTarget = Vector2(squareX, squareY)
+            // Trigger onEnter effects
+            destinationSquare.onEnter(this)
+            // Add to the square's content
+            destinationSquare.addToContents(this)
+            if (this is Shop) {
+                Gdx.app.log("move", "/ ${this.stageYpos} / ")
             }
         }
+
         deselectPiece()
     }
 
@@ -81,7 +79,7 @@ abstract class BoardObject() : GameObject() {
     open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
         Gdx.app.log(
             "collisions", "A collision has happened! (between $this and $other)." +
-                "Board position = ${this.boardXpos}, ${this.boardYpos}"
+                "Board position = ${this.stageXpos}, ${this.stageYpos}"
         )
     }
 

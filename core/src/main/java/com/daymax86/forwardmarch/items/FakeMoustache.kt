@@ -55,9 +55,8 @@ class FakeMoustache(
                         if (!(obj is PawnDefault && enemyPiece is EnemyPawn)) {
                             actionQueue.add {
                                 enemyPiece.move(
-                                    square.boardXpos,
-                                    square.boardYpos,
-                                    null
+                                    square.stageXpos,
+                                    square.stageYpos,
                                 )
                                 obj.kill()
                             }

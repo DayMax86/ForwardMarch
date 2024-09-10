@@ -14,19 +14,18 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
 import com.daymax86.forwardmarch.animations.SpriteAnimation
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.managers.BoardManager
 import com.daymax86.forwardmarch.managers.FileManager
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_WIDTH
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
-import com.daymax86.forwardmarch.managers.BoardManager.boards
 import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.managers.GameManager.currentShop
 import com.daymax86.forwardmarch.managers.GameManager.currentStation
+import com.daymax86.forwardmarch.managers.StageManager
+import com.daymax86.forwardmarch.managers.StageManager.stage
 import com.daymax86.forwardmarch.squares.Square
 import ktx.graphics.lerpTo
 
@@ -69,14 +68,12 @@ class GameScreen(private val application: MainApplication) : Screen {
                         GameManager.currentInfoBox = null
                     }
 
-                    boards.forEach { board ->
-                        checkSquareCollisions(
-                            board.squaresList,
-                            xPos,
-                            yPos,
-                            button
-                        )
-                    }
+                    checkSquareCollisions(
+                        StageManager.stage.squaresList,
+                        xPos,
+                        yPos,
+                        button
+                    )
 
                     checkBoardObjectCollisions(
                         GameManager.getAllObjects(),
@@ -114,14 +111,13 @@ class GameScreen(private val application: MainApplication) : Screen {
             override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
                 val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
                 val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
-                boards.forEach { board ->
-                    getMouseEnvironmentPosition(gameCamera)?.let {
-                        checkSquareCollisions(
-                            board.squaresList,
-                            it.x.toInt(),
-                            it.y.toInt()
-                        )
-                    }
+
+                getMouseEnvironmentPosition(gameCamera)?.let {
+                    checkSquareCollisions(
+                        StageManager.stage.squaresList,
+                        it.x.toInt(),
+                        it.y.toInt()
+                    )
                 }
 
                 if (xPos != null && yPos != null) {
@@ -196,22 +192,24 @@ class GameScreen(private val application: MainApplication) : Screen {
         application.batch.projectionMatrix = gameCamera.combined
         application.batch.begin()
 
-        drawBackground()
+        if (stage.squaresList.size != 192) {
+            application.font.draw(application.batch, "LOADING", 500f, 500f)
+        } else {
+            drawBackground()
 
-        boards.forEach { board ->
-            drawBoardAndContents(board)
+            drawStageAndContents()
+
+            drawAnimations(GameManager.activeAnimations)
+
+            checkShopRender()
+            checkStationRender()
+
+            hudBatch.projectionMatrix = hudCamera.combined
+            hudBatch.begin()
+            drawHUD()
+            hudBatch.end()
         }
-
-        drawAnimations(GameManager.activeAnimations)
         application.batch.end()
-
-        checkShopRender()
-        checkStationRender()
-
-        hudBatch.projectionMatrix = hudCamera.combined
-        hudBatch.begin()
-        drawHUD()
-        hudBatch.end()
     }
 
     private fun checkShopRender() {
@@ -296,9 +294,9 @@ class GameScreen(private val application: MainApplication) : Screen {
         }
     }
 
-    private fun drawBoardAndContents(board: Board) {
+    private fun drawStageAndContents() {
         val rect = Rectangle()
-        board.squaresList.forEach { square ->
+        stage.squaresList.forEach { square ->
             val (x, y) = square.getEnvironmentPosition()
             rect.set(
                 x,
@@ -323,6 +321,7 @@ class GameScreen(private val application: MainApplication) : Screen {
             // Draw the square's contents too
             drawSquareContents(square)
         }
+
     }
 
     private fun drawSquareContents(square: Square) {
@@ -333,8 +332,16 @@ class GameScreen(private val application: MainApplication) : Screen {
             } else if (content.highlight) {
                 contentImg = content.highlightedImage
             }
-            val currentX = content.interpolationType.apply(content.currentPosition.x, content.movementTarget.x, 0.25f)
-            val currentY = content.interpolationType.apply(content.currentPosition.y, content.movementTarget.y, 0.25f)
+            val currentX = content.interpolationType.apply(
+                content.currentPosition.x,
+                content.movementTarget.x,
+                0.25f
+            )
+            val currentY = content.interpolationType.apply(
+                content.currentPosition.y,
+                content.movementTarget.y,
+                0.25f
+            )
             application.batch.draw(
                 contentImg,
                 currentX,
@@ -342,7 +349,7 @@ class GameScreen(private val application: MainApplication) : Screen {
                 SQUARE_WIDTH,
                 SQUARE_HEIGHT,
             )
-            content.currentPosition.set(currentX, currentY)
+            content.setCurrentPosition(currentX, currentY)
         }
     }
 

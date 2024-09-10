@@ -4,16 +4,13 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
-import com.daymax86.forwardmarch.board_objects.pieces.Piece
-import com.daymax86.forwardmarch.managers.BoardManager.boards
-import com.daymax86.forwardmarch.squares.BrokenSquare
+import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.StageManager
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.SquareTypes
 import java.lang.Math.round
@@ -32,10 +29,9 @@ class Bomb(
         loop = true,
     ),
     override var visuallyStatic: Boolean = true,
-    override var associatedBoard: Board? = null,
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -52,10 +48,9 @@ class Bomb(
         description = "A handy explosive. Middle-mouse click on a square to bomb it, just make sure you don't fall through the hole it leaves behind!",
     ),
 ) : Pickup(
-    associatedBoard = associatedBoard,
     highlight = highlight,
-    boardXpos = boardXpos,
-    boardYpos = boardYpos,
+    stageXpos = stageXpos,
+    stageYpos = stageYpos,
     clickable = clickable,
     hostile = hostile,
     boundingBox = boundingBox,
@@ -84,7 +79,7 @@ class Bomb(
 
     override fun use(xPos: Int, yPos: Int, square: Square?) {
         active = true
-        this.move(xPos, yPos, square?.associatedBoard)
+        this.move(xPos, yPos)
     }
 
     override fun collide(other: BoardObject, friendlyAttack: Boolean) {
@@ -113,34 +108,15 @@ class Bomb(
             SquareTypes.BROKEN -> {}
         }
 
-        boards.forEach { board ->
-            board.squaresList.firstOrNull { square ->
+            StageManager.stage.squaresList.firstOrNull { square ->
                 square == targetSquare
-            }?.let { oldSquare ->
-                val oldIndex = board.squaresList.indexOf(oldSquare)
-
-                board.squaresList[oldIndex].contents.forEach { bo ->
-                    if (bo is Piece) {
-                        actionQueue.add {
-                            bo.kill()
-                        }
-                    }
-                }.also {
-                    board.squaresList[oldIndex].contents.clear()
-                }
-
-                board.squaresList[oldIndex] =
-                    BrokenSquare(
-                        tileImage = img,
-                        associatedBoard = oldSquare.associatedBoard,
-                        boardXpos = oldSquare.boardXpos,
-                        boardYpos = oldSquare.boardYpos,
-                    )
             }
-        }
         Player.changeBombTotal(-1)
         actionQueue.forEach { it.invoke() }
-    }
+        }
+
+
+
 
     override fun kill() {
         super.kill()
@@ -154,5 +130,5 @@ class Bomb(
             height = deathAnimation.height,
         )
     }
-
 }
+

@@ -9,13 +9,13 @@ import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.Toast
 import com.daymax86.forwardmarch.managers.PickupManager.pickups
+import com.daymax86.forwardmarch.managers.StageManager
 import com.daymax86.forwardmarch.squares.Square
 
 abstract class Pickup(
-    override var associatedBoard: Board?,
     override var highlight: Boolean,
-    override var boardXpos: Int,
-    override var boardYpos: Int,
+    override var stageXpos: Int,
+    override var stageYpos: Int,
     override var clickable: Boolean,
     override var hostile: Boolean,
     override var boundingBox: BoundingBox,
@@ -31,14 +31,18 @@ abstract class Pickup(
                 is Coin -> {
                     Player.changeCoinTotal(1)
                 }
+
                 is Bomb -> {
                     Player.changeBombTotal(1)
                 }
             }
-            GameManager.currentShop!!.exitShop()
+            if (GameManager.currentShop != null) {
+                GameManager.currentShop!!.exitShop()
+            }
         } else {
             // Feedback to the player that they don't have enough money
-            GameManager.toast = Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
+            GameManager.toast =
+                Toast(text = "You can't afford this! It costs $shopPrice and you have ${Player.coinTotal}")
         }
     }
 
@@ -50,7 +54,7 @@ abstract class Pickup(
         idleAnimation?.activate()
     }
 
-    open fun use(xPos: Int = boardXpos , yPos: Int = boardYpos, square: Square? = null) {
+    open fun use(xPos: Int = stageXpos, yPos: Int = stageYpos, square: Square? = null) {
 
     }
 
@@ -69,15 +73,7 @@ abstract class Pickup(
             toRemove.forEach { it.invoke() }
         }
 
-        this.associatedBoard.let { board ->
-            board?.squaresList?.forEach { square ->
-                if (square.contents.contains(this)) {
-                    square.contents.remove(this)
-                }
-            }
-        }
-
-
+        StageManager.stage.getSquare(this.stageXpos, this.stageYpos)?.contents?.remove(this)
     }
 
 }

@@ -1,15 +1,10 @@
 package com.daymax86.forwardmarch.board_objects.pieces
 
-import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.managers.AudioManager
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.managers.EnemyManager
-import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.MovementDirections
 import com.daymax86.forwardmarch.MovementTypes
 import com.daymax86.forwardmarch.Player
@@ -19,7 +14,6 @@ import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
-import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pickups.ItemToken
 import com.daymax86.forwardmarch.board_objects.pickups.Pickup
@@ -27,21 +21,24 @@ import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
 import com.daymax86.forwardmarch.items.base_classes.EnemyAttackModifierItem
-import com.daymax86.forwardmarch.managers.BoardManager.boards
+import com.daymax86.forwardmarch.managers.AudioManager
+import com.daymax86.forwardmarch.managers.EnemyManager
+import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.PieceManager.deselectPiece
 import com.daymax86.forwardmarch.managers.PieceManager.pieces
 import com.daymax86.forwardmarch.managers.PieceManager.selectPiece
 import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
+import com.daymax86.forwardmarch.managers.StageManager
+import com.daymax86.forwardmarch.squares.Square
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
 
 abstract class Piece(
-    override var associatedBoard: Board?,
     override var image: Texture,
     override var highlightedImage: Texture,
     override var highlight: Boolean,
-    override var boardXpos: Int,
-    override var boardYpos: Int,
+    override var stageXpos: Int,
+    override var stageYpos: Int,
     override var clickable: Boolean,
     override var hostile: Boolean,
     override var boundingBox: BoundingBox,
@@ -54,7 +51,6 @@ abstract class Piece(
     override var movementTarget: Vector2 = Vector2()
     open lateinit var pieceType: PieceTypes
     open val movement: MutableList<Square> = mutableListOf()
-    open var nextBoard: Board? = null
     var soundSet: SoundSet = SoundSet()
 
     open fun getValidMoves(onComplete: () -> Unit = { }): Boolean {
@@ -83,7 +79,9 @@ abstract class Piece(
         if (Player.canAfford(this)) {
             pieces.add(this)
             selectPiece(this, true)
-            GameManager.currentShop!!.exitShop()
+            if (GameManager.currentShop != null) {
+                GameManager.currentShop!!.exitShop()
+            }
         } else {
             // Feedback to the player that they don't have enough money
             GameManager.toast =
@@ -95,9 +93,8 @@ abstract class Piece(
         super.onSacrificeClick(button)
         if (GameManager.currentStation != null && GameManager.currentStation?.enteredPiece != null) {
             this.move(
-                GameManager.currentStation!!.boardXpos,
-                GameManager.currentStation!!.boardYpos,
-                GameManager.currentStation!!.associatedBoard,
+                GameManager.currentStation!!.stageXpos,
+                GameManager.currentStation!!.stageYpos,
             ).also {
                 GameManager.currentStation!!.exitStation()
                 pieces.add(this)
@@ -178,10 +175,9 @@ abstract class Piece(
                     if (obj is Piece && obj.hostile != this.hostile) {
                         actionQueue.add {
                             this.move(
-                                square.boardXpos,
-                                square.boardYpos,
-                                null
-                            ) // What happens across boards?
+                                square.stageXpos,
+                                square.stageYpos,
+                            )
                             obj.kill()
                         }
                     }
@@ -194,13 +190,8 @@ abstract class Piece(
         }
     }
 
-    override fun move(x: Int, y: Int, newBoard: Board?) {
-        this.nextBoard = try {
-            boards[boards.indexOf(this.associatedBoard) + 1]
-        } catch (e: Exception) {
-            null
-        }
-        super.move(x, y, newBoard)
+    override fun move(x: Int, y: Int) {
+        super.move(x, y)
         if (GameManager.firstMoveComplete) {
             AudioManager.playRandomSound(this.soundSet.move)
             if (!this.hostile) {
@@ -233,13 +224,13 @@ abstract class Piece(
             } else {
                 pieces.remove(this)
             }
-            if (this.associatedBoard != null) {
-                this.associatedBoard!!.squaresList.firstOrNull { square ->
-                    square.contents.contains(this)
-                }.let { sq ->
-                    sq?.contents?.remove(this)
-                }
+
+            StageManager.stage.squaresList.firstOrNull { square ->
+                square.contents.contains(this)
+            }.let { sq ->
+                sq?.contents?.remove(this)
             }
+
         }
     }
 

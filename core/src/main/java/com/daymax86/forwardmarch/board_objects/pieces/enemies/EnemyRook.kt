@@ -38,11 +38,9 @@ class EnemyRook(
     override var range: Int = 3
 
     override fun getValidMoves(onComplete: () -> Unit): Boolean {
-        if (this.associatedBoard != null) { // No need to check if piece is not on a board
-            // and this allows for safe !! usage
             this.movement.clear() // Reset movement array
 
-            Movement.getEnemyMovement(
+            Movement.getMovement(
                 this,
                 this.movementTypes,
                 range,
@@ -50,7 +48,6 @@ class EnemyRook(
             ).forEach { square ->
                 this.movement.add(square)
             }
-        }
 
         onComplete.invoke()
         return this.movement.isNotEmpty() // No valid moves if array is empty

@@ -5,23 +5,20 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.InfoBox
 import com.daymax86.forwardmarch.Movement
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronessDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KingDefault
-import com.daymax86.forwardmarch.managers.BoardManager.boards
+import com.daymax86.forwardmarch.managers.GameManager
 
 open class Trap(
-    override var associatedBoard: Board? = null,
     override var image: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/spike_trap_256_damage.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = false,
     override var hostile: Boolean = true,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -65,11 +62,8 @@ open class Trap(
     }
 
     fun checkNearbyBaroness() {
-        val dummyKing = KingDefault(boardXpos = this.boardXpos, boardYpos = this.boardYpos)
-        dummyKing.associatedBoard = this.associatedBoard
-        dummyKing.nextBoard =
-            boards[boards.indexOf(this.associatedBoard) + 1]
-        val surroundingSquares = Movement.getSurroundingSquares(
+        val dummyKing = KingDefault(stageXpos = this.stageXpos, stageYpos = this.stageYpos)
+        val surroundingSquares = Movement.getMovement(
             dummyKing,
             dummyKing.movementTypes,
             1,
@@ -82,7 +76,6 @@ open class Trap(
         } else {
             this.arm()
         }
-
     }
 
 }

@@ -19,14 +19,14 @@ import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.*
 import com.daymax86.forwardmarch.items.base_classes.ShopModifierItem
+import com.daymax86.forwardmarch.managers.StageManager
 
 class Shop(
-    override var associatedBoard: Board?,
     override var image: Texture = Texture(Gdx.files.internal("sprites/shop.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/shop.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -66,7 +66,6 @@ class Shop(
 
     init {
         shopWindow.backgroundImage = Texture(Gdx.files.internal("shop/shop_background.png"))
-//        this.move(boardXpos, boardYpos, GameManager.boards.elementAt(0)) // For TESTING ------
     }
 
     fun enterShop() {
@@ -124,15 +123,11 @@ class Shop(
             shop == this
         }.let {
             if (it.isNotEmpty()) {
-                shopToRemove = it[0]
+                shopToRemove = it.first()
             }
         }.also {
             GameManager.shops.remove(shopToRemove)
-            if (this.associatedBoard != null) {
-                this.associatedBoard!!.squaresList.firstOrNull { square ->
-                    square.boardXpos == shopToRemove!!.boardXpos && square.boardYpos == shopToRemove!!.boardYpos
-                }?.contents?.remove(this)
-            }
+            StageManager.stage.getSquare(this.stageXpos, this.stageYpos)?.contents?.remove(this)
         }
 
         GameManager.currentShop = null

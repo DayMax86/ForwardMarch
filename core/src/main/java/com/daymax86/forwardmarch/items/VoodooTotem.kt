@@ -13,6 +13,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.KnightDefault
 import com.daymax86.forwardmarch.items.base_classes.DeathModifierItem
 import com.daymax86.forwardmarch.managers.PieceManager.pieces
+import com.daymax86.forwardmarch.managers.StageManager
 import com.daymax86.forwardmarch.squares.Square
 
 class VoodooTotem(
@@ -50,50 +51,45 @@ class VoodooTotem(
 
     override fun applyDeathModifier(piece: Piece) {
         if (piece is KnightDefault) {
-            if (piece.associatedBoard != null) {
-                var squareLeft: Square? = null
-                var squareRight: Square? = null
-                piece.associatedBoard!!.squaresList.filter { sq ->
-                    sq.boardYpos == piece.boardYpos
-                }.let { filteredList ->
-                    squareLeft = filteredList.firstOrNull { l ->
-                        l.boardXpos == piece.boardXpos - 1
-                    }
-                    squareRight = filteredList.firstOrNull { r ->
-                        r.boardXpos == piece.boardXpos + 1
-                    }
-                }.also {
-                    squareLeft.let { sqL ->
-                        if (sqL != null) {
-                            if (sqL.contents.isEmpty()) {
-                                val pawnLeft = BlackPawn()
-                                pawnLeft.move(
-                                    sqL.boardXpos,
-                                    sqL.boardYpos,
-                                    sqL.associatedBoard
-                                )
-                                sqL.contents.add(pawnLeft)
-                                pieces.add(pawnLeft)
-                            }
+            var squareLeft: Square? = null
+            var squareRight: Square? = null
+            StageManager.stage.squaresList.filter { sq ->
+                sq.stageYpos == piece.stageYpos
+            }.let { filteredList ->
+                squareLeft = filteredList.firstOrNull { l ->
+                    l.stageXpos == piece.stageXpos - 1
+                }
+                squareRight = filteredList.firstOrNull { r ->
+                    r.stageXpos == piece.stageXpos + 1
+                }
+            }.also {
+                squareLeft.let { sqL ->
+                    if (sqL != null) {
+                        if (sqL.contents.isEmpty()) {
+                            val pawnLeft = BlackPawn()
+                            pawnLeft.move(
+                                sqL.stageXpos,
+                                sqL.stageYpos,
+                            )
+                            sqL.contents.add(pawnLeft)
+                            pieces.add(pawnLeft)
                         }
                     }
-                    squareRight.let { sqR ->
-                        if (sqR != null) {
-                            if (sqR.contents.isEmpty()) {
-                                val pawnRight = BlackPawn()
-                                pawnRight.move(
-                                    sqR.boardXpos,
-                                    sqR.boardYpos,
-                                    sqR.associatedBoard
-                                )
-                                sqR.contents.add(pawnRight)
-                                pieces.add(pawnRight)
-                            }
+                }
+                squareRight.let { sqR ->
+                    if (sqR != null) {
+                        if (sqR.contents.isEmpty()) {
+                            val pawnRight = BlackPawn()
+                            pawnRight.move(
+                                sqR.stageXpos,
+                                sqR.stageYpos,
+                            )
+                            sqR.contents.add(pawnRight)
+                            pieces.add(pawnRight)
                         }
                     }
                 }
             }
         }
     }
-
 }

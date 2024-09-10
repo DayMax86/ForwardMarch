@@ -14,7 +14,7 @@ class Board(
 
     fun getSquare(x: Int, y: Int): Square? {
         return this.squaresList.firstOrNull {
-            it.boardXpos == x && it.boardYpos == y
+            it.stageXpos == x && it.stageYpos == y
         }
     }
 

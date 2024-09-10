@@ -16,6 +16,7 @@ import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
 import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
+import com.daymax86.forwardmarch.managers.StageManager
 
 enum class SquareTypes {
     BLACK,
@@ -31,33 +32,25 @@ abstract class Square {
     abstract var colour: SquareTypes
     abstract var clickable: Boolean
     abstract val contents: MutableList<BoardObject>
-    abstract var boardXpos: Int
-    abstract var boardYpos: Int
+    abstract var stageXpos: Int
+    abstract var stageYpos: Int
     abstract var squareWidth: Int
     abstract var highlight: Boolean
     abstract var altHighlight: Boolean
     abstract var boundingBox: BoundingBox
-    abstract var associatedBoard: Board
-
-    fun getEnvironmentPosition(): Pair<Float, Float> {
-        val envX = associatedBoard.environmentXPos + (GameManager.SQUARE_WIDTH * this.boardXpos)
-        val envY = associatedBoard.environmentYPos + (GameManager.SQUARE_HEIGHT * this.boardYpos)
-        return Pair(envX, envY)
-    }
 
     open fun onClick(button: Int) {
         if (clickable) {
             when (button) {
                 inputTypes["LMB"] -> {
-                    Gdx.app.log("square", "$boardXpos, $boardYpos, contents = $contents")
+                    Gdx.app.log("square", "$stageXpos, $stageYpos, contents = $contents")
                     if (selectedPiece != null) { // Null safety check for !! use
                         if (this.canBeEntered() &&
                             selectedPiece!!.movement.contains(this)
                         ) {
                             selectedPiece!!.move(
-                                this.boardXpos,
-                                this.boardYpos,
-                                this.associatedBoard,
+                                this.stageXpos,
+                                this.stageYpos,
                             )
                         } else {
                             if (selectedPiece != null) {
@@ -72,7 +65,7 @@ abstract class Square {
                 inputTypes["RMB"] -> {
                     Gdx.app.log("square", "OnClick event for square and RMB")
                     if (this.contents.isNotEmpty()) {
-                        GameManager.currentInfoBox = this.contents[0].infoBox
+                        GameManager.currentInfoBox = this.contents.last().infoBox
                     }
                 }
 
@@ -81,7 +74,7 @@ abstract class Square {
                     //------------------------FOR TESTING--------------------//
                     if (Player.bombTotal > 0) {
                         val bomb = Bomb()
-                        bomb.move(this.boardXpos, this.boardYpos, this.associatedBoard)
+                        bomb.move(this.stageXpos, this.stageYpos)
                         bomb.use()
                     }
                 }
@@ -97,6 +90,13 @@ abstract class Square {
         }
     }
 
+    fun getEnvironmentPosition(): Pair<Float, Float> {
+        val x = StageManager.stage.environmentXPos + this.stageXpos * GameManager.SQUARE_WIDTH
+        val y =
+            StageManager.stage.environmentYPos + this.stageYpos * 120.toFloat()
+        return Pair(x, y)
+    }
+
     fun addToContents(objToAdd: BoardObject) {
         // Set the new object's bounding box to match that of the square it's in
         objToAdd.boundingBox = this.boundingBox
@@ -109,8 +109,7 @@ abstract class Square {
                     // If a piece is selected it's a friendly attack, otherwise friendly comes off worse
                     if (objToAdd is Piece) {
                         objToAdd.collide(content, selectedPiece == null)
-                    }
-                    else {
+                    } else {
                         // Generic collision handling for non-piece-based interactions
                         objToAdd.collide(content)
                     }
@@ -170,9 +169,6 @@ abstract class Square {
 
     fun updateBoundingBox(x: Float, y: Float, width: Float, height: Float) {
         this.boundingBox = BoundingBox(Vector3(x, y, 0f), Vector3(x + width, y + height, 0f))
-        this.contents.forEach { content ->
-            content.boundingBox = this.boundingBox
-        }
     }
 
     open fun swapToAltHighlight(swap: Boolean) {

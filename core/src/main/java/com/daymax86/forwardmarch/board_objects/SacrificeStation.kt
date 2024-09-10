@@ -26,14 +26,14 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.PrinceDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.VilleinDefault
+import com.daymax86.forwardmarch.managers.StageManager
 
 class SacrificeStation(
-    override var associatedBoard: Board?,
     override var image: Texture = Texture(Gdx.files.internal("sprites/sacrifice_station.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/sacrifice_station.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
@@ -204,15 +204,11 @@ class SacrificeStation(
             station == this
         }.let {
             if (it.isNotEmpty()) {
-                stationToRemove = it[0]
+                stationToRemove = it.first()
             }
         }.also {
             GameManager.stations.remove(stationToRemove)
-            if (this.associatedBoard != null) {
-                this.associatedBoard!!.squaresList.firstOrNull { square ->
-                    square.boardXpos == stationToRemove!!.boardXpos && square.boardYpos == stationToRemove!!.boardYpos
-                }?.contents?.remove(this)
-            }
+            StageManager.stage.getSquare(this.stageXpos, this.stageYpos)?.contents?.remove(this)
         }
 
         GameManager.currentStation = null

@@ -8,14 +8,13 @@ object PickupManager {
 
     val pickups: MutableList<BoardObject> = mutableListOf()
 
-    fun spawnPickup(type: PickupTypes, x: Int, y: Int, board: Board) {
+    fun spawnPickup(type: PickupTypes, x: Int, y: Int) {
         when (type) {
             PickupTypes.COIN -> {
                 val coinToAdd = Coin()
-                coinToAdd.associatedBoard = board
-                coinToAdd.boardXpos = x
-                coinToAdd.boardYpos = y
-                coinToAdd.move(x, y, board)
+                coinToAdd.stageXpos = x
+                coinToAdd.stageYpos = y
+                coinToAdd.move(x, y)
                 coinToAdd.initialise()
                 pickups.add(coinToAdd)
             }

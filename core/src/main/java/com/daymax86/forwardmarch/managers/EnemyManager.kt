@@ -1,11 +1,10 @@
 package com.daymax86.forwardmarch.managers
 
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
-import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyPawn
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyKnight
+import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyPawn
 import com.daymax86.forwardmarch.board_objects.pieces.enemies.EnemyRook
 import com.daymax86.forwardmarch.board_objects.traps.SpikeTrap
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
@@ -15,14 +14,13 @@ object EnemyManager {
     val enemyPieces: MutableList<Piece> = mutableListOf()
     val traps: MutableList<BoardObject> = mutableListOf()
 
-    fun spawnEnemy(type: PieceTypes, x: Int, y: Int, board: Board) {
+    fun spawnEnemy(type: PieceTypes, x: Int, y: Int) {
         when (type) {
             PieceTypes.PAWN -> {
                 val pawnToAdd = EnemyPawn()
-                pawnToAdd.associatedBoard = board
-                pawnToAdd.boardXpos = x
-                pawnToAdd.boardYpos = y
-                pawnToAdd.move(x, y, board)
+                pawnToAdd.stageXpos = x
+                pawnToAdd.stageYpos = y
+                pawnToAdd.move(x, y)
                 pawnToAdd.getValidMoves()
                 enemyPieces.add(pawnToAdd)
             }
@@ -32,19 +30,17 @@ object EnemyManager {
 
             PieceTypes.ROOK -> {
                 val rookToAdd = EnemyRook()
-                rookToAdd.associatedBoard = board
-                rookToAdd.boardXpos = x
-                rookToAdd.boardYpos = y
-                rookToAdd.move(x, y, board)
+                rookToAdd.stageXpos = x
+                rookToAdd.stageYpos = y
+                rookToAdd.move(x, y)
                 enemyPieces.add(rookToAdd)
             }
 
             PieceTypes.KNIGHT -> {
                 val knightToAdd = EnemyKnight()
-                knightToAdd.associatedBoard = board
-                knightToAdd.boardXpos = x
-                knightToAdd.boardYpos = y
-                knightToAdd.move(x, y, board)
+                knightToAdd.stageXpos = x
+                knightToAdd.stageYpos = y
+                knightToAdd.move(x, y)
                 enemyPieces.add(knightToAdd)
             }
 
@@ -57,14 +53,13 @@ object EnemyManager {
         }
     }
 
-    fun spawnTrap(type: TrapTypes, x: Int, y: Int, board: Board) {
+    fun spawnTrap(type: TrapTypes, x: Int, y: Int) {
         when (type) {
             TrapTypes.SPIKE -> {
                 val spikesToAdd = SpikeTrap()
-                spikesToAdd.associatedBoard = board
-                spikesToAdd.boardXpos = x
-                spikesToAdd.boardYpos = y
-                spikesToAdd.move(x, y, board)
+                spikesToAdd.stageXpos = x
+                spikesToAdd.stageYpos = y
+                spikesToAdd.move(x, y)
                 traps.add(spikesToAdd)
             }
         }

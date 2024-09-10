@@ -18,15 +18,13 @@ class QueenDefault(
     override var image: Texture = Texture(Gdx.files.internal("sprites/pieces/black_queen.png")),
     override var highlightedImage: Texture = Texture(Gdx.files.internal("sprites/pieces/black_queen_highlighted.png")),
     override var highlight: Boolean = false,
-    override var boardXpos: Int = -1,
-    override var boardYpos: Int = -1,
+    override var stageXpos: Int = -1,
+    override var stageYpos: Int = -1,
     override var clickable: Boolean = true,
     override var hostile: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
     override var pieceType: PieceTypes = PieceTypes.KING,
     override val movement: MutableList<Square> = mutableListOf(),
-    override var associatedBoard: Board? = null,
-    override var nextBoard: Board? = null,
     override val movementTypes: List<MovementTypes> = mutableListOf(
         MovementTypes.ROOK,
         MovementTypes.BISHOP
@@ -67,12 +65,11 @@ class QueenDefault(
     image = image,
     highlightedImage = highlightedImage,
     highlight = highlight,
-    boardXpos = boardXpos,
-    boardYpos = boardYpos,
+    stageXpos = stageXpos,
+    stageYpos = stageYpos,
     clickable = clickable,
     hostile = hostile,
     boundingBox = boundingBox,
-    associatedBoard = associatedBoard,
 ) {
 
     init {

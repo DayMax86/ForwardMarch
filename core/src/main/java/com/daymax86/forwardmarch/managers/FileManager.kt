@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
+import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.traps.TrapTypes
 import com.daymax86.forwardmarch.squares.BlackSquareDefault
@@ -89,14 +90,14 @@ object FileManager {
         writer.flush()
     }
 
-    fun makeBoardFromFile(file: File): Pair<Board?, MutableList<() -> Unit>> {
+    fun makeBoardFromFile(file: File): Pair<Board, MutableList<() -> Unit>> {
         val inputStream = file.inputStream()
         val dataSquares = readBoardFile(inputStream)
         val tempSquaresList: MutableList<Square> = mutableListOf()
         val board = Board()
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         if (dataSquares.isEmpty()) {
-            return Pair(null, mutableListOf())
+            return Pair(board, mutableListOf())
         }
         dataSquares.forEach { dataSquare ->
             lateinit var square: Square
@@ -104,9 +105,8 @@ object FileManager {
                 "black" -> {
                     square = BlackSquareDefault(
                         colour = SquareTypes.BLACK,
-                        associatedBoard = board,
-                        boardXpos = dataSquare.xPos,
-                        boardYpos = dataSquare.yPos,
+                        stageXpos = dataSquare.xPos,
+                        stageYpos = dataSquare.yPos,
                         clickable = true,
                     )
                 }
@@ -114,9 +114,8 @@ object FileManager {
                 "white" -> {
                     square = WhiteSquareDefault(
                         colour = SquareTypes.WHITE,
-                        associatedBoard = board,
-                        boardXpos = dataSquare.xPos,
-                        boardYpos = dataSquare.yPos,
+                        stageXpos = dataSquare.xPos,
+                        stageYpos = dataSquare.yPos ,
                         clickable = true,
                     )
                 }
@@ -124,9 +123,8 @@ object FileManager {
                 "mystery" -> {
                     square = MysterySquare(
                         colour = SquareTypes.MYSTERY,
-                        associatedBoard = board,
-                        boardXpos = dataSquare.xPos,
-                        boardYpos = dataSquare.yPos,
+                        stageXpos = dataSquare.xPos,
+                        stageYpos = dataSquare.yPos ,
                         clickable = true,
                     )
                 }
@@ -134,9 +132,8 @@ object FileManager {
                 "trapdoor" -> {
                     square = TrapdoorSquare(
                         colour = SquareTypes.TRAPDOOR,
-                        associatedBoard = board,
-                        boardXpos = dataSquare.xPos,
-                        boardYpos = dataSquare.yPos,
+                        stageXpos = dataSquare.xPos,
+                        stageYpos = dataSquare.yPos ,
                         clickable = true,
                     )
                 }
@@ -144,35 +141,25 @@ object FileManager {
                 else -> {
                     square = BrokenSquare(
                         colour = SquareTypes.BROKEN,
-                        associatedBoard = board,
-                        boardXpos = dataSquare.xPos,
-                        boardYpos = dataSquare.yPos,
+                        stageXpos = dataSquare.xPos,
+                        stageYpos = dataSquare.yPos ,
                         clickable = true,
                     )
                 }
-
             }
 
             dataSquare.contents.forEach { content ->
                 when (content) {
                     "coin" -> {
-                        actionQueue.add {
-                            PickupManager.spawnPickup(
-                                PickupTypes.COIN,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
-                            )
-                        }
+                        square.contents.add(Coin())
                     }
 
                     "bomb" -> {
                         actionQueue.add {
                             PickupManager.spawnPickup(
                                 PickupTypes.BOMB,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
+                                square.stageXpos,
+                                square.stageYpos ,
                             )
                         }
                     }
@@ -181,39 +168,26 @@ object FileManager {
                         actionQueue.add {
                             EnemyManager.spawnTrap(
                                 type = TrapTypes.SPIKE,
-                                x = square.boardXpos,
-                                y = square.boardYpos,
-                                board = board,
+                                x = square.stageXpos,
+                                y = square.stageYpos,
                             )
                         }
                     }
 
                     "shop" -> {
                         actionQueue.add {
-                            square.contents.add(
-                                Shop(
-                                    associatedBoard = board,
-                                    boardXpos = square.boardXpos,
-                                    boardYpos = square.boardYpos,
-                                ).also { shop ->
-                                    shop.move(square.boardXpos, square.boardYpos, board)
-                                    GameManager.shops.add(shop)
-                                }
+                            StageManager.spawnShop(
+                                x = square.stageXpos,
+                                y = square.stageYpos,
                             )
                         }
                     }
 
                     "sacrifice_station" -> {
                         actionQueue.add {
-                            square.contents.add(
-                                SacrificeStation(
-                                    associatedBoard = board,
-                                    boardXpos = square.boardXpos,
-                                    boardYpos = square.boardYpos,
-                                ).also { station ->
-                                    station.move(square.boardXpos, square.boardYpos, board)
-                                    GameManager.stations.add(station)
-                                }
+                            StageManager.spawnSacrificeStation(
+                                x = square.stageXpos,
+                                y = square.stageYpos,
                             )
                         }
                     }
@@ -222,9 +196,8 @@ object FileManager {
                         actionQueue.add {
                             PickupManager.spawnPickup(
                                 PickupTypes.ITEM_TOKEN,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
+                                square.stageXpos,
+                                square.stageYpos ,
                             )
                         }
                     }
@@ -233,9 +206,8 @@ object FileManager {
                         actionQueue.add {
                             EnemyManager.spawnEnemy(
                                 PieceTypes.PAWN,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
+                                square.stageXpos,
+                                square.stageYpos ,
                             )
                         }
                     }
@@ -244,9 +216,8 @@ object FileManager {
                         actionQueue.add {
                             EnemyManager.spawnEnemy(
                                 PieceTypes.KNIGHT,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
+                                square.stageXpos,
+                                square.stageYpos,
                             )
                         }
                     }
@@ -255,9 +226,8 @@ object FileManager {
                         actionQueue.add {
                             EnemyManager.spawnEnemy(
                                 PieceTypes.ROOK,
-                                square.boardXpos,
-                                square.boardYpos,
-                                board
+                                square.stageXpos,
+                                square.stageYpos,
                             )
                         }
                     }
@@ -277,12 +247,10 @@ object FileManager {
             }
         }.apply {
             tempSquaresList.clear()
-            if (board.squaresList.size == 64) {// Was the operation successful?
-                board.boardIndex = BoardManager.totalBoardIndex
-                BoardManager.totalBoardIndex++
-                return Pair(board, actionQueue)
+            return if (board.squaresList.size == 64) {// Was the operation successful?
+                Pair(board, actionQueue)
             } else {
-                return Pair(null, mutableListOf())
+                Pair(board, mutableListOf())
             }
         }
     }

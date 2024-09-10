@@ -14,14 +14,12 @@ import com.daymax86.forwardmarch.items.Item
 import com.daymax86.forwardmarch.items.Knightshoe
 import com.daymax86.forwardmarch.items.ReverseCard
 import com.daymax86.forwardmarch.items.VoodooTotem
-import com.daymax86.forwardmarch.managers.BoardManager.addBoard
-import com.daymax86.forwardmarch.managers.BoardManager.addStartingBoard
-import com.daymax86.forwardmarch.managers.BoardManager.boards
-import com.daymax86.forwardmarch.managers.BoardManager.checkBoardsStatus
 import com.daymax86.forwardmarch.managers.EnemyManager.enemyPieces
 import com.daymax86.forwardmarch.managers.EnemyManager.traps
 import com.daymax86.forwardmarch.managers.PickupManager.pickups
 import com.daymax86.forwardmarch.managers.PieceManager.pieces
+import com.daymax86.forwardmarch.managers.PieceManager.setStartingLayout
+import com.daymax86.forwardmarch.managers.StageManager.checkStageStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import ktx.async.KtxAsync
@@ -36,6 +34,7 @@ object GameManager {
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
     const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
+    const val BOARD_STARTING_X = ((ENVIRONMENT_WIDTH / 8)).toInt()
     var aspectRatio = 1920 / 1080f
 
     var currentScreenWidth = 0f
@@ -70,22 +69,15 @@ object GameManager {
     var cameraTargetInX: Float = 0f
     var cameraTargetInY: Float = 0f
 
+    var loading:Boolean = true
+
     init {
         loadAllItems()
-
+        setStartingLayout()
         // TESTING ----------------------------------------------------------------------------------------
+
         // ------------------------------------------------------------------------------------------------
 
-        addStartingBoard {
-            addBoard(difficultyModifier) {
-                addBoard(difficultyModifier) {
-                    PieceManager.setStartingLayout()
-                    getAllObjects()
-                }
-            }
-        }
-
-//        saveGameState()
     }
 
     fun triggerGameOver() {
@@ -133,15 +125,11 @@ object GameManager {
 
             // Move all pieces up by one square
             pieces.forEach { piece ->
-                val yMovement =
-                    if (piece.boardYpos + distance > 8) piece.boardYpos + distance - 8 else piece.boardYpos + distance
-                val newBoard =
-                    if (piece.boardYpos + distance > 8) boards[boards.indexOf(piece.associatedBoard) + 1] else null
+                val yMovement = piece.stageYpos + distance
                 movementQueue.add {
                     piece.move(
-                        piece.boardXpos,
+                        piece.stageXpos,
                         yMovement,
-                        newBoard
                     )
                 }
             }
@@ -152,13 +140,11 @@ object GameManager {
 
             moveWithinEnvironment()
 
-            checkBoardsStatus()
+            checkStageStatus()
 
             moveLimitReached = false
             moveCounter = 0
             marchInProgress = false
-
-            Gdx.app.log("collections", "All objects size: ${getAllObjects().size}")
 
             delay(500) // Delaying stops pieces like rooks appearing to move diagonally
 
@@ -174,52 +160,13 @@ object GameManager {
 
             difficultyModifier = forwardMarchCounter / DIMENSIONS
             Gdx.app.log("forward_march", "Difficulty modifier = $difficultyModifier")
-//            saveGameState()
         }
     }
 
-//    fun revertToLastSavedState() { // TODO elements in the lists are pass by reference? We need value
-//        pieces.clear()
-//        gameState.state_pieces.forEach { pieces.add(it) }
-//        boards.clear()
-//        gameState.state_boards.forEach { boards.add(it) }
-//        PickupManager.pickups.clear()
-//        gameState.state_pickups.forEach { PickupManager.pickups.add(it) }
-//        activeAnimations.clear()
-//        gameState.state_activeAnimations.forEach { activeAnimations.add(it) }
-//        selectedPiece = gameState.state_selectedPiece
-//        freezeHighlights = gameState.state_freezeHighlights
-//        difficultyModifier = gameState.state_difficultyModifier
-//        forwardMarchCounter = gameState.state_forwardMarchCounter
-//        marchInProgress = gameState.state_marchInProgress
-//        moveCounter = gameState.state_moveCounter
-//        moveLimit = gameState.state_moveLimit
-//        moveLimitReached = gameState.state_moveLimitReached
-//        firstMoveComplete = gameState.state_firstMoveComplete
-//        saveGameState()
-//    }
-
-
-//    private suspend fun myAppendBoard(
-//        difficultyModifier: Int,
-//    ) = suspendCoroutine { continuation ->
-//        val yPos =
-//            (BOARD_STARTING_Y + ((boards.size - 1) * SQUARE_HEIGHT * (DIMENSIONS)) - (SQUARE_HEIGHT)).toInt()
-//        val board = VeryEasyBoard1(
-//            environmentYPos = yPos,
-//        )
-//        boards.add(board)
-//        Gdx.app.log("manager", "a board has been added. (boards.size = ${boards.size})")
-//
-//        continuation.resume(Unit)
-//    }
-
-
     private fun moveWithinEnvironment() {
-        // Each Board, and all its contents, must move down by SQUARE_HEIGHT units, while camera remains fixed
-        boards.forEach { board ->
-            board.environmentYPos -= SQUARE_HEIGHT.toInt()
-        }
+        // The stage, and all its contents, must move down by SQUARE_HEIGHT units, while camera remains fixed
+
+        StageManager.stage.environmentYPos -= SQUARE_HEIGHT.toInt()
 
         getAllObjects().forEach { obj ->
             obj.movementTarget = Vector2(
@@ -232,7 +179,6 @@ object GameManager {
             )
         }
     }
-
 
     fun updateValidMoves() {
         for (piece in pieces) {

@@ -26,7 +26,7 @@ class SpikeTrap(
 ) : Trap() {
 
     init {
-        this.infoBox.titleText = "Spike trap - armed = ${this.armed}!"
+        this.infoBox.titleText = "Spike trap"
         this.infoBox.description = "Spiky! Traps will destroy any piece - both allied and enemy - which move onto them."
         this.infoBox.thumbnailImage = image
     }

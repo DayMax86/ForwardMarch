@@ -18,12 +18,11 @@ class MysterySquare(
     override var colour: SquareTypes = SquareTypes.MYSTERY,
     override var clickable: Boolean = false,
     override val contents: MutableList<BoardObject> = mutableListOf(),
-    override var boardXpos: Int,
-    override var boardYpos: Int,
+    override var stageXpos: Int,
+    override var stageYpos: Int,
     override var squareWidth: Int = GameManager.SQUARE_WIDTH.toInt(),
     override var highlight: Boolean = false,
     override var boundingBox: BoundingBox = BoundingBox(),
-    override var associatedBoard: Board,
     override var altHighlight: Boolean = false,
 ) : Square() {
 

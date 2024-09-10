@@ -1,6 +1,5 @@
 package com.daymax86.forwardmarch.managers
 
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.pieces.PieceTypes
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.BaronDefault
@@ -14,7 +13,6 @@ import com.daymax86.forwardmarch.board_objects.pieces.defaults.PrinceDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.QueenDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.RookDefault
 import com.daymax86.forwardmarch.board_objects.pieces.defaults.VilleinDefault
-import com.daymax86.forwardmarch.managers.BoardManager.boards
 import com.daymax86.forwardmarch.managers.GameManager.currentShop
 import com.daymax86.forwardmarch.managers.GameManager.firstMoveComplete
 import com.daymax86.forwardmarch.managers.GameManager.freezeHighlights
@@ -32,12 +30,10 @@ object PieceManager {
                 selectedPiece = piece
                 piece.highlight = true
                 updateValidMoves()
-                for (board in boards) {
-                    for (square in board.squaresList) {
-                        if (piece.movement.contains(square)) {
-                            square.swapToAltHighlight(true)
-                            square.highlight = true
-                        }
+                for (square in StageManager.stage.squaresList) {
+                    if (piece.movement.contains(square)) {
+                        square.swapToAltHighlight(true)
+                        square.highlight = true
                     }
                 }
                 freezeHighlights = true
@@ -47,12 +43,10 @@ object PieceManager {
             selectedPiece = piece
             piece.highlight = true
             // TODO() Player must place their new piece behind or in line with the king
-            for (board in boards) {
-                for (square in board.squaresList) {
-                    square.swapToAltHighlight(true)
-                    square.highlight = true
-                    selectedPiece!!.movement.add(square)
-                }
+            for (square in StageManager.stage.squaresList) {
+                square.swapToAltHighlight(true)
+                square.highlight = true
+                selectedPiece!!.movement.add(square)
             }
             freezeHighlights = true
         }
@@ -79,104 +73,93 @@ object PieceManager {
     }
 
 
-    fun spawnPiece(type: PieceTypes, x: Int, y: Int, board: Board) {
+    fun spawnPiece(type: PieceTypes, x: Int, y: Int) {
         when (type) {
             PieceTypes.PAWN -> {
                 val pawnToAdd = PawnDefault()
-                pawnToAdd.associatedBoard = board
-                pawnToAdd.boardXpos = x
-                pawnToAdd.boardYpos = y
-                pawnToAdd.move(x, y, board)
+                pawnToAdd.stageXpos = x
+                pawnToAdd.stageYpos = y
+                pawnToAdd.move(x, y)
                 pieces.add(pawnToAdd)
             }
 
             PieceTypes.KING -> {
                 val kingToAdd = KingDefault()
-                kingToAdd.associatedBoard = board
-                kingToAdd.boardXpos = x
-                kingToAdd.boardYpos = y
-                kingToAdd.move(x, y, board)
+                kingToAdd.stageXpos = x
+                kingToAdd.stageYpos = y
+                kingToAdd.move(x, y)
                 pieces.add(kingToAdd)
             }
 
             PieceTypes.QUEEN -> {
                 val queenToAdd = QueenDefault()
-                queenToAdd.associatedBoard = board
-                queenToAdd.boardXpos = x
-                queenToAdd.boardYpos = y
-                queenToAdd.move(x, y, board)
+                queenToAdd.stageXpos = x
+                queenToAdd.stageYpos = y
+                queenToAdd.move(x, y)
                 pieces.add(queenToAdd)
             }
 
             PieceTypes.ROOK -> {
                 val rookToAdd = RookDefault()
-                rookToAdd.associatedBoard = board
-                rookToAdd.boardXpos = x
-                rookToAdd.boardYpos = y
-                rookToAdd.move(x, y, board)
+                rookToAdd.stageXpos = x
+                rookToAdd.stageYpos = y
+                rookToAdd.move(x, y)
                 pieces.add(rookToAdd)
             }
 
             PieceTypes.KNIGHT -> {
                 val knightToAdd = KnightDefault()
-                knightToAdd.associatedBoard = board
-                knightToAdd.boardXpos = x
-                knightToAdd.boardYpos = y
-                knightToAdd.move(x, y, board)
+                knightToAdd.stageXpos = x
+                knightToAdd.stageYpos = y
+                knightToAdd.move(x, y)
                 pieces.add(knightToAdd)
             }
 
             PieceTypes.BISHOP -> {
                 val bishopToAdd = BishopDefault()
-                bishopToAdd.associatedBoard = board
-                bishopToAdd.boardXpos = x
-                bishopToAdd.boardYpos = y
-                bishopToAdd.move(x, y, board)
+                bishopToAdd.stageXpos = x
+                bishopToAdd.stageYpos = y
+                bishopToAdd.move(x, y)
                 pieces.add(bishopToAdd)
             }
 
             PieceTypes.PRINCE -> {
                 val princeToAdd = PrinceDefault()
-                princeToAdd.associatedBoard = board
-                princeToAdd.boardXpos = x
-                princeToAdd.boardYpos = y
-                princeToAdd.move(x, y, board)
+                princeToAdd.stageXpos = x
+                princeToAdd.stageYpos = y
+                princeToAdd.move(x, y)
                 pieces.add(princeToAdd)
             }
 
             PieceTypes.MONK -> {
                 val monkToAdd = MonkDefault()
-                monkToAdd.associatedBoard = board
-                monkToAdd.boardXpos = x
-                monkToAdd.boardYpos = y
-                monkToAdd.move(x, y, board)
+                monkToAdd.stageXpos = x
+                monkToAdd.stageYpos = y
+                monkToAdd.move(x, y)
                 pieces.add(monkToAdd)
             }
 
             PieceTypes.VILLEIN -> {
                 val villeinToAdd = VilleinDefault()
-                villeinToAdd.associatedBoard = board
-                villeinToAdd.boardXpos = x
-                villeinToAdd.boardYpos = y
-                villeinToAdd.move(x, y, board)
+                villeinToAdd.stageXpos = x
+                villeinToAdd.stageYpos = y
+                villeinToAdd.move(x, y)
                 pieces.add(villeinToAdd)
             }
 
             PieceTypes.BARON -> {
                 val baronToAdd = BaronDefault()
-                baronToAdd.associatedBoard = board
-                baronToAdd.boardXpos = x
-                baronToAdd.boardYpos = y
-                baronToAdd.move(x, y, board)
+                baronToAdd.stageXpos = x
+                baronToAdd.stageYpos = y
+                baronToAdd.move(x, y)
                 pieces.add(baronToAdd)
             }
 
             PieceTypes.BARONESS -> {
                 val baronessToAdd = BaronessDefault()
-                baronessToAdd.associatedBoard = board
-                baronessToAdd.boardXpos = x
-                baronessToAdd.boardYpos = y
-                baronessToAdd.move(x, y, board)
+                baronessToAdd.stageXpos = x
+                baronessToAdd.stageYpos = y
+                baronessToAdd.move(x, y)
                 pieces.add(baronessToAdd)
             }
         }
@@ -185,16 +168,26 @@ object PieceManager {
     // ------------------------------SETUP PLACEMENT--------------------------------------------- //
 
     fun setStartingLayout() {
-        spawnPiece(PieceTypes.QUEEN, 4, 1, boards[0])
-        spawnPiece(PieceTypes.KING, 5, 1, boards[0])
-        spawnPiece(PieceTypes.ROOK, 1, 1, boards[0])
-        spawnPiece(PieceTypes.ROOK, 8, 1, boards[0])
-        spawnPiece(PieceTypes.BISHOP, 3, 1, boards[0])
-        spawnPiece(PieceTypes.BISHOP, 6, 1, boards[0])
-        spawnPiece(PieceTypes.KNIGHT, 2, 1, boards[0])
-        spawnPiece(PieceTypes.KNIGHT, 7, 1, boards[0])
+        spawnPiece(PieceTypes.QUEEN, 4, 1)
+        spawnPiece(PieceTypes.KING, 5, 1)
+        spawnPiece(PieceTypes.ROOK, 1, 1)
+        spawnPiece(PieceTypes.ROOK, 8, 1)
+        spawnPiece(PieceTypes.BISHOP, 3, 1)
+        spawnPiece(PieceTypes.BISHOP, 6, 1)
+        spawnPiece(PieceTypes.KNIGHT, 2, 1)
+        spawnPiece(PieceTypes.KNIGHT, 7, 1)
         for (x in 1..8) {
-            spawnPiece(PieceTypes.PAWN, x, 2, boards[0])
+            spawnPiece(PieceTypes.PAWN, x, 2)
+        }
+        pieces.forEach { piece ->
+            StageManager.stage.squaresList.firstOrNull { square ->
+                square.stageXpos == piece.stageXpos &&
+                    square.stageYpos == piece.stageYpos
+            }.let { s ->
+                if (s != null) {
+                    piece.move(s.stageXpos, s.stageYpos)
+                }
+            }
         }
     }
 
