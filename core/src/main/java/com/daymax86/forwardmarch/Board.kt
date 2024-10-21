@@ -9,7 +9,8 @@ class Board(
     var environmentYPos: Int = 0,
     val squaresList: MutableList<Square> = mutableListOf(),
     var squareWidth: Int = GameManager.SQUARE_WIDTH.toInt(),
-    var boardIndex: Int = 0
+    var boardIndex: Int = 0,
+    var initialActionQueue: MutableList<() -> Unit> = mutableListOf(),
 ) {
 
     fun getSquare(x: Int, y: Int): Square? {
@@ -18,6 +19,9 @@ class Board(
         }
     }
 
+    fun completeActionQueue() {
+        initialActionQueue.forEach { it.invoke() }
+    }
 
     fun destroy() {
         this.squaresList.forEach { square ->

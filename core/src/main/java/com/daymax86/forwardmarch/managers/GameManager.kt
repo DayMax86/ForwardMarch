@@ -20,8 +20,10 @@ import com.daymax86.forwardmarch.managers.PickupManager.pickups
 import com.daymax86.forwardmarch.managers.PieceManager.pieces
 import com.daymax86.forwardmarch.managers.PieceManager.setStartingLayout
 import com.daymax86.forwardmarch.managers.StageManager.checkStageStatus
+import com.daymax86.forwardmarch.managers.StageManager.stage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ktx.async.KtxAsync
 
 
@@ -40,6 +42,7 @@ object GameManager {
     var currentScreenWidth = 0f
     var currentScreenHeight = 0f
 
+    var isLoading: Boolean = true
     var gameOver: Boolean = false
 
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
@@ -69,15 +72,24 @@ object GameManager {
     var cameraTargetInX: Float = 0f
     var cameraTargetInY: Float = 0f
 
-    var loading:Boolean = true
-
     init {
         loadAllItems()
-        setStartingLayout()
-        // TESTING ----------------------------------------------------------------------------------------
+        StageManager.load {
+            runBlocking {
+                isLoading = false
+                updateBoardObjectPositions()
+                setStartingLayout()
+            }
+        }
+    }
 
-        // ------------------------------------------------------------------------------------------------
-
+    private fun updateBoardObjectPositions() {
+        pickups.forEach { pickup ->
+            pickup.move(pickup.stageXpos, pickup.stageYpos)
+        }
+        enemyPieces.forEach { enemy ->
+            enemy.move(enemy.stageXpos, enemy.stageYpos)
+        }
     }
 
     fun triggerGameOver() {
@@ -140,7 +152,7 @@ object GameManager {
 
             moveWithinEnvironment()
 
-            checkStageStatus()
+//            checkStageStatus()
 
             moveLimitReached = false
             moveCounter = 0

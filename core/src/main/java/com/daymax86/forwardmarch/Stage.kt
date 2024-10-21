@@ -3,6 +3,8 @@ package com.daymax86.forwardmarch
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.squares.Square
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 
 class Stage() {
     // A Stage is 3 boards stacked on top of each other, essentially one mega-board.
@@ -12,38 +14,44 @@ class Stage() {
     var environmentYPos: Int = GameManager.BOARD_STARTING_Y
 
     fun initialise(
-        boards: Triple<Board, Board, Board>
+        boards: Triple<Board, Board, Board>,
     ) {
-        val board1 = boards.toList().elementAt(0)
-        val board2 = boards.toList().elementAt(1)
-        val board3 = boards.toList().elementAt(2)
-        // Create the initial stage from the 3 board parameters
-        for (y: Int in 1..DIMENSIONS) {
-            for (x: Int in 1..DIMENSIONS) {
-                board1.getSquare(x, y)?.let {
-                    this.squaresList.add(it)
+        KtxAsync.launch {
+            boards.toList().forEach { board ->
+                board.completeActionQueue()
+            }
+        }.invokeOnCompletion {
+            val board1 = boards.toList().elementAt(0)
+            val board2 = boards.toList().elementAt(1)
+            val board3 = boards.toList().elementAt(2)
+            // Create the initial stage from the 3 board parameters
+            for (y: Int in 1..DIMENSIONS) {
+                for (x: Int in 1..DIMENSIONS) {
+                    board1.getSquare(x, y)?.let {
+                        this.squaresList.add(it)
+                    }
                 }
             }
-        }
-        for (y: Int in 1..DIMENSIONS) {
-            for (x: Int in 1..DIMENSIONS) {
-                board2.getSquare(x, y)?.let {
-                    it.stageYpos += DIMENSIONS
-                    it.contents.forEach { content ->
-                        content.move(it.stageXpos, it.stageYpos)
+            for (y: Int in 1..DIMENSIONS) {
+                for (x: Int in 1..DIMENSIONS) {
+                    board2.getSquare(x, y)?.let {
+                        it.stageYpos += DIMENSIONS
+                        it.contents.forEach { content ->
+                            content.move(it.stageXpos, it.stageYpos)
+                        }
+                        this.squaresList.add(it)
                     }
-                    this.squaresList.add(it)
                 }
             }
-        }
-        for (y: Int in 1..DIMENSIONS) {
-            for (x: Int in 1..DIMENSIONS) {
-                board3.getSquare(x, y)?.let {
-                    it.stageYpos += (DIMENSIONS + DIMENSIONS)
-                    it.contents.forEach { content ->
-                        content.move(it.stageXpos, it.stageYpos)
+            for (y: Int in 1..DIMENSIONS) {
+                for (x: Int in 1..DIMENSIONS) {
+                    board3.getSquare(x, y)?.let {
+                        it.stageYpos += (DIMENSIONS + DIMENSIONS)
+                        it.contents.forEach { content ->
+                            content.move(it.stageXpos, it.stageYpos)
+                        }
+                        this.squaresList.add(it)
                     }
-                    this.squaresList.add(it)
                 }
             }
         }

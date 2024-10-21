@@ -7,7 +7,8 @@ import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
-import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 import java.nio.file.DirectoryStream
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -16,14 +17,18 @@ object StageManager {
 
     val stage: Stage = Stage()
 
-    init {
-        stage.initialise(
-            getStartingBoards()
-        )
+    fun load(onComplete: () -> Unit) {
+        KtxAsync.launch {
+            stage.initialise(
+                getStartingBoards()
+            )
+        }.invokeOnCompletion {
+            onComplete.invoke()
+        }
     }
 
     @Suppress("NewApi")
-    fun getStartingBoards(): Triple<Board, Board, Board> {
+    private fun getStartingBoards(): Triple<Board, Board, Board> {
 
         // ------------------ Board 1 ------------------
         var path: Path = FileSystems.getDefault().getPath("boards/starting_boards")
@@ -32,11 +37,17 @@ object StageManager {
         stream.forEach { p ->
             files.add(p)
         }
+//        val (board1, actionQueue1) = FileManager.makeBoardFromFile(
+//            Gdx.files.internal(
+//                files.random().toString()
+//            ).file(),
+//        )
         val (board1, actionQueue1) = FileManager.makeBoardFromFile(
             Gdx.files.internal(
-                files.random().toString()
+                "boards/starting_boards/starting_board_4.csv"
             ).file(),
         )
+        board1.initialActionQueue = actionQueue1
         // ------------------ Boards 2 & 3 ----------------
         path = FileSystems.getDefault().getPath("boards/very_easy_boards")
         stream = java.nio.file.Files.newDirectoryStream(path)
@@ -49,15 +60,22 @@ object StageManager {
         while (source2 == source1) {
             source2 = files.random().toString()
         }
+//        val (board2, actionQueue2) = FileManager.makeBoardFromFile(
+//            Gdx.files.internal(
+//                source1
+//            ).file(),
+//        )
+
         val (board2, actionQueue2) = FileManager.makeBoardFromFile(
             Gdx.files.internal(
-                source1
+                "boards/very_easy_boards/very_easy_board_1.csv"
             ).file(),
         )
+        board2.initialActionQueue = actionQueue2
 
 
         // TESTING --------
-        board2.getSquare(1,1)?.contents?.add(Coin())
+        board2.getSquare(1, 1)?.contents?.add(Coin())
         // ----------------
 
         val (board3, actionQueue3) = FileManager.makeBoardFromFile(
@@ -65,12 +83,15 @@ object StageManager {
                 source2
             ).file(),
         )
+        board3.initialActionQueue = actionQueue3
 
-        actionQueue1.forEach { it.invoke() }
-        actionQueue2.forEach { it.invoke() }
-        actionQueue3.forEach { it.invoke() }
 
         return Triple(board1, board2, board3)
+    }
+
+    private fun resolveActionQueues(queues: List<MutableList<() -> Unit>>){
+        queues.forEach { q ->
+            q.forEach { it.invoke() } }
     }
 
     @Suppress("NewApi")
@@ -120,7 +141,7 @@ object StageManager {
             )
             if (board != null) {
                 actionQueue.forEach { it.invoke() }.apply {
-                    stage.appendBoard(board,stage.squaresList.size / (DIMENSIONS * DIMENSIONS))
+                    stage.appendBoard(board, stage.squaresList.size / (DIMENSIONS * DIMENSIONS))
                 }
             }
             onComplete.invoke()
@@ -150,7 +171,7 @@ object StageManager {
         val shopToAdd = Shop()
         shopToAdd.stageXpos = x
         shopToAdd.stageYpos = y
-        shopToAdd.move(x,y)
+        shopToAdd.move(x, y)
         GameManager.shops.add(shopToAdd)
     }
 
@@ -158,7 +179,7 @@ object StageManager {
         val stationToAdd = SacrificeStation()
         stationToAdd.stageXpos = x
         stationToAdd.stageYpos = y
-        stationToAdd.move(x,y)
+        stationToAdd.move(x, y)
         GameManager.stations.add(stationToAdd)
     }
 

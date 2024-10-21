@@ -14,6 +14,9 @@ import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.math.collision.BoundingBox
 import com.badlogic.gdx.utils.ScreenUtils
 import com.daymax86.forwardmarch.animations.SpriteAnimation
+import com.daymax86.forwardmarch.animations.StickySpriteAnimator
+import com.daymax86.forwardmarch.managers.AudioManager
+import com.daymax86.forwardmarch.managers.EnemyManager
 import com.daymax86.forwardmarch.managers.FileManager
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.GameManager.ENVIRONMENT_HEIGHT
@@ -24,9 +27,13 @@ import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInX
 import com.daymax86.forwardmarch.managers.GameManager.cameraTargetInY
 import com.daymax86.forwardmarch.managers.GameManager.currentShop
 import com.daymax86.forwardmarch.managers.GameManager.currentStation
+import com.daymax86.forwardmarch.managers.PieceManager.pieces
 import com.daymax86.forwardmarch.managers.StageManager
 import com.daymax86.forwardmarch.managers.StageManager.stage
 import com.daymax86.forwardmarch.squares.Square
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import ktx.async.KtxAsync
 import ktx.graphics.lerpTo
 
 class GameScreen(private val application: MainApplication) : Screen {
@@ -48,6 +55,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     )
 
     init {
+
         environmentSprite.setPosition(0f, 0f)
         environmentSprite.setSize(ENVIRONMENT_WIDTH, ENVIRONMENT_HEIGHT)
         windowWidth = Gdx.graphics.width
@@ -57,30 +65,83 @@ class GameScreen(private val application: MainApplication) : Screen {
         cameraTargetInY = ((ENVIRONMENT_HEIGHT / 2) + (windowHeight / 2) + SQUARE_HEIGHT)
         gameCamera.position.set(cameraTargetInX, cameraTargetInY, 0f)
 
-        Gdx.input.inputProcessor = object : InputAdapter() {
-            override fun touchDown(screenX: Int, screenY: Int, pointer: Int, button: Int): Boolean {
-                val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
-                val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
-                if (xPos != null && yPos != null) {
+        if (!GameManager.isLoading) {
 
-                    if (GameManager.currentInfoBox != null) {
-                        // Showing an info box so disable it when any mouse button pressed
-                        GameManager.currentInfoBox = null
+            Gdx.input.inputProcessor = object : InputAdapter() {
+                override fun touchDown(
+                    screenX: Int,
+                    screenY: Int,
+                    pointer: Int,
+                    button: Int
+                ): Boolean {
+                    val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
+                    val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
+                    if (xPos != null && yPos != null) {
+
+                        if (GameManager.currentInfoBox != null) {
+                            // Showing an info box so disable it when any mouse button pressed
+                            GameManager.currentInfoBox = null
+                        }
+
+                        checkSquareCollisions(
+                            StageManager.stage.squaresList,
+                            xPos,
+                            yPos,
+                            button
+                        )
+
+                        checkBoardObjectCollisions(
+                            GameManager.getAllObjects(),
+                            xPos,
+                            yPos,
+                            button
+                        )
+
+                        val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
+                        val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
+                        checkHUDCollisions(
+                            gameHUD.hudElements,
+                            hudXPos ?: 0,
+                            hudYPos ?: 0,
+                            button,
+                        )
+
                     }
 
-                    checkSquareCollisions(
-                        StageManager.stage.squaresList,
-                        xPos,
-                        yPos,
-                        button
-                    )
+                    if (GameManager.currentShop != null) {
+                        currentShop!!.shopItems.let { items ->
+                            currentShop!!.shopWindow.checkPopupCollisions(items, button)
+                        }
+                    }
 
-                    checkBoardObjectCollisions(
-                        GameManager.getAllObjects(),
-                        xPos,
-                        yPos,
-                        button
-                    )
+                    if (GameManager.currentStation != null) {
+                        currentStation!!.choices.let { choices ->
+                            currentStation!!.choiceWindow.checkPopupCollisions(choices, button)
+                        }
+                    }
+
+                    return true
+                }
+
+                override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
+                    val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
+                    val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
+
+                    getMouseEnvironmentPosition(gameCamera)?.let {
+                        checkSquareCollisions(
+                            StageManager.stage.squaresList,
+                            it.x.toInt(),
+                            it.y.toInt()
+                        )
+                    }
+
+                    if (xPos != null && yPos != null) {
+                        checkBoardObjectCollisions(
+                            GameManager.getAllObjects(),
+                            xPos,
+                            yPos,
+                        )
+                    }
 
                     val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
                     val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
@@ -88,95 +149,30 @@ class GameScreen(private val application: MainApplication) : Screen {
                         gameHUD.hudElements,
                         hudXPos ?: 0,
                         hudYPos ?: 0,
-                        button,
                     )
 
+                    return true
                 }
 
-                if (GameManager.currentShop != null) {
-                    currentShop!!.shopItems.let { items ->
-                        currentShop!!.shopWindow.checkPopupCollisions(items, button)
-                    }
-                }
-
-                if (GameManager.currentStation != null) {
-                    currentStation!!.choices.let { choices ->
-                        currentStation!!.choiceWindow.checkPopupCollisions(choices, button)
-                    }
-                }
-
-                return true
-            }
-
-            override fun mouseMoved(screenX: Int, screenY: Int): Boolean {
-                val xPos = getMouseEnvironmentPosition(gameCamera)?.x?.toInt()
-                val yPos = getMouseEnvironmentPosition(gameCamera)?.y?.toInt()
-
-                getMouseEnvironmentPosition(gameCamera)?.let {
-                    checkSquareCollisions(
-                        StageManager.stage.squaresList,
-                        it.x.toInt(),
-                        it.y.toInt()
-                    )
-                }
-
-                if (xPos != null && yPos != null) {
-                    checkBoardObjectCollisions(
-                        GameManager.getAllObjects(),
-                        xPos,
-                        yPos,
-                    )
-                }
-
-                val hudXPos = getMouseEnvironmentPosition(hudCamera)?.x?.toInt()
-                val hudYPos = getMouseEnvironmentPosition(hudCamera)?.y?.toInt()
-                checkHUDCollisions(
-                    gameHUD.hudElements,
-                    hudXPos ?: 0,
-                    hudYPos ?: 0,
-                )
-
-                return true
-            }
-
-            override fun keyDown(keycode: Int): Boolean {
-                super.keyDown(keycode)
-                when (keycode) {
-                    // --------- FOR TESTING ONLY ---------- //
-                    (Input.Keys.F) -> {
-                        if (!GameManager.marchInProgress) {
-                            GameManager.forwardMarch(1)
+                override fun keyDown(keycode: Int): Boolean {
+                    super.keyDown(keycode)
+                    when (keycode) {
+                        // --------- FOR TESTING ONLY ---------- //
+                        (Input.Keys.F) -> {
+                            if (!GameManager.marchInProgress) {
+                                GameManager.forwardMarch(1)
+                            }
                         }
+
+                        (Input.Keys.T) -> {
+                            // TESTING ----------------
+                            FileManager.generateBoardFile(1)
+                            // ------------------------
+                        }
+
                     }
-
-//                    (Input.Keys.Z) -> {
-//                        if (!GameManager.marchInProgress) {
-//                            // Undo moves since last forwardMarch
-//                            GameManager.revertToLastSavedState()
-//                        }
-//                    }
-
-                    (Input.Keys.T) -> {
-                        // TESTING ----------------
-                        FileManager.generateBoardFile(1)
-                        // ------------------------
-                    }
-
-//                    (Input.Keys.S) -> {
-//                        //Show the shop
-//                        GameManager.currentShop!!.displayShopWindow =
-//                            !GameManager.currentShop!!.displayShopWindow
-//                        if (GameManager.currentShop != null) {
-//                            if (GameManager.currentShop!!.displayShopWindow) {
-//                                GameManager.currentShop!!.enterShop()
-//                            } else {
-//                                GameManager.currentShop!!.exitShop()
-//                            }
-//                        }
-//                    }
-
+                    return true
                 }
-                return true
             }
         }
     }
@@ -186,15 +182,23 @@ class GameScreen(private val application: MainApplication) : Screen {
         gameCamera.update()
     }
 
+    private fun showLoadingAnimation(show: Boolean) {
+        application.loading = show
+    }
+
+    private fun loading(): Boolean {
+        return GameManager.isLoading
+    }
+
     override fun render(delta: Float) {
         ScreenUtils.clear(0f, 0.8f, 0.8f, 1f)
         updateCamera()
         application.batch.projectionMatrix = gameCamera.combined
         application.batch.begin()
 
-        if (stage.squaresList.size != 192) {
-            application.font.draw(application.batch, "LOADING", 500f, 500f)
-        } else {
+        if (!loading()) {
+            showLoadingAnimation(false)
+
             drawBackground()
 
             drawStageAndContents()
@@ -208,9 +212,14 @@ class GameScreen(private val application: MainApplication) : Screen {
             hudBatch.begin()
             drawHUD()
             hudBatch.end()
+
+        } else {
+            // Show a loading screen/animation instead
+            showLoadingAnimation(true)
         }
         application.batch.end()
     }
+
 
     private fun checkShopRender() {
         if (currentShop != null) {
