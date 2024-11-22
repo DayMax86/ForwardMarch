@@ -35,7 +35,7 @@ object GameManager {
     const val SQUARE_HEIGHT = 120f
     const val DIMENSIONS: Int = 8
     const val DEFAULT_ANIMATION_DURATION: Float = 0.033f
-    const val BOARD_STARTING_Y = ((ENVIRONMENT_HEIGHT / 2)).toInt()
+    const val BOARD_STARTING_Y = 1500
     const val BOARD_STARTING_X = ((ENVIRONMENT_WIDTH / 8)).toInt()
     var aspectRatio = 1920 / 1080f
 
@@ -74,22 +74,24 @@ object GameManager {
 
     init {
         loadAllItems()
-        StageManager.load {
-            runBlocking {
-                isLoading = false
-                updateBoardObjectPositions()
-                setStartingLayout()
-            }
+        runBlocking {
+            StageManager.load()
+            updateBoardObjectPositions()
+            setStartingLayout()
+            isLoading = false
         }
     }
 
     private fun updateBoardObjectPositions() {
-        pickups.forEach { pickup ->
-            pickup.move(pickup.stageXpos, pickup.stageYpos)
+        val movementQueue: MutableList<() -> Unit> = mutableListOf()
+        stage.squaresList.forEach { square ->
+            square.contents.forEach { content ->
+                movementQueue.add {
+                    content.move(square.stageXpos, square.stageYpos)
+                }
+            }
         }
-        enemyPieces.forEach { enemy ->
-            enemy.move(enemy.stageXpos, enemy.stageYpos)
-        }
+        movementQueue.forEach { action -> action.invoke() }
     }
 
     fun triggerGameOver() {
@@ -178,7 +180,7 @@ object GameManager {
     private fun moveWithinEnvironment() {
         // The stage, and all its contents, must move down by SQUARE_HEIGHT units, while camera remains fixed
 
-        StageManager.stage.environmentYPos -= SQUARE_HEIGHT.toInt()
+        stage.environmentYPos -= SQUARE_HEIGHT.toInt()
 
         getAllObjects().forEach { obj ->
             obj.movementTarget = Vector2(

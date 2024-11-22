@@ -6,8 +6,13 @@ import com.daymax86.forwardmarch.Stage
 import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
+import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_X
+import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_Y
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
+import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import ktx.async.KtxAsync
 import java.nio.file.DirectoryStream
 import java.nio.file.FileSystems
@@ -17,14 +22,19 @@ object StageManager {
 
     val stage: Stage = Stage()
 
-    fun load(onComplete: () -> Unit) {
-        KtxAsync.launch {
-            stage.initialise(
-                getStartingBoards()
-            )
-        }.invokeOnCompletion {
-            onComplete.invoke()
+    fun load() = runBlocking {
+        stage.initialise(
+            getStartingBoards()
+        )
+        val movementQueue: MutableList<() -> Unit> = mutableListOf()
+        stage.squaresList.forEach { square ->
+            square.contents.forEach { content ->
+                movementQueue.add {
+                    content.move(square.stageXpos, square.stageYpos)
+                }
+            }
         }
+        movementQueue.forEach { action -> action.invoke() }
     }
 
     @Suppress("NewApi")
@@ -37,16 +47,13 @@ object StageManager {
         stream.forEach { p ->
             files.add(p)
         }
-//        val (board1, actionQueue1) = FileManager.makeBoardFromFile(
-//            Gdx.files.internal(
-//                files.random().toString()
-//            ).file(),
-//        )
         val (board1, actionQueue1) = FileManager.makeBoardFromFile(
             Gdx.files.internal(
-                "boards/starting_boards/starting_board_4.csv"
+                files.random().toString()
             ).file(),
         )
+        board1.environmentXPos = BOARD_STARTING_X
+        board1.environmentYPos = BOARD_STARTING_Y
         board1.initialActionQueue = actionQueue1
         // ------------------ Boards 2 & 3 ----------------
         path = FileSystems.getDefault().getPath("boards/very_easy_boards")
@@ -60,38 +67,31 @@ object StageManager {
         while (source2 == source1) {
             source2 = files.random().toString()
         }
-//        val (board2, actionQueue2) = FileManager.makeBoardFromFile(
-//            Gdx.files.internal(
-//                source1
-//            ).file(),
-//        )
-
         val (board2, actionQueue2) = FileManager.makeBoardFromFile(
             Gdx.files.internal(
                 "boards/very_easy_boards/very_easy_board_1.csv"
             ).file(),
         )
+        board2.environmentXPos = BOARD_STARTING_X + DIMENSIONS * SQUARE_WIDTH.toInt()
+        board2.environmentYPos = BOARD_STARTING_Y + DIMENSIONS * SQUARE_HEIGHT.toInt()
         board2.initialActionQueue = actionQueue2
-
-
-        // TESTING --------
-        board2.getSquare(1, 1)?.contents?.add(Coin())
-        // ----------------
 
         val (board3, actionQueue3) = FileManager.makeBoardFromFile(
             Gdx.files.internal(
                 source2
             ).file(),
         )
+        board3.environmentXPos = BOARD_STARTING_X + (DIMENSIONS * 2) * SQUARE_WIDTH.toInt()
+        board3.environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * 2) * SQUARE_HEIGHT.toInt()
         board3.initialActionQueue = actionQueue3
-
 
         return Triple(board1, board2, board3)
     }
 
-    private fun resolveActionQueues(queues: List<MutableList<() -> Unit>>){
+    private fun resolveActionQueues(queues: List<MutableList<() -> Unit>>) {
         queues.forEach { q ->
-            q.forEach { it.invoke() } }
+            q.forEach { it.invoke() }
+        }
     }
 
     @Suppress("NewApi")
