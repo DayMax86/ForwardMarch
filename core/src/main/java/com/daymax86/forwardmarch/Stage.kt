@@ -1,11 +1,13 @@
 package com.daymax86.forwardmarch
 
+import com.daymax86.forwardmarch.managers.FileManager
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.squares.Square
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import ktx.async.KtxAsync
+import java.io.File
 
 class Stage() {
     // A Stage is 3 boards stacked on top of each other, essentially one mega-board.
@@ -15,20 +17,33 @@ class Stage() {
     var environmentYPos: Int = GameManager.BOARD_STARTING_Y
 
     fun initialise(
-        boards: Triple<Board, Board, Board>,
+        boardsAndFiles: Pair<Triple<Board, Board, Board>, Triple<File, File, File>>,
     ) {
         runBlocking {
-            boards.toList().forEach { board ->
-                board.completeActionQueue()
-            }
+
+            val boards = boardsAndFiles.toList().elementAt(0)
+            val files = boardsAndFiles.toList().elementAt(1)
 
             val board1 = boards.toList().elementAt(0)
             val board2 = boards.toList().elementAt(1)
             val board3 = boards.toList().elementAt(2)
             // Create the initial stage from the 3 board parameters
-            appendBoard(board1, 0)
-            appendBoard(board2, 8)
-            appendBoard(board3, 16)
+            if (board1 is Board && board2 is Board && board3 is Board) {
+                appendBoard(board1, 0)
+                appendBoard(board2, 8)
+                appendBoard(board3, 16)
+            }
+
+            // Now the stage has been filled with squares we can populate the squares with the appropriate content
+            val file1 = files.toList().elementAt(0)
+            val file2 = files.toList().elementAt(1)
+            val file3 = files.toList().elementAt(2)
+            if (file1 is File && file2 is File && file3 is File) {
+                FileManager.populateBoardFromFile(file1, 0)
+                FileManager.populateBoardFromFile(file2, 8)
+                FileManager.populateBoardFromFile(file3, 16)
+            }
+
         }
     }
 

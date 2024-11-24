@@ -5,15 +5,13 @@ import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.Stage
 import com.daymax86.forwardmarch.board_objects.SacrificeStation
 import com.daymax86.forwardmarch.board_objects.Shop
-import com.daymax86.forwardmarch.board_objects.pickups.Coin
 import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_X
 import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_Y
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import ktx.async.KtxAsync
+import java.io.File
 import java.nio.file.DirectoryStream
 import java.nio.file.FileSystems
 import java.nio.file.Path
@@ -23,22 +21,16 @@ object StageManager {
     val stage: Stage = Stage()
 
     fun load() = runBlocking {
+        // Create the stage by appending board squares
         stage.initialise(
             getStartingBoards()
         )
-        val movementQueue: MutableList<() -> Unit> = mutableListOf()
-        stage.squaresList.forEach { square ->
-            square.contents.forEach { content ->
-                movementQueue.add {
-                    content.move(square.stageXpos, square.stageYpos)
-                }
-            }
-        }
-        movementQueue.forEach { action -> action.invoke() }
+//        val movementQueue: MutableList<() -> Unit> = mutableListOf()
+//        movementQueue.forEach { action -> action.invoke() }
     }
 
     @Suppress("NewApi")
-    private fun getStartingBoards(): Triple<Board, Board, Board> {
+    private fun getStartingBoards(): Pair<Triple<Board, Board, Board>, Triple<File, File, File>> {
 
         // ------------------ Board 1 ------------------
         var path: Path = FileSystems.getDefault().getPath("boards/starting_boards")
@@ -47,14 +39,15 @@ object StageManager {
         stream.forEach { p ->
             files.add(p)
         }
-        val (board1, actionQueue1) = FileManager.makeBoardFromFile(
-            Gdx.files.internal(
-                files.random().toString()
-            ).file(),
+        val file1 = Gdx.files.internal(
+            files.random().toString()
+        ).file()
+        val board1 = FileManager.makeBoardFromFile(
+            file1
         )
         board1.environmentXPos = BOARD_STARTING_X
         board1.environmentYPos = BOARD_STARTING_Y
-        board1.initialActionQueue = actionQueue1
+
         // ------------------ Boards 2 & 3 ----------------
         path = FileSystems.getDefault().getPath("boards/very_easy_boards")
         stream = java.nio.file.Files.newDirectoryStream(path)
@@ -62,30 +55,30 @@ object StageManager {
         stream.forEach { p ->
             files.add(p)
         }
-        val source1 = files.random().toString()
-        var source2 = files.random().toString()
-        while (source2 == source1) {
-            source2 = files.random().toString()
+        val source2 = files.random().toString()
+        var source3 = files.random().toString()
+        while (source3 == source2) {
+            source3 = files.random().toString()
         }
-        val (board2, actionQueue2) = FileManager.makeBoardFromFile(
-            Gdx.files.internal(
-                "boards/very_easy_boards/very_easy_board_1.csv"
-            ).file(),
+        val file2 = Gdx.files.internal(
+            source2
+        ).file()
+        val board2 = FileManager.makeBoardFromFile(
+            file2
         )
         board2.environmentXPos = BOARD_STARTING_X + DIMENSIONS * SQUARE_WIDTH.toInt()
         board2.environmentYPos = BOARD_STARTING_Y + DIMENSIONS * SQUARE_HEIGHT.toInt()
-        board2.initialActionQueue = actionQueue2
 
-        val (board3, actionQueue3) = FileManager.makeBoardFromFile(
-            Gdx.files.internal(
-                source2
-            ).file(),
+        val file3 = Gdx.files.internal(
+            source3
+        ).file()
+        val board3 = FileManager.makeBoardFromFile(
+            file3
         )
         board3.environmentXPos = BOARD_STARTING_X + (DIMENSIONS * 2) * SQUARE_WIDTH.toInt()
         board3.environmentYPos = BOARD_STARTING_Y + (DIMENSIONS * 2) * SQUARE_HEIGHT.toInt()
-        board3.initialActionQueue = actionQueue3
 
-        return Triple(board1, board2, board3)
+        return Pair(Triple(board1, board2, board3), Triple(file1, file2, file3))
     }
 
     private fun resolveActionQueues(queues: List<MutableList<() -> Unit>>) {
@@ -134,16 +127,16 @@ object StageManager {
             stream.forEach { p ->
                 files.add(p)
             }
-            val (board, actionQueue) = FileManager.makeBoardFromFile(
-                Gdx.files.internal(
-                    files.random().toString()
-                ).file(),
-            )
-            if (board != null) {
-                actionQueue.forEach { it.invoke() }.apply {
-                    stage.appendBoard(board, stage.squaresList.size / (DIMENSIONS * DIMENSIONS))
-                }
-            }
+//            val (board, actionQueue) = FileManager.makeBoardFromFile(
+//                Gdx.files.internal(
+//                    files.random().toString()
+//                ).file(),
+//            )
+//            if (board != null) {
+//                actionQueue.forEach { it.invoke() }.apply {
+//                    stage.appendBoard(board, stage.squaresList.size / (DIMENSIONS * DIMENSIONS))
+//                }
+//            }
             onComplete.invoke()
         }
     }

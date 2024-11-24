@@ -50,17 +50,12 @@ abstract class BoardObject() : GameObject() {
         // Set environment coordinates to aim for (so it can be seen to move)
         if (destinationSquare != null) {
             val (squareX, squareY) = destinationSquare.getEnvironmentPosition()
-
             movementTarget = Vector2(squareX, squareY)
-            // Trigger onEnter effects
-            destinationSquare.onEnter(this)
             // Add to the square's content
             destinationSquare.addToContents(this)
-            if (this is Shop) {
-                Gdx.app.log("move", "/ ${this.stageYpos} / ")
-            }
+            // Trigger onEnter effects
+            destinationSquare.onEnter(this)
         }
-
         deselectPiece()
     }
 

@@ -90,14 +90,13 @@ object FileManager {
         writer.flush()
     }
 
-    fun makeBoardFromFile(file: File): Pair<Board, MutableList<() -> Unit>> {
+    fun makeBoardFromFile(file: File): Board {
         val inputStream = file.inputStream()
         val dataSquares = readBoardFile(inputStream)
         val tempSquaresList: MutableList<Square> = mutableListOf()
         val board = Board()
-        val actionQueue: MutableList<() -> Unit> = mutableListOf()
         if (dataSquares.isEmpty()) {
-            return Pair(board, mutableListOf())
+            return board
         }
         dataSquares.forEach { dataSquare ->
             lateinit var square: Square
@@ -115,7 +114,7 @@ object FileManager {
                     square = WhiteSquareDefault(
                         colour = SquareTypes.WHITE,
                         stageXpos = dataSquare.xPos,
-                        stageYpos = dataSquare.yPos ,
+                        stageYpos = dataSquare.yPos,
                         clickable = true,
                     )
                 }
@@ -124,7 +123,7 @@ object FileManager {
                     square = MysterySquare(
                         colour = SquareTypes.MYSTERY,
                         stageXpos = dataSquare.xPos,
-                        stageYpos = dataSquare.yPos ,
+                        stageYpos = dataSquare.yPos,
                         clickable = true,
                     )
                 }
@@ -133,7 +132,7 @@ object FileManager {
                     square = TrapdoorSquare(
                         colour = SquareTypes.TRAPDOOR,
                         stageXpos = dataSquare.xPos,
-                        stageYpos = dataSquare.yPos ,
+                        stageYpos = dataSquare.yPos,
                         clickable = true,
                     )
                 }
@@ -142,100 +141,9 @@ object FileManager {
                     square = BrokenSquare(
                         colour = SquareTypes.BROKEN,
                         stageXpos = dataSquare.xPos,
-                        stageYpos = dataSquare.yPos ,
+                        stageYpos = dataSquare.yPos,
                         clickable = true,
                     )
-                }
-            }
-
-            dataSquare.contents.forEach { content ->
-                when (content) {
-                    "coin" -> {
-                        square.contents.add(Coin())
-                    }
-
-                    "bomb" -> {
-                        actionQueue.add {
-                            PickupManager.spawnPickup(
-                                PickupTypes.BOMB,
-                                square.stageXpos,
-                                square.stageYpos ,
-                            )
-                        }
-                    }
-
-                    "trap" -> {
-                        actionQueue.add {
-                            EnemyManager.spawnTrap(
-                                type = TrapTypes.SPIKE,
-                                x = square.stageXpos,
-                                y = square.stageYpos,
-                            )
-                        }
-                    }
-
-                    "shop" -> {
-                        actionQueue.add {
-                            StageManager.spawnShop(
-                                x = square.stageXpos,
-                                y = square.stageYpos,
-                            )
-                        }
-                    }
-
-                    "sacrifice_station" -> {
-                        actionQueue.add {
-                            StageManager.spawnSacrificeStation(
-                                x = square.stageXpos,
-                                y = square.stageYpos,
-                            )
-                        }
-                    }
-
-                    "item_token" -> {
-                        actionQueue.add {
-                            PickupManager.spawnPickup(
-                                PickupTypes.ITEM_TOKEN,
-                                square.stageXpos,
-                                square.stageYpos ,
-                            )
-                        }
-                    }
-
-                    "enemy_pawn" -> {
-                        actionQueue.add {
-                            EnemyManager.spawnEnemy(
-                                PieceTypes.PAWN,
-                                square.stageXpos,
-                                square.stageYpos ,
-                            )
-                        }
-                    }
-
-                    "enemy_knight" -> {
-                        actionQueue.add {
-                            EnemyManager.spawnEnemy(
-                                PieceTypes.KNIGHT,
-                                square.stageXpos,
-                                square.stageYpos,
-                            )
-                        }
-                    }
-
-                    "enemy_rook" -> {
-                        actionQueue.add {
-                            EnemyManager.spawnEnemy(
-                                PieceTypes.ROOK,
-                                square.stageXpos,
-                                square.stageYpos,
-                            )
-                        }
-                    }
-
-                    else -> {
-                        // add nothing.
-                    }
-
                 }
             }
             tempSquaresList.add(square)
@@ -247,11 +155,123 @@ object FileManager {
             }
         }.apply {
             tempSquaresList.clear()
-            return if (board.squaresList.size == 64) {// Was the operation successful?
-                Pair(board, actionQueue)
-            } else {
-                Pair(board, mutableListOf())
+            Gdx.app.log("file", "Board created with ${board.squaresList.size} squares")
+            return board
+        }
+    }
+
+    fun populateBoardFromFile(file: File, stageStartingY: Int) {
+        val inputStream = file.inputStream()
+        val dataSquares = readBoardFile(inputStream)
+        val actionQueue: MutableList<() -> Unit> = mutableListOf()
+        if (dataSquares.isEmpty()) {
+            Gdx.app.log(
+                "file",
+                "Error reading file - dataSquares list is empty! (populateBoardFromFile)"
+            )
+        }
+        dataSquares.forEach { dataSquare ->
+            dataSquare.contents.forEach { content ->
+                when (content) {
+                    "coin" -> {
+                        actionQueue.add {
+                            PickupManager.spawnPickup(
+                                PickupTypes.COIN,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "bomb" -> {
+                        actionQueue.add {
+                            PickupManager.spawnPickup(
+                                PickupTypes.BOMB,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "trap" -> {
+                        actionQueue.add {
+                            EnemyManager.spawnTrap(
+                                type = TrapTypes.SPIKE,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "shop" -> {
+                        actionQueue.add {
+                            StageManager.spawnShop(
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "sacrifice_station" -> {
+                        actionQueue.add {
+                            StageManager.spawnSacrificeStation(
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "item_token" -> {
+                        actionQueue.add {
+                            PickupManager.spawnPickup(
+                                PickupTypes.ITEM_TOKEN,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                                associatedItem = GameManager.allItems.random(),
+                            )
+                        }
+                    }
+
+                    "enemy_pawn" -> {
+                        actionQueue.add {
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.PAWN,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "enemy_knight" -> {
+                        actionQueue.add {
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.KNIGHT,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    "enemy_rook" -> {
+                        actionQueue.add {
+                            EnemyManager.spawnEnemy(
+                                PieceTypes.ROOK,
+                                dataSquare.xPos,
+                                dataSquare.yPos + stageStartingY,
+                            )
+                        }
+                    }
+
+                    else -> {
+                        // add nothing.
+                    }
+
+                }
             }
+        }
+        inputStream.close()
+        actionQueue.forEach { action ->
+            action.invoke()
         }
     }
 }

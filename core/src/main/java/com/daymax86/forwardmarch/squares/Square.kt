@@ -92,8 +92,7 @@ abstract class Square {
 
     fun getEnvironmentPosition(): Pair<Float, Float> {
         val x = StageManager.stage.environmentXPos + this.stageXpos * GameManager.SQUARE_WIDTH
-        val y =
-            StageManager.stage.environmentYPos + this.stageYpos * 120.toFloat()
+        val y = StageManager.stage.environmentYPos + this.stageYpos * GameManager.SQUARE_HEIGHT
         return Pair(x, y)
     }
 
