@@ -5,6 +5,7 @@ import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.board_objects.Shop
+import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.managers.PieceManager.deselectPiece
 import com.daymax86.forwardmarch.managers.StageManager
@@ -55,6 +56,9 @@ abstract class BoardObject() : GameObject() {
             destinationSquare.addToContents(this)
             // Trigger onEnter effects
             destinationSquare.onEnter(this)
+        }
+        if (this is Piece) {
+            this.getValidMoves()
         }
     }
 

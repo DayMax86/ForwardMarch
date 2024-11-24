@@ -165,7 +165,7 @@ object GameManager {
         }.invokeOnCompletion {
             val actionQueue: MutableList<() -> Unit> = mutableListOf()
             enemyPieces.forEach { enemy ->
-                enemy.getValidMoves { actionQueue.add { enemy.enemyAttack() } }
+                actionQueue.add { enemy.enemyAttack() }
             }.also { // Fulfil the attacks afterwards to avoid concurrent modification
                 actionQueue.forEach {
                     it.invoke()

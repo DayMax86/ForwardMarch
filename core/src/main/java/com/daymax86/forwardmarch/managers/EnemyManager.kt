@@ -21,6 +21,7 @@ object EnemyManager {
                 pawnToAdd.stageXpos = x
                 pawnToAdd.stageYpos = y
                 pawnToAdd.getValidMoves()
+                pawnToAdd.move(x, y)
                 enemyPieces.add(pawnToAdd)
             }
 
@@ -31,6 +32,7 @@ object EnemyManager {
                 val rookToAdd = EnemyRook()
                 rookToAdd.stageXpos = x
                 rookToAdd.stageYpos = y
+                rookToAdd.move(x, y)
                 enemyPieces.add(rookToAdd)
             }
 
@@ -38,6 +40,7 @@ object EnemyManager {
                 val knightToAdd = EnemyKnight()
                 knightToAdd.stageXpos = x
                 knightToAdd.stageYpos = y
+                knightToAdd.move(x, y)
                 enemyPieces.add(knightToAdd)
             }
 
@@ -56,6 +59,7 @@ object EnemyManager {
                 val spikesToAdd = SpikeTrap()
                 spikesToAdd.stageXpos = x
                 spikesToAdd.stageYpos = y
+                spikesToAdd.move(x, y)
                 traps.add(spikesToAdd)
             }
         }
