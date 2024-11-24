@@ -21,12 +21,9 @@ object StageManager {
     val stage: Stage = Stage()
 
     fun load() = runBlocking {
-        // Create the stage by appending board squares
         stage.initialise(
             getStartingBoards()
         )
-//        val movementQueue: MutableList<() -> Unit> = mutableListOf()
-//        movementQueue.forEach { action -> action.invoke() }
     }
 
     @Suppress("NewApi")

@@ -15,6 +15,7 @@ import com.daymax86.forwardmarch.board_objects.pickups.Pickup
 import com.daymax86.forwardmarch.board_objects.pieces.Piece
 import com.daymax86.forwardmarch.board_objects.traps.Trap
 import com.daymax86.forwardmarch.inputTypes
+import com.daymax86.forwardmarch.managers.PickupManager
 import com.daymax86.forwardmarch.managers.PieceManager.selectedPiece
 import com.daymax86.forwardmarch.managers.StageManager
 
@@ -71,11 +72,15 @@ abstract class Square {
 
                 inputTypes["SCROLL_WHEEL_CLICK"] -> {
                     Gdx.app.log("square", "OnClick event for square and SCROLL_WHEEL_CLICK")
-                    //------------------------FOR TESTING--------------------//
                     if (Player.bombTotal > 0) {
                         val bomb = Bomb()
-                        bomb.move(this.stageXpos, this.stageYpos)
-                        bomb.use()
+                        val targetSquare = StageManager.stage.squaresList.firstOrNull { square ->
+                            square.stageXpos == this.stageXpos &&
+                                square.stageYpos == this.stageYpos
+                        }
+                        if (targetSquare != null) {
+                            bomb.explode(targetSquare)
+                        }
                     }
                 }
 
@@ -175,10 +180,9 @@ abstract class Square {
     }
 
     open fun onEnter(obj: BoardObject) {
-        if (obj is Bomb && obj.active) {
-            obj.explode(this)
-        }
-
+//        if (obj is Bomb && obj.active) {
+//            obj.explode(this)
+//        }
     }
 
 

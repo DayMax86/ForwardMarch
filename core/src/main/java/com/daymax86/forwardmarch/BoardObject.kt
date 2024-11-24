@@ -56,20 +56,7 @@ abstract class BoardObject() : GameObject() {
             // Trigger onEnter effects
             destinationSquare.onEnter(this)
         }
-        deselectPiece()
     }
-
-
-//    open fun updateBoundingBox() {
-//        boundingBox = BoundingBox(
-//            Vector3(currentPosition.x, currentPosition.y, 0f),
-//            Vector3(
-//                currentPosition.x + GameManager.SQUARE_WIDTH,
-//                currentPosition.y + GameManager.SQUARE_HEIGHT,
-//                0f
-//            )
-//        )
-//    }
 
     open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
         Gdx.app.log(

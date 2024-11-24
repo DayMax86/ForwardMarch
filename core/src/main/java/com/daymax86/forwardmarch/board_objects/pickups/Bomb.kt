@@ -10,6 +10,7 @@ import com.daymax86.forwardmarch.Player
 import com.daymax86.forwardmarch.animations.SpriteAnimation
 import com.daymax86.forwardmarch.animations.StickySpriteAnimator
 import com.daymax86.forwardmarch.managers.GameManager
+import com.daymax86.forwardmarch.managers.PickupManager
 import com.daymax86.forwardmarch.managers.StageManager
 import com.daymax86.forwardmarch.squares.Square
 import com.daymax86.forwardmarch.squares.SquareTypes
@@ -57,16 +58,6 @@ class Bomb(
     currentPosition = currentPosition,
     movementTarget = movementTarget,
 ) {
-    var active: Boolean = false
-
-    init {
-        initialise()
-    }
-
-    override fun onShopClick(button: Int) {
-        super.onShopClick(button)
-        Player.changeBombTotal(1)
-    }
 
     override fun onSacrificeClick(button: Int) {
         super.onSacrificeClick(button)
@@ -77,26 +68,12 @@ class Bomb(
         GameManager.currentStation!!.exitStation()
     }
 
-    override fun use(xPos: Int, yPos: Int, square: Square?) {
-        active = true
-        this.move(xPos, yPos)
-    }
-
-    override fun collide(other: BoardObject, friendlyAttack: Boolean) {
-        super.collide(other, friendlyAttack)
-        if (active) {
-            other.kill()
-            this.kill()
-        }
-    }
-
     fun explode(targetSquare: Square) {
         val actionQueue: MutableList<() -> Unit> = mutableListOf()
         var img = targetSquare.tileImage
         when (targetSquare.colour) {
             SquareTypes.BLACK -> {
                 img = Texture(Gdx.files.internal("sprites/black_square_hole_256.png"))
-                // Replace the square with a 'hole' square
             }
 
             SquareTypes.WHITE -> {
@@ -108,27 +85,19 @@ class Bomb(
             SquareTypes.BROKEN -> {}
         }
 
-            StageManager.stage.squaresList.firstOrNull { square ->
-                square == targetSquare
+        targetSquare.contents.forEach { content ->
+            actionQueue.add {
+                content.kill()
             }
-        Player.changeBombTotal(-1)
-        actionQueue.forEach { it.invoke() }
         }
 
+        targetSquare.tileImage =
+            img // TODO() This just changes the tile's image, we need a squareTransform method
 
-
-
-    override fun kill() {
-        super.kill()
-        StickySpriteAnimator.activateAnimation(
-            atlasFilepath = deathAnimation.atlasFilepath,
-            frameDuration = deathAnimation.frameDuration,
-            loop = deathAnimation.loop,
-            x = deathAnimation.x,
-            y = deathAnimation.y,
-            width = deathAnimation.width,
-            height = deathAnimation.height,
-        )
+        Player.changeBombTotal(-1)
+        this.kill()
+        actionQueue.forEach { it.invoke() }
     }
+
 }
 

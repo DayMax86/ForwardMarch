@@ -111,9 +111,7 @@ abstract class Piece(
                     Player.changeCoinTotal(1)
                 }
                 if (other is Bomb) {
-                    if (!other.active) {
-                        Player.changeBombTotal(1)
-                    }
+                    Player.changeBombTotal(1)
                 }
                 if (other is ItemToken) {
                     other.giveItemToPlayer()

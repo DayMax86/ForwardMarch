@@ -1,6 +1,5 @@
 package com.daymax86.forwardmarch.managers
 
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
 import com.daymax86.forwardmarch.board_objects.pickups.Bomb
 import com.daymax86.forwardmarch.board_objects.pickups.Coin
@@ -20,7 +19,6 @@ object PickupManager {
                 coinToAdd.stageYpos = y
                 coinToAdd.move(x, y)
                 coinToAdd.initialise()
-                pickups.add(coinToAdd)
             }
 
             PickupTypes.BOMB -> {
@@ -29,7 +27,6 @@ object PickupManager {
                 bombToAdd.stageYpos = y
                 bombToAdd.move(x, y)
                 bombToAdd.initialise()
-                pickups.add(bombToAdd)
             }
 
             PickupTypes.ITEM_TOKEN -> {
@@ -38,10 +35,9 @@ object PickupManager {
                 tokenToAdd.stageYpos = y
                 tokenToAdd.move(x, y)
                 tokenToAdd.initialise()
-                pickups.add(tokenToAdd)}
+            }
         }
     }
-
 }
 
 enum class PickupTypes {
