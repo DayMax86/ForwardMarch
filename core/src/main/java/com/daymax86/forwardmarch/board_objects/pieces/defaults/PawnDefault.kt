@@ -104,6 +104,7 @@ open class PawnDefault(
 
         val squaresToRemove: MutableList<Square> = mutableListOf()
         // Filter out the diagonal squares without enemy pieces in them
+        // and the square directly above if it contains an enemy piece
         this.movement.firstOrNull { square ->
             square.stageXpos == this.stageXpos - 1 && square.stageYpos == this.stageYpos + 1
         }.let { sq ->
@@ -118,6 +119,15 @@ open class PawnDefault(
         }.let { sq ->
             if (sq != null) {
                 if (!sq.containsEnemy()) {
+                    squaresToRemove.add(sq)
+                }
+            }
+        }
+        this.movement.firstOrNull { square ->
+            square.stageXpos == this.stageXpos && square.stageYpos == this.stageYpos + 1
+        }.let { sq ->
+            if (sq != null) {
+                if (sq.containsEnemy()) {
                     squaresToRemove.add(sq)
                 }
             }
