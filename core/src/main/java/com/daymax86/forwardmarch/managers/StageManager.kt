@@ -46,7 +46,7 @@ object StageManager {
         board1.environmentYPos = BOARD_STARTING_Y
 
         // ------------------ Boards 2 & 3 ----------------
-        path = FileSystems.getDefault().getPath("boards/very_easy_boards")
+        path = FileSystems.getDefault().getPath("boards/easy_boards")
         stream = java.nio.file.Files.newDirectoryStream(path)
         files.clear()
         stream.forEach { p ->

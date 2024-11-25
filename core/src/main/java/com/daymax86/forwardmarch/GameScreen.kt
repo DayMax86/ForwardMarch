@@ -53,6 +53,7 @@ class GameScreen(private val application: MainApplication) : Screen {
     val hudCamera = OrthographicCamera(
         (viewWidth).toFloat(), (viewHeight * (viewWidth / viewHeight)).toFloat()
     )
+    private val cachedAlphaImage = Texture(Gdx.files.internal("sprites/alpha.png"))
 
     init {
 
@@ -337,7 +338,7 @@ class GameScreen(private val application: MainApplication) : Screen {
         square.contents.forEach { content ->
             var contentImg = content.image
             if (content.hideImage) {
-                contentImg = Texture(Gdx.files.internal("sprites/alpha.png"))
+                contentImg = cachedAlphaImage
             } else if (content.highlight) {
                 contentImg = content.highlightedImage
             }

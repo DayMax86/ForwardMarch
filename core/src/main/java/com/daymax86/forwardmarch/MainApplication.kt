@@ -44,7 +44,6 @@ class MainApplication : Game() {
 
     override fun render() {
         super.render()
-//        ScreenUtils.clear(0.5f, 0.2f, 0.2f, 1f)
         fps.update()
         fps.render()
         if (loading) { showLoadingAnim() }
