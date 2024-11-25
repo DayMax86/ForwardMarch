@@ -74,6 +74,25 @@ abstract class Piece(
         }
     }
 
+    override fun onHover() {
+        super.onHover()
+        if (EnemyManager.enemyPieces.contains(this)) {
+            this.movement.forEach { square ->
+                square.swapToAltHighlight(true)
+                square.highlight = true
+            }
+        }
+    }
+
+    override fun onExitHover() {
+        super.onExitHover()
+        if (EnemyManager.enemyPieces.contains(this)) {
+            this.movement.forEach { square ->
+                square.highlight = false
+            }
+        }
+    }
+
     override fun onShopClick(button: Int) {
         super.onShopClick(button)
         if (Player.canAfford(this)) {
