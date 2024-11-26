@@ -19,7 +19,6 @@ import com.daymax86.forwardmarch.managers.EnemyManager.traps
 import com.daymax86.forwardmarch.managers.PickupManager.pickups
 import com.daymax86.forwardmarch.managers.PieceManager.pieces
 import com.daymax86.forwardmarch.managers.PieceManager.setStartingLayout
-import com.daymax86.forwardmarch.managers.StageManager.checkStageStatus
 import com.daymax86.forwardmarch.managers.StageManager.stage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -44,6 +43,7 @@ object GameManager {
 
     var isLoading: Boolean = true
     var gameOver: Boolean = false
+    var disableHUDPress: Boolean = false
 
     val activeAnimations: MutableList<SpriteAnimation> = mutableListOf()
 
@@ -73,8 +73,8 @@ object GameManager {
     var cameraTargetInY: Float = 0f
 
     init {
-        loadAllItems()
         runBlocking {
+            loadAllItems()
             StageManager.load()
             updateBoardObjectPositions()
             setStartingLayout()
@@ -174,6 +174,16 @@ object GameManager {
 
             difficultyModifier = forwardMarchCounter / DIMENSIONS
             Gdx.app.log("forward_march", "Difficulty modifier = $difficultyModifier")
+
+            if (forwardMarchCounter.mod(DIMENSIONS) == 0) {
+                // Every 8 forward marches add a new board to the top of the stage
+                StageManager.addBoard(difficultyModifier)
+                // And remove a board from the bottom
+                if (forwardMarchCounter > DIMENSIONS) { // Make sure it only removes a board once off the screen
+                    StageManager.removeBoard()
+                }
+            }
+
         }
     }
 

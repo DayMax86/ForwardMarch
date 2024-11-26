@@ -10,6 +10,7 @@ import com.daymax86.forwardmarch.managers.GameManager.BOARD_STARTING_Y
 import com.daymax86.forwardmarch.managers.GameManager.DIMENSIONS
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_HEIGHT
 import com.daymax86.forwardmarch.managers.GameManager.SQUARE_WIDTH
+import com.daymax86.forwardmarch.managers.GameManager.forwardMarchCounter
 import kotlinx.coroutines.runBlocking
 import java.io.File
 import java.nio.file.DirectoryStream
@@ -85,7 +86,7 @@ object StageManager {
     }
 
     @Suppress("NewApi")
-    fun addBoard(difficultyModifier: Int, onComplete: () -> Unit) {
+    fun addBoard(difficultyModifier: Int) {
         val dir: String
         when (difficultyModifier.floorDiv(1)) {
             1 -> {
@@ -124,37 +125,22 @@ object StageManager {
             stream.forEach { p ->
                 files.add(p)
             }
-//            val (board, actionQueue) = FileManager.makeBoardFromFile(
-//                Gdx.files.internal(
-//                    files.random().toString()
-//                ).file(),
-//            )
-//            if (board != null) {
-//                actionQueue.forEach { it.invoke() }.apply {
-//                    stage.appendBoard(board, stage.squaresList.size / (DIMENSIONS * DIMENSIONS))
-//                }
-//            }
-            onComplete.invoke()
+            val file = Gdx.files.internal(
+                files.random().toString()
+            ).file()
+            val board = FileManager.makeBoardFromFile(
+                file
+            )
+            val numberOfRows = DIMENSIONS * 2 + forwardMarchCounter
+            board.environmentXPos = BOARD_STARTING_X
+            board.environmentYPos = BOARD_STARTING_Y + (SQUARE_HEIGHT * numberOfRows).toInt()
+            stage.appendBoard(board, numberOfRows)
+            FileManager.populateBoardFromFile(file, numberOfRows)
         }
     }
 
-    fun checkStageStatus() {
-        // See if any boards need to be removed, or any new boards appended
-        // Get the y coordinate of the lowest allied piece
-        var lowestPieceY = stage.squaresList.size
-        PieceManager.pieces.forEach { piece ->
-            if (piece.stageYpos < lowestPieceY) {
-                lowestPieceY = piece.stageYpos
-            }
-        }
-        // If the lowest y is more than 10 (?) rows above the bottom row, remove a board
-        stage.squaresList.sortBy { square ->
-            square.stageYpos
-        }
-        val firstRow = stage.squaresList.first().stageYpos
-        if (lowestPieceY > firstRow) {
-            stage.removeRows(DIMENSIONS)
-        }
+    fun removeBoard() {
+        stage.removeRows(DIMENSIONS)
     }
 
     fun spawnShop(x: Int, y: Int) {

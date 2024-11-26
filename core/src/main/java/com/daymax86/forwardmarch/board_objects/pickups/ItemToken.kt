@@ -56,10 +56,25 @@ class ItemToken(
 ) {
 
     fun giveItemToPlayer() {
-        Player.playerItems.add(associatedItem)
-        Gdx.app.log("item_token", "Player has been given ${this.associatedItem}")
-        this.kill()
+        // Check that the player doesn't already have this item
+        if (Player.playerItems.size < GameManager.allItems.size) {
+            while (true) {
+                if (Player.alreadyHasItem(this.associatedItem)) {
+                    Gdx.app.log(
+                        "item_token",
+                        "Player already has $associatedItem , trying again..."
+                    )
+                    this.associatedItem = GameManager.allItems.random()
+                } else {
+                    break
+                }
+            }
+            Player.playerItems.add(associatedItem)
+            Gdx.app.log("item_token", "Player has been given ${this.associatedItem}")
+            this.kill()
+        } else {
+            Gdx.app.log("item_token", "The player already has all the items available in the game!")
+        }
     }
-
 
 }

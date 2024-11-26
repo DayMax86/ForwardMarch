@@ -63,10 +63,10 @@ abstract class BoardObject() : GameObject() {
     }
 
     open fun collide(other: BoardObject, friendlyAttack: Boolean = false) {
-        Gdx.app.log(
-            "collisions", "A collision has happened! (between $this and $other)." +
-                "Board position = ${this.stageXpos}, ${this.stageYpos}"
-        )
+//        Gdx.app.log(
+//            "collisions", "A collision has happened! (between $this and $other)." +
+//                "Board position = ${this.stageXpos}, ${this.stageYpos}"
+//        )
     }
 
     open fun kill() {

@@ -5,8 +5,8 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.math.Interpolation
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.collision.BoundingBox
-import com.daymax86.forwardmarch.Board
 import com.daymax86.forwardmarch.BoardObject
+import com.daymax86.forwardmarch.GameHUD
 import com.daymax86.forwardmarch.managers.GameManager
 import com.daymax86.forwardmarch.GameObject
 import com.daymax86.forwardmarch.InfoBox
@@ -79,6 +79,7 @@ class Shop(
             }
             obj.clickable = false
         }
+        GameManager.disableHUDPress = true
     }
 
     private fun stockShop() {
@@ -87,9 +88,33 @@ class Shop(
         }
         shopItems.add(Bomb())
         shopItems.add(PawnDefault())
-        shopItems.add(GameManager.allItems.filter { item ->
+        var itemToStock = GameManager.allItems.filter { item ->
             item.itemPools.contains(ItemPools.SHOP)
-        }.random())
+        }.random()
+
+        if (Player.playerItems.size < GameManager.allItems.filter{ item ->
+                item.itemPools.contains(ItemPools.SHOP)
+            }.size) { // If player doesn't already have all the items from the shop pool...
+            while (true) {
+                if (Player.alreadyHasItem(itemToStock)) {
+                    Gdx.app.log(
+                        "shop",
+                        "Player already has $itemToStock , trying again..."
+                    )
+                    itemToStock = GameManager.allItems.filter { item ->
+                        item.itemPools.contains(ItemPools.SHOP)
+                    }.random()
+                } else {
+                    break
+                }
+            }
+
+        } else {
+            Gdx.app.log("shop", "The player already has all the items available in the game!")
+            // Don't add an item to the shop as the player already has every item in the shop pool
+        }
+
+
 
         when (PieceTypes.entries.random()) {
             PieceTypes.KING -> { /* Can only have one king in a game so do nothing */ }
@@ -135,6 +160,7 @@ class Shop(
             obj.clickable = clickables.contains(obj)
         }
         shopWindow.dispose()
+        GameManager.disableHUDPress = false
     }
 
 }

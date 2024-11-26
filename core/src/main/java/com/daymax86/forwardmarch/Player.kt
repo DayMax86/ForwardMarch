@@ -1,5 +1,6 @@
 package com.daymax86.forwardmarch
 
+import com.badlogic.gdx.Gdx
 import com.daymax86.forwardmarch.items.Item
 
 object Player {
@@ -34,6 +35,16 @@ object Player {
 
     fun canAfford(obj: GameObject): Boolean { // This can be modified if an item reduces shop prices for example
         return coinTotal >= obj.shopPrice
+    }
+
+    fun alreadyHasItem(item: Item): Boolean {
+        playerItems.forEach { playerItem ->
+//            Gdx.app.log("item_token", "playerItem = ${playerItem::class} || tokenItem = ${item::class}")
+            if (item::class == playerItem::class) {
+                return true
+            }
+        }
+        return false
     }
 
 }

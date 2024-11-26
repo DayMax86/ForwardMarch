@@ -424,6 +424,7 @@ class GameHUD(gameScreen: GameScreen) {
         var height: Float = 0f,
         var visible: Boolean = false,
         var associatedObject: GameObject? = null,
+        var clickable: Boolean = true,
         private var onClickBehaviour: () -> Unit,
     ) {
         val type = elementType
@@ -436,7 +437,6 @@ class GameHUD(gameScreen: GameScreen) {
             if (elementType == ElementTypes.TEXT) {
                 width = GlyphLayout(font, text).width
                 height = GlyphLayout(font, text).height
-                Gdx.app.log("HUD", "HUD example text width = $width, height = $height")
             } else {
                 image = if (texturePath == "") image else Texture(Gdx.files.internal(texturePath))
                 highlightImage = if (texturePath == "") highlightImage else image
@@ -487,7 +487,9 @@ class GameHUD(gameScreen: GameScreen) {
         }
 
         fun onClick() {
-            onClickBehaviour.invoke()
+            if (!GameManager.disableHUDPress) {
+                onClickBehaviour.invoke()
+            }
         }
 
         fun isInBounds(): Boolean {
