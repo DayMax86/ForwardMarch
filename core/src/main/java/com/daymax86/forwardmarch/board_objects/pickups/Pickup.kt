@@ -36,6 +36,8 @@ abstract class Pickup(
                     Player.changeBombTotal(1)
                 }
             }
+            // Purchase successful so remove the appropriate amount of money from the player
+            Player.changeCoinTotal(-shopPrice)
             if (GameManager.currentShop != null) {
                 GameManager.currentShop!!.exitShop()
             }

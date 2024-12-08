@@ -33,6 +33,8 @@ abstract class Item : GameObject() {
     override fun onShopClick(button: Int) {
         super.onShopClick(button)
         if (Player.canAfford(this)) {
+            // Purchase successful so remove the appropriate amount of money from the player
+            Player.changeCoinTotal(-shopPrice)
             Player.playerItems.add(this)
             GameManager.currentShop!!.exitShop()
         } else {

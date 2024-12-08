@@ -98,6 +98,8 @@ abstract class Piece(
         if (Player.canAfford(this)) {
             pieces.add(this)
             selectPiece(this, true)
+            // Purchase successful so remove the appropriate amount of money from the player
+            Player.changeCoinTotal(-shopPrice)
             if (GameManager.currentShop != null) {
                 GameManager.currentShop!!.exitShop()
             }

@@ -108,7 +108,7 @@ class Shop(
                     break
                 }
             }
-
+        shopItems.add(itemToStock)
         } else {
             Gdx.app.log("shop", "The player already has all the items available in the game!")
             // Don't add an item to the shop as the player already has every item in the shop pool
